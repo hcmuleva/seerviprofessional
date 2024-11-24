@@ -14,11 +14,11 @@ const AvatarImage = ({ src }) => {
 // Image Cell Renderer Component
 const ImageCellRenderer = (props) => {
   const images = props?.value; // Ensure value is defined
-  const firstImageUrl = images?.url || ""; // Fallback if undefined
+  const firstImageUrl = images?.url || "/Person.png"; // Use the image from public folder
 
   return (
     <div className="flex items-center gap-2">
-      {firstImageUrl ? <AvatarImage key="image" src={firstImageUrl} /> : "No Image"}
+      <AvatarImage key="image" src={firstImageUrl} />
     </div>
   );
 };
@@ -69,14 +69,13 @@ export default function UserDashboard() {
       cellStyle: { display: "flex", alignItems: "center", padding: "5px" },
     },
     { headerName: "ID", field: "id", width: 120 },
-    { headerName: "First Name", field: "FirstName", width: 125 },
-    { headerName: "Last Name", field: "LastName", width: 125 },
-    { headerName: "Profession", field: "Profession", width: 125 },
-     { headerName: "Country", field: "Country", width: 110 },
-    { headerName: "State", field: "State", width: 110 },
-    { headerName: "City", field: "City", width: 110 },
-
-    { headerName: "Working City", field: "WorkingCity", width: 124 },
+    { headerName: "First Name", field: "FirstName", width: 150 },
+    { headerName: "Last Name", field: "LastName", width: 150 },
+    { headerName: "Profession", field: "Profession", width: 150 },
+    { headerName: "Working City", field: "WorkingCity", width: 150 },
+     { headerName: "Country", field: "Country", width: 150 },
+    { headerName: "State", field: "State", width: 150 },
+    { headerName: "City", field: "City", width: 150 },
   ];
 
   const defaultColDef = {
