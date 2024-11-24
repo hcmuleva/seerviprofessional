@@ -104,7 +104,7 @@ const ProfileCard = ({ user }) => {
       case "addressInfo":
         return (
           <Space direction="vertical" size="small">
-            {renderField("Home Address", user.home_address)}
+            {renderField("Home Address", user.Address)}
             {renderField("City", user.City)}
             {renderField("State", user.State)}
             {renderField("Country", user.Country)}

@@ -163,7 +163,7 @@ export default function EditProfile({ user }) {
                 {/* Address Tab */}
                 <TabPane tab="Address" key="addressInfo">
                   <Space direction="vertical" size="small" style={{ width: "100%" }}>
-                    <Form.Item name="home_address" label="Home Address">
+                    <Form.Item name="Address" label="Home Address">
                       <Input placeholder="Enter Home Address" />
                     </Form.Item>
                     <Form.Item name="City" label="City">
