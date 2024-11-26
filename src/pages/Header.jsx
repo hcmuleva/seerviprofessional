@@ -15,15 +15,18 @@ const Header = ({ setSearch } ) => {
     resource: "users",
     id: String(userid),
     meta: {
-      populate: ["profilePicture"],
+      populate: ["profilePicture", "vyaapar"],
     },
   })
   const user = data?.data;
   console.log("logo",Logo)
-  console.log("Data for header ",data)
+  console.log("Data for header ",user)
   if (isLoading){
     return <p>Loading...</p>;
   }
+
+  
+
   return (
     <div className="dashboard-container"  style={{
       padding: "0.5rem 1rem", // Reduced padding for the brown bar
@@ -34,7 +37,7 @@ const Header = ({ setSearch } ) => {
     }}>
     <div className="dashboard-content" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
       {/* Logo and App Name */}
-      <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "1rem" }} onClick={() => navigate(`/dashboard}`)}>
         <div style={{ textAlign: "center" }}>
           <img
             src="/logo.png"
@@ -56,7 +59,7 @@ const Header = ({ setSearch } ) => {
           gap: "1rem",
           cursor: "pointer",
         }}
-        onClick={() => navigate(`/myprofile/${userid}`)}
+        onClick={() => navigate(`/hcmcard/${userid}`)}
        // onClick={() => navigate(`/hcmcard/${userid}`)}
 
       >

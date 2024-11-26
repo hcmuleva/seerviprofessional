@@ -55,8 +55,8 @@ export default function App() {
                 }
               >
                 <Route path="/dashboard" element={<Controller />} />
-                <Route path="/myprofile/:id" element={<MyProfile />} />
                 <Route path="/hcmcard/:id" element={<ProfilePage/>}/>
+                <Route path="/myprofile/:id" element={<MyProfile />} />
                 {/* <Route path="/matches" element={<MatchesPage />} /> */}
                 <Route path="/profile/:id" element={<ProfileView />} />
                 <Route path="/hcmcard" element={<ProfilePage/>}/>

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Card, Avatar, Button, Tabs, Form, Space, Upload, Typography, notification, Row, Col } from "antd";
 import { EditOutlined, SettingOutlined, CameraOutlined } from "@ant-design/icons";
 import { getValueProps, mediaUploadMapper } from "@refinedev/strapi-v4";
-import { useUpdate } from "@refinedev/core";
+import { useOne, useUpdate } from "@refinedev/core";
 import PhotoComponent from "./PhotoComponent";
 import ImageGallery from "./ImageGallery";
 
@@ -14,6 +14,26 @@ const ProfileCard = ({ user }) => {
   const [showPhoto, setShowPhoto] = useState(false);
   const [form] = Form.useForm();
   const { mutate: updateUser } = useUpdate();
+
+  //get data
+  // const userid = localStorage.getItem("userid");
+  // const {data, isLoading} = useOne({
+  //   resource: "users",
+  //   id: String(userid),
+  //   meta: {
+  //     populate: ["profilePicture", "vyaapars"],
+  //   },
+  // })
+  // const user = data?.data;
+  // console.log("logo",Logo)
+  // console.log("Data for header ",user)
+  // if (isLoading){
+  //   return <p>Loading...</p>;
+  // }
+  //get data
+
+  console.log("USER ME ", user)
+
   console.log("Users for photos to see ",user)
   const onFinish = async (values) => {
     try {
@@ -66,22 +86,22 @@ const ProfileCard = ({ user }) => {
       case "personalInfo":
         return (
           <Space direction="vertical" size="small">
-            {renderField("First Name", user.FirstName)}
-            {renderField("Last Name", user.LastName)}
-            {renderField("Date of Birth", user.DOB)}
-            {renderField("Sex", user.Sex)}
+            {renderField("First Name", user.firstname)}
+            {renderField("Last Name", user.lastname)}
+            {renderField("Date of Birth", user.dob)}
+            {renderField("Sex", user.sex)}
             {renderField("Birth Time", user.birth_time)}
             {renderField("Birth Place", user.birth_place)}
             {renderField("Height", user.Height)}
             {renderField("Manglik", user.manglik)}
-            {renderField("Marital Status", user.MeritalStatus)}
+            {renderField("Marital Status", user.marital)}
             {renderField("Have Children", user.have_child)}
           </Space>
         );
       case "contactInfo":
         return (
           <Space direction="vertical" size="small">
-            {renderField("Mobile Number", user.MobileNumber)}
+            {renderField("Mobile Number", user.mobile)}
             {renderField("Father's Mobile", user.FatherMobileNumber)}
             {renderField("Mamaji's Mobile", user.MamajiMobileNumber)}
           </Space>
@@ -89,12 +109,12 @@ const ProfileCard = ({ user }) => {
       case "familyDetails":
         return (
           <Space direction="vertical" size="small">
-            {renderField("Father's Name", user.FatherName)}
-            {renderField("Mother's Name", user.MotherName)}
+            {renderField("Father's Name", user.father)}
+            {renderField("Mother's Name", user.mother)}
             {renderField("Father's Profession", user.father_occupation)}
             {renderField("Grandfather's Name", user.GrandFatherName)}
             {renderField("Siblings", user.Siblings)}
-            {renderField("Gotra", user.Gotra)}
+            {renderField("Gotra", user.gotra)}
             {renderField("Nanaji's Name", user.NanajiName)}
             {renderField("Naniji's Name", user.NanijiName)}
             {renderField("Mamaji's Name", user.MamajiName)}
@@ -123,9 +143,9 @@ const ProfileCard = ({ user }) => {
       case "professionalInfo":
         return (
           <Space direction="vertical" size="small">
-            {renderField("Your Profession", user.Profession)}
-            {renderField("Company Name", user.CompanyName)}
-            {renderField("Designation", user.Designation)}
+            {renderField("Vyaapar Type", user?.vyaapars[0]?.type)}
+            {renderField("Company Name", user.companyName)}
+            {renderField("Designation", user?.vyaapars[0]?.your_designation)}
             {renderField("Working City", user.WorkingCity)}
             {renderField("Income", user.Income)}
             {renderField("Previous Profession", user.PreProfession)}
