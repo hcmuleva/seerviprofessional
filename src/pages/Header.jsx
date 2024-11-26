@@ -57,6 +57,8 @@ const Header = ({ setSearch } ) => {
           cursor: "pointer",
         }}
         onClick={() => navigate(`/myprofile/${userid}`)}
+       // onClick={() => navigate(`/hcmcard/${userid}`)}
+
       >
         <Avatar src={user?.profilePicture?.formats?.thumbnail?.url || "/default-profile.png"} size={64} icon={<UserOutlined />} />
           
