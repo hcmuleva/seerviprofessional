@@ -19,6 +19,7 @@ import MyProfile from "./pages/myProfile";
 import HelpPage from "./help/HelpPage";
 import ProfilePage from "./pages/myProfile/HarishCard";
 import UserTable from "./pages/HCMTableView";
+import Header from "./pages/Header";
 
 export const TOKEN_KEY = import.meta.env.VITE_TOKEN_KEY;
 const API_URL = import.meta.env.VITE_SERVER_URL;
@@ -47,6 +48,7 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <CustomLayout>
+                      <Header/>
                       <Outlet />
                     </CustomLayout>
                   </ProtectedRoute>
@@ -54,6 +56,7 @@ export default function App() {
               >
                 <Route path="/dashboard" element={<Controller />} />
                 <Route path="/myprofile/:id" element={<MyProfile />} />
+                <Route path="/hcmcard/:id" element={<ProfilePage/>}/>
                 {/* <Route path="/matches" element={<MatchesPage />} /> */}
                 <Route path="/profile/:id" element={<ProfileView />} />
                 <Route path="/hcmcard" element={<ProfilePage/>}/>

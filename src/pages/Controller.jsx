@@ -79,7 +79,7 @@ export default function Controller() {
     
     return (
         <>
-         <Header/>
+       
         <Menu onClick={onClick} selectedKeys={[current]} mode="horizontal" items={items} />
         <UserDashboard/>
         </>
