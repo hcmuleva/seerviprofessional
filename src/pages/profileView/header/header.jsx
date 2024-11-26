@@ -43,7 +43,7 @@ const Header = () => {
 
           <div className="profile-logo">
             <img
-              src={Logo}
+              src="/sp/logo.png"
               alt="logo"
               style={{ width: "2.5rem", marginTop: "0.3rem" }}
             ></img>

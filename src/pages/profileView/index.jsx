@@ -1,29 +1,16 @@
-import React, { useEffect, useState } from "react";
-import Header from "./header/header";
-import Woman from "../../../public/woman.png";
 import {
   EnvironmentOutlined,
   HeartFilled,
   LoadingOutlined,
 } from "@ant-design/icons";
-import "../../styles/profile.css";
-import Person from "../../../public/Location.png";
-import Calender from "../../../public/Calender.png";
-import Contact from "../../../public/Contact.png";
-import Scholar from "../../../public/Scholar.png";
-import PassportSize from "../../../public/Person.png";
-import Family from "../../../public/family.png";
-import Hobbies from "../../../public/hobbies.png";
-import Business from "../../../public/business.png";
-import Horoscope from "../../../public/horoscope.png";
-import AddRequest from "../../../public/add-request.png";
-import RequestAccepted from "../../../public/request-accepted.png";
-import Fitness from "../../../public/fitness.png";
-import { Button, Modal, Spin } from "antd";
+import { useCustom } from "@refinedev/core";
+import { Button, Modal } from "antd";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useCustom, useOne, useUpdate } from "@refinedev/core";
+
+import "../../styles/profile.css";
 import calculateAge from "../../utils/age-finder";
-import { Link } from "react-router-dom";
+import Header from "./header/header";
 const API_URL = import.meta.env.VITE_SERVER_URL;
 
 const ProfileView = () => {

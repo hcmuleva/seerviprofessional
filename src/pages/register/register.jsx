@@ -1,30 +1,32 @@
-import React, { useState } from "react";
 import {
-  Layout,
+  BookOutlined,
+  LockOutlined,
+  MailOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
+import { useCreate } from "@refinedev/core";
+import {
+  Button,
   Card,
+  Col,
+  DatePicker,
   Form,
   Input,
-  Button,
-  DatePicker,
-  Select,
-  Tabs,
-  Row,
-  Col,
-  Typography,
-  Progress,
+  Layout,
   notification,
+  Progress,
+  Row,
+  Select,
+  Space,
+  Tabs,
+  Typography,
 } from "antd";
-import {
-  UserOutlined,
-  MailOutlined,
-  LockOutlined,
-  BookOutlined,
-} from "@ant-design/icons";
-import { City, Country, State } from "country-state-city";
-import gotra from "../../utils/gotra.json";
-import "../../styles/register.css";
-import { useCreate } from "@refinedev/core";
+import { Country, State } from "country-state-city";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import AddressComponent from "../../components/address/AddressComponent";
+import "../../styles/register.css";
+import gotra from "../../utils/gotra.json";
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -94,22 +96,7 @@ export const RegisterPage = ({ userrole, createdBy }) => {
 
   const handleTabChange = (activeKey) => setCurrentStep(Number(activeKey));
 
-  const handleCountry = (option) => {
-    const selectedCountry = Country.getAllCountries().find(
-      (country) => country.name === option
-    );
-    setCountry({ code: selectedCountry.isoCode, name: option });
-    setState({}); // Clear selected state
-    form.setFieldsValue({ State: undefined, City: undefined }); // Clear state and city fields
-  };
-
-  const handleState = (option) => {
-    const selectedState = State.getStatesOfCountry(country.code).find(
-      (state) => state.name === option
-    );
-    setState({ code: selectedState.isoCode, name: option });
-    form.setFieldsValue({ City: undefined }); // Clear city field
-  };
+ 
 
   return (
     <Layout
@@ -160,7 +147,7 @@ export const RegisterPage = ({ userrole, createdBy }) => {
                 tab={
                   <span>
                     <UserOutlined />
-                    Personal Info
+                    Personal
                   </span>
                 }
                 key="1"
@@ -168,7 +155,7 @@ export const RegisterPage = ({ userrole, createdBy }) => {
                 <Row gutter={16}>
                   <Col xs={24} sm={12}>
                     <Form.Item
-                      name="FirstName"
+                      name="firstname"
                       label="First Name"
                       rules={[
                         { required: true, message: "Enter your first name" },
@@ -179,13 +166,13 @@ export const RegisterPage = ({ userrole, createdBy }) => {
                   </Col>
                   <Col xs={24} sm={12}>
                     <Form.Item
-                      name="LastName"
-                      label="Last Name"
+                      name="lastname"
+                      label="Father/Husband Name"
                       rules={[
-                        { required: true, message: "Enter your last name" },
+                        { required: true, message: "Enter your Father/Husband name" },
                       ]}
                     >
-                      <Input placeholder="Enter Last Name" />
+                      <Input placeholder="Enter Father/Husband Name" />
                     </Form.Item>
                   </Col>
                 </Row>
@@ -262,7 +249,7 @@ export const RegisterPage = ({ userrole, createdBy }) => {
                 <Row gutter={16}>
                   <Col xs={24} sm={12}>
                     <Form.Item
-                      name="DOB"
+                      name="dob"
                       label="Date of Birth"
                       rules={[
                         {
@@ -280,8 +267,8 @@ export const RegisterPage = ({ userrole, createdBy }) => {
                   </Col>
                   <Col xs={24} sm={12}>
                     <Form.Item
-                      name="Sex"
-                      label="Sex"
+                      name="sex"
+                      label="Gender"
                       rules={[
                         {
                           required: true,
@@ -297,7 +284,7 @@ export const RegisterPage = ({ userrole, createdBy }) => {
                   </Col>
                 </Row>
                 <Form.Item
-                  name="Gotra"
+                  name="gotra"
                   label="Gotra"
                   rules={[
                     { required: true, message: "Please select your gotra." },
@@ -319,101 +306,12 @@ export const RegisterPage = ({ userrole, createdBy }) => {
                     </Option>
                   </Select>
                 </Form.Item>
-                <Form.Item name="MobileNumber" label="Mobile Number"  rules={[{ required: true, message: 'Please enter your mobile number' }]}>
+                <Form.Item name="mobile" label="Mobile Number"  rules={[{ required: true, message: 'Please enter your mobile number' }]}>
                   <Input placeholder="Enter Mobile Number" />
                 </Form.Item>
               </Tabs.TabPane>
 
-              {/* Address Info Tab */}
-              <Tabs.TabPane
-                tab={
-                  <span>
-                    <BookOutlined />
-                    Address Info
-                  </span>
-                }
-                key="2"
-              >
-                <Form.Item name="Address" label="Home Address">
-                  <Input.TextArea placeholder="Enter Home Address" />
-                </Form.Item>
-                <Row gutter={16}>
-                  <Col xs={24} sm={12}>
-                    <Form.Item
-                      name="Country"
-                      label="Country"
-                      rules={[
-                        { required: true, message: "Please Enter Country" },
-                      ]}
-                    >
-                      <Select
-                        style={{ width: "100%" }}
-                        placeholder="Select Your Country"
-                        showSearch
-                        onChange={handleCountry}
-                      >
-                        {Country.getAllCountries().map((country) => (
-                          <Option key={country.isoCode} value={country.name}>
-                            {country.name}
-                          </Option>
-                        ))}
-                      </Select>
-                    </Form.Item>
-                  </Col>
-                  <Col xs={24} sm={12}>
-                    <Form.Item
-                      name="State"
-                      label="State"
-                      rules={[
-                        { required: true, message: "Please Enter State" },
-                      ]}
-                    >
-                      <Select
-                        style={{ width: "100%" }}
-                        placeholder="Select State"
-                        onChange={handleState}
-                        showSearch
-                        disabled={!country.code}
-                      >
-                        {State.getStatesOfCountry(country.code).map((state) => (
-                          <Option key={state.isoCode} value={state.name}>
-                            {state.name}
-                          </Option>
-                        ))}
-                      </Select>
-                    </Form.Item>
-                  </Col>
-                </Row>
-                <Row gutter={16}>
-                  <Col xs={24} sm={12}>
-                    <Form.Item
-                      name="City"
-                      label="City"
-                      rules={[{ required: true, message: "Please Enter City" }]}
-                    >
-                      <Select
-                        style={{ width: "100%" }}
-                        placeholder="Select Your City"
-                        showSearch
-                        disabled={!state.code}
-                      >
-                        {City.getCitiesOfState(country.code, state.code).map(
-                          (city) => (
-                            <Option key={city.name} value={city.name}>
-                              {city.name}
-                            </Option>
-                          )
-                        )}
-                      </Select>
-                    </Form.Item>
-                  </Col>
-                  <Col xs={24} sm={12}>
-                    <Form.Item name="postalcode" label="Pin Code">
-                      <Input placeholder="Enter Pin Code" />
-                    </Form.Item>
-                  </Col>
-                </Row>
-              </Tabs.TabPane>
+            
 
               {/* Profession Tab */}
               <Tabs.TabPane
@@ -423,11 +321,11 @@ export const RegisterPage = ({ userrole, createdBy }) => {
                     Profession
                   </span>
                 }
-                key="3"
+                key="2"
               >
                 <Row gutter={16}>
                   <Col xs={24} sm={12}>
-                    <Form.Item name="Profession" label="Profession">
+                    <Form.Item name="profession" label="Profession">
                       <Input placeholder="Enter Profession" />
                     </Form.Item>
                   </Col>
@@ -462,12 +360,33 @@ export const RegisterPage = ({ userrole, createdBy }) => {
                   </Col>
                 </Row>
               </Tabs.TabPane>
+                {/* Address Info Tab */}
+                <Tabs.TabPane
+                tab={
+                  <span>
+                    <BookOutlined />
+                    Address
+                  </span>
+                }
+                key="3"
+              >
+                <AddressComponent form={form}/>
+               
+              </Tabs.TabPane>
             </Tabs>
 
             <Form.Item>
-              <Button type="primary" htmlType="submit" block>
-                Register
-              </Button>
+                  <Space>
+                  <Button htmlType="submit">
+                    Register
+                    </Button>
+
+                    <Button  onClick={() => navigate("/login")}>
+                    Back to Login
+                    </Button>
+            
+                  </Space>
+             
             </Form.Item>
           </Form>
         </Card>
