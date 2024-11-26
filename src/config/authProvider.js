@@ -6,7 +6,6 @@ const USER_ROLE = import.meta.env.VITE_USERROLE;
 const USER_STATUS = import.meta.env.VITE_USERSTATUS;
 export const axiosInstance = axios.create();
 const strapiAuthHelper = AuthHelper(API_URL + "/api");
-import moment from "moment";
 
 
 
@@ -115,7 +114,6 @@ export const authProvider = {
           username: username,
           password: password,
           email: email,
-          emeelanrole: "MEELAN",
           userstatus: "PENDING",
           ...commvalues,
         }

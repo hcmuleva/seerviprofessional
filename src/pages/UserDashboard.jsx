@@ -1,10 +1,9 @@
 import { useList } from "@refinedev/core";
-import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
+import { AgGridReact } from "ag-grid-react";
 import { Avatar } from "antd";
 import React, { useRef } from "react";
-import Header from "./profileView/header/header";
 
 // Avatar Image Component
 const AvatarImage = ({ src }) => {
@@ -87,7 +86,7 @@ export default function UserDashboard() {
 
   return (
     <div className="ag-theme-alpine" style={{ height: "100%", width: "100%" }}>
-      <Header/>
+     
       <AgGridReact
         rowData={rowData}
         ref={gridRef}

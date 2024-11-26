@@ -12,18 +12,22 @@ import { resourcesConfig } from "./config/resources";
 import { PageViewProvider } from "./contextprovider/PageProvider";
 import Controller from "./pages/Controller";
 import LoginPage from "./pages/login/LoginPage";
-import MatchesPage from "./pages/matches";
+//import MatchesPage from "./pages/matches";
 import ProfileView from "./pages/profileView";
 import { RegisterPage } from "./pages/register/register";
 import MyProfile from "./pages/myProfile";
+import HelpPage from "./help/HelpPage";
+import ProfilePage from "./pages/myProfile/HarishCard";
+import UserTable from "./pages/HCMTableView";
 
 export const TOKEN_KEY = import.meta.env.VITE_TOKEN_KEY;
 const API_URL = import.meta.env.VITE_SERVER_URL;
+const basePath = import.meta.env.VITE_BASE_PATH || "/";
 
 export default function App() {
   return (
     <ConfigProvider>
-      <BrowserRouter>
+      <BrowserRouter basename="/">
         <Refine
           dataProvider={DataProvider(API_URL + `/api`, axiosInstance)}
           authProvider={authProvider}
@@ -38,6 +42,7 @@ export default function App() {
             <Routes>
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/login" element={<LoginPage />} />
+              <Route path="/help" element={<HelpPage />} /> 
               <Route
                 element={
                   <ProtectedRoute>
@@ -49,8 +54,10 @@ export default function App() {
               >
                 <Route path="/dashboard" element={<Controller />} />
                 <Route path="/myprofile/:id" element={<MyProfile />} />
-                <Route path="/matches" element={<MatchesPage />} />
+                {/* <Route path="/matches" element={<MatchesPage />} /> */}
                 <Route path="/profile/:id" element={<ProfileView />} />
+                <Route path="/hcmcard" element={<ProfilePage/>}/>
+                <Route path="/hcmtable" element={<UserTable/>}/>
               </Route>
               <Route path="*" element={<CustomErrorComponent />} />
             </Routes>
