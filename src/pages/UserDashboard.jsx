@@ -4,6 +4,7 @@ import "ag-grid-community/styles/ag-theme-alpine.css";
 import { AgGridReact } from "ag-grid-react";
 import { Avatar } from "antd";
 import React, { useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 // Avatar Image Component
 const AvatarImage = ({ src }) => {
@@ -12,6 +13,7 @@ const AvatarImage = ({ src }) => {
 
 // Image Cell Renderer Component
 const ImageCellRenderer = (props) => {
+  const navigate = useNavigate();
   const images = props?.value; // Ensure value is defined
   const firstImageUrl = images?.url || "/Person.png"; // Use the image from public folder
 
@@ -28,13 +30,13 @@ export default function UserDashboard() {
   const { data: usersData, isLoading, isFetching } = useList({
     resource: "users",
     meta: {
-      populate: ["profilePicture"],
+      populate: ["profilePicture", "vyaapars"],
     },
-    filters: [{ field: "org", operator: "eq", value: "SEERVI" }],
-    sort: {
-      field: "id", 
-      order: "desc", 
-    },
+    // filters: [{ field: "org", operator: "eq", value: "SEERVI" }],
+    // sort: {
+    //   field: "id", 
+    //   order: "desc", 
+    // },
   });
 
   if (isLoading) {
@@ -44,14 +46,15 @@ export default function UserDashboard() {
   if (isFetching) {
     return <h1>Fetching...</h1>;
   }
+  console.log("userslist", usersData.data)
 
   // Transform `usersData?.data` if necessary
   const rowData = usersData?.data?.map((user) => ({
     id: user.id,
     profilePicture: user.profilePicture, // Ensure this matches your API structure
-    FirstName: user.FirstName,
-    LastName: user.LastName,
-    Profession: user.Profession,
+    FirstName: user.firstname,
+    FatherName: user.father,
+    VyaaparType: user?.vyaapars[0]?.type,
     State: user.State,
     Country:user.Country,
     City:user.City,
@@ -69,10 +72,10 @@ export default function UserDashboard() {
     },
     { headerName: "ID", field: "id", width: 120 },
     { headerName: "First Name", field: "FirstName", width: 150 },
-    { headerName: "Last Name", field: "LastName", width: 150 },
-    { headerName: "Profession", field: "Profession", width: 150 },
+    { headerName: "Father Name", field: "FatherName", width: 150 },
+    { headerName: "Vyaapar Type", field: "VyaaparType", width: 150 },
     { headerName: "Working City", field: "WorkingCity", width: 150 },
-     { headerName: "Country", field: "Country", width: 150 },
+    { headerName: "Country", field: "Country", width: 150 },
     { headerName: "State", field: "State", width: 150 },
     { headerName: "City", field: "City", width: 150 },
   ];

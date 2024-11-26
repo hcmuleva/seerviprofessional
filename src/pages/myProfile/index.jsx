@@ -30,7 +30,7 @@ export default function MyProfile() {
     resource: "users",
     id:userid,
     meta: {
-      populate: ["photos","profilePicture", "user_setting"],
+      populate: ["photos","profilePicture", "user_setting", "vyaapars"],
     },
   });
   if(isLoading){
@@ -84,10 +84,10 @@ export default function MyProfile() {
           </Button>}
          {isEditProfile&& <Button color="danger" variant="dashed"   onClick={()=>{setIsEditProfile(false)}}>
          <UserOutlined style={{ fontSize: '15px', color: '#1890ff' }} />
-         Profile
+          Profile
           </Button>}
-          <Button color='danger' variant='dashed' onClick={handleLogout} ><LogoutOutlined style={{ fontSize: '15px', color: '#ff4d4f' }}  /> Logout
-
+          <Button color='danger' variant='dashed' onClick={handleLogout} ><LogoutOutlined style={{ fontSize: '15px', color: '#ff4d4f' }}  /> 
+          Logout
           </Button>
         </Space.Compact>
       

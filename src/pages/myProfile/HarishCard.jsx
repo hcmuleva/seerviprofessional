@@ -1,14 +1,32 @@
 import React from 'react';
 import { Avatar, Card, Progress, Tabs, Typography, Button, Row, Col, List, Tag } from 'antd';
 import { EditOutlined, EnvironmentOutlined, BankOutlined, GlobalOutlined, UserOutlined } from '@ant-design/icons';
+import { useOne } from '@refinedev/core';
+import MyProfile from '.';
+import { useNavigate } from "react-router-dom";
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
 
 
 const ProfilePage = () => {
+
+  const userid = localStorage.getItem("userid");
+  const navigate = useNavigate();
+  const {data, isLoading} = useOne({
+    resource: "users",
+    id: String(userid),
+    meta: {
+      populate: ["profilePicture", "vyaapars"],
+    },
+  })
+  const user = data?.data;
+  if (isLoading){
+    return <p>Loading...</p>;
+  }
+
   const profileInfo = {
-    name: "Anna Adame",
+    name: user?.username,
     title: "Owner & Founder",
     location: "California, United States",
     company: "Themesbrand",
@@ -17,9 +35,9 @@ const ProfilePage = () => {
     about: `Hi I'm Anna Adame, It will be as simple as Occidental; in fact, it will be Occidental. To an English person, it will seem like simplified English, as a skeptical Cambridge friend of mine told me what Occidental is European languages are members of the same family.
 
     You always want to make sure that your fonts work well together and try to limit the number of fonts you use to three or less. Experiment and play around with the fonts that you already have in the software you're working with reputable font websites. This may be the most commonly encountered tip I received from the designers I spoke with. They highly encourage that you use different fonts in one design, but do not over-exaggerate and go overboard.`,
-    fullName: "Anna Adame",
-    mobile: "+1 987 6543",
-    email: "daveadame@velzon.com",
+    fullName: user?.firstname ? user?.firstname + " " + user?.lastname : "-",
+    mobile: user?.mobile ? user?.mobile : "-",
+    email: user?.email,
     joiningDate: "24 Nov 2021",
     designation: "Lead Designer / Developer",
     website: "www.velzon.com"
@@ -72,7 +90,7 @@ const ProfilePage = () => {
                   <Title level={3} style={{ marginBottom: '0' }}>{profileInfo.following}</Title>
                   <Text type="secondary">Following</Text>
                 </div>
-                <Button type="primary" icon={<EditOutlined />}>
+                <Button type="primary" icon={<EditOutlined />} onClick={() => navigate(`/myprofile/${userid}`)}>
                   Edit Profile
                 </Button>
               </div>
