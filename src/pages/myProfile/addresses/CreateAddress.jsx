@@ -30,7 +30,7 @@ export default function CreateAddress({setType}) {
         <Option value="ORIGINAL">ORIGINAL</Option>
       </Select>
     </Form.Item>
-        <AddressComponent form={form}/>
+        <AddressComponent form={form} />
         <Form.Item>
         <Button htmlType='submit' >
           Create Address
