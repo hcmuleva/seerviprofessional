@@ -4,6 +4,10 @@ import { EditOutlined, EnvironmentOutlined, BankOutlined, GlobalOutlined, UserOu
 import { useOne } from '@refinedev/core';
 import MyProfile from '.';
 import { useNavigate } from "react-router-dom";
+import AddressDetails from './addresses';
+import BasicInfo from './info/BasicInfo';
+import Profession from './profession/Profession';
+import JobManager from './profession/JobManager';
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -17,14 +21,14 @@ const ProfilePage = () => {
     resource: "users",
     id: String(userid),
     meta: {
-      populate: ["profilePicture", "vyaapars"],
+      populate: ["photo"],
     },
   })
   const user = data?.data;
   if (isLoading){
     return <p>Loading...</p>;
   }
-
+console.log("Profile Page for phot", user)
   const profileInfo = {
     name: user?.username,
     title: "Owner & Founder",
@@ -57,7 +61,7 @@ const ProfilePage = () => {
               <div style={{ textAlign: 'center' }}>
                 <Avatar
                   size={120}
-                  src="/placeholder.svg?height=120&width=120"
+                  src={user?.photo?.formats?.thumbnail?.url}
                   style={{ marginBottom: '16px' }}
                 />
                 <Title level={4} style={{ marginBottom: '4px' }}>{profileInfo.name}</Title>
@@ -82,14 +86,14 @@ const ProfilePage = () => {
                 alignItems: 'center',
                 marginBottom: '24px'
               }}>
-                <div style={{ textAlign: 'center' }}>
+                {/* <div style={{ textAlign: 'center' }}>
                   <Title level={3} style={{ marginBottom: '0' }}>{profileInfo.followers}</Title>
                   <Text type="secondary">Followers</Text>
                 </div>
                 <div style={{ textAlign: 'center' }}>
                   <Title level={3} style={{ marginBottom: '0' }}>{profileInfo.following}</Title>
                   <Text type="secondary">Following</Text>
-                </div>
+                </div> */}
                 <Button type="primary" icon={<EditOutlined />} onClick={() => navigate(`/myprofile/${userid}`)}>
                   Edit Profile
                 </Button>
@@ -97,6 +101,7 @@ const ProfilePage = () => {
 
               <Tabs defaultActiveKey="1">
                 <TabPane tab="Overview" key="1">
+                      {/* Info Card */}
                   <Row gutter={[24, 24]}>
                     {/* Complete Profile Card */}
                     <Col xs={24} lg={12}>
@@ -106,41 +111,14 @@ const ProfilePage = () => {
                         bordered={false}
                       >
                         <Progress percent={30} showInfo={false} strokeColor="#4863A0" />
-                      </Card>
-                    </Col>
-
-                    {/* Info Card */}
-                    <Col xs={24} lg={12}>
-                      <Card title="Info" bordered={false}>
-                        <List
-                          itemLayout="horizontal"
-                          split={false}
-                          dataSource={[
-                            { label: 'Full Name', value: profileInfo.fullName },
-                            { label: 'Mobile', value: profileInfo.mobile },
-                            { label: 'E-mail', value: profileInfo.email },
-                            { label: 'Location', value: profileInfo.location },
-                            { label: 'Joining Date', value: profileInfo.joiningDate }
-                          ]}
-                          renderItem={item => (
-                            <List.Item>
-                              <Row style={{ width: '100%' }}>
-                                <Col span={8}>
-                                  <Text type="secondary">{item.label} :</Text>
-                                </Col>
-                                <Col span={16}>
-                                  <Text>{item.value}</Text>
-                                </Col>
-                              </Row>
-                            </List.Item>
-                          )}
-                        />
+                        <BasicInfo profileInfo={profileInfo} />
                       </Card>
                     </Col>
 
                     {/* About Card */}
                     <Col span={24}>
                       <Card title="About" bordered={false}>
+                       
                         <Paragraph style={{ marginBottom: 0 }}>
                           {profileInfo.about}
                         </Paragraph>
@@ -207,9 +185,10 @@ const ProfilePage = () => {
                     </Col>
                   </Row>
                 </TabPane>
-                <TabPane tab="Activities" key="2">
+               
+                <TabPane tab="Professional" key="2">
                   <Card bordered={false}>
-                    <Text type="secondary">Activities content</Text>
+                   <JobManager user={profileInfo}/>
                   </Card>
                 </TabPane>
                 <TabPane tab="Projects" key="3">
@@ -217,11 +196,23 @@ const ProfilePage = () => {
                     <Text type="secondary">Projects content</Text>
                   </Card>
                 </TabPane>
-                <TabPane tab="Documents" key="4">
+                <TabPane tab="Address" key="4">
                   <Card bordered={false}>
-                    <Text type="secondary">Documents content</Text>
+                    <Text type="secondary">Address</Text>
+                    <AddressDetails/>
                   </Card>
                 </TabPane>
+                <TabPane tab="Activities" key="5">
+                  <Card bordered={false}>
+                    <Text type="secondary">Activities content</Text>
+                  </Card>
+                </TabPane>
+                <TabPane tab="Subscriptions" key="6">
+                  <Card bordered={false}>
+                    <Text type="secondary">Subscriptions</Text>
+                  </Card>
+                </TabPane>
+               
               </Tabs>
             </Col>
           </Row>
