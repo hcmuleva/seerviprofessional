@@ -6,6 +6,7 @@ import { useLogout, useOne, useUpdate } from "@refinedev/core";
 import PhotoComponent from './PhotoComponent';
 import ProfileCard from './ProfileCard';
 import EditProfile from './EditProfile'
+import ProfilePage from './HarishCard';
 const { Content } = Layout;
 const { TabPane } = Tabs;
 const { TextArea } = Input;
@@ -73,6 +74,7 @@ export default function MyProfile() {
  */
 
   return (
+  <>
     <Layout>
       <Content style={{ padding: '10px' }}>
         <Space.Compact>
@@ -97,6 +99,7 @@ export default function MyProfile() {
        
       </Content>
     </Layout>
+    </>
   );
 }
 

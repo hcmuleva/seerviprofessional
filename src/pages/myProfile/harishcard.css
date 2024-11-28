@@ -1,0 +1,51 @@
+/* styles.css */
+.logout-container {
+  /* display: "flex",
+  flexDirection: "column",
+  gap: "10px", // Optional: Adds spacing between items
+  alignItems: "center", */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  }
+
+  .logout-container .first-icon{
+    display: none;
+  }
+
+  .edit-profile-button, .logout-container {
+    padding: 4px 4px;
+  font-size: 12px;
+  }
+
+  @media (max-width: 768px) {
+    .logout-container .first-icon {
+      display: flex; /* Make it visible */
+      justify-content: flex-end;
+      position: fixed;
+      top: 34px;
+      right: 34px;
+      z-index: 1000;
+      background-color: rgb(199, 6, 6);
+      color: white;
+      size: small;
+      border-radius: 50%;
+    }
+    
+    .logout-container .logout{
+      display: none;
+    }
+
+    .logout-button {
+      font-size: 14px;
+      padding: 5px 10px;
+    }
+
+    .edit-profile-button {
+      padding: 4px 4px; /* Smaller padding for mobile */
+    font-size: 10px; /* Smaller font size for better fit */
+    }
+
+  }
+  

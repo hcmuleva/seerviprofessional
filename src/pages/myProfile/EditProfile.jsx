@@ -7,10 +7,11 @@ import ChangePassword from "./ChangePassword"; // Import ChangePassword componen
 const { TabPane } = Tabs;
 const { Text } = Typography;
 
-export default function EditProfile({ user }) {
+export default function EditProfile({ user , setIsEditProfile}) {
   const { mutate: updateUser } = useUpdate();
   const [form] = Form.useForm();
   const [view, setView] = useState("editProfile"); // State to manage views
+  
 
   const onFinish = async (values) => {
     try {
@@ -145,8 +146,8 @@ export default function EditProfile({ user }) {
                     <Form.Item name="GrandFatherName" label="Grandfather's Name">
                       <Input placeholder="Enter Grandfather's Name" />
                     </Form.Item>
-                    <Form.Item name="Siblings" label="Siblings">
-                      <Input placeholder="Enter Number of Siblings" />
+                    <Form.Item name="myrelative" label="Sibling">
+                      <Input placeholder="Enter Number of myrelative" />
                     </Form.Item>
                     <Form.Item name="NanajiName" label="Nanaji's Name">
                       <Input placeholder="Enter Nanaji's Name" />
@@ -229,17 +230,45 @@ export default function EditProfile({ user }) {
                     <Form.Item name="LifeStyle" label="Lifestyle">
                       <Input placeholder="Enter Lifestyle" />
                     </Form.Item>
-                    <Form.Item name="FoodPreference" label="Food Preference">
+                    <Form.Item name="Horoscope" label="Horoscope">
+                      <Input placeholder="Enter Horoscope" />
+                    </Form.Item>
+                    <Form.Item name="Hobbies" label="Hobbies">
+                      <Input placeholder="Enter Horoscope" />
+                    </Form.Item>
+                  </Space>
+                </TabPane>
+
+                <TabPane tab="Preference" key="preference">
+                  <Space direction="vertical" size="small" style={{ width: "100%" }}>
+                    <Form.Item name="PreMinAge" label="Preferred Min Age">
+                      <Input placeholder="Enter Lifestyle" />
+                    </Form.Item>
+                    <Form.Item name="PreMaxAge" label="Preferred Max Age">
+                      <Input placeholder="Enter Food Preference" />
+                    </Form.Item>
+                    <Form.Item name="PreMinHeight" label="Preferred Min Height">
+                      <Input placeholder="Enter Food Preference" />
+                    </Form.Item>
+                    <Form.Item name="PreMaxHeight" label="Preferred Max Height">
+                      <Input placeholder="Enter Food Preference" />
+                    </Form.Item>
+                    <Form.Item name="PreDescription" label="Preferred Description">
                       <Input placeholder="Enter Food Preference" />
                     </Form.Item>
                   </Space>
                 </TabPane>
               </Tabs>
 
-              <Form.Item style={{ marginTop: 16 }}>
+              <Form.Item style={{ display:"flex",justifyContent:"space-between", marginTop: 16 }}>
+              <Space style={{ display: "flex", justifyContent: "space-between" }}>
                 <Button type="primary" htmlType="submit" block>
                   Update Profile
                 </Button>
+                <Button type="default" onClick={() => setIsEditProfile(false)}>
+                    Close
+                </Button>
+                </Space>
               </Form.Item>
             </Form>
           </>

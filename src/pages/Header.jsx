@@ -1,16 +1,37 @@
-import React from "react";
-import "../styles/dashboard-header.css";
-import Logo from "../../public/logo.png";
-import { Avatar, Input } from "antd";
-//import Hamburger, { Divide } from "hamburger-react";
-import { CaretRightOutlined, SearchOutlined, UserAddOutlined, UserOutlined } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
-import { useOne } from "@refinedev/core";
+import React, { useState } from "react";
+import {
+  AppBar,
+  Box,
+  Toolbar,
+  Typography,
+  Avatar,
+  Menu,
+  MenuItem,
+  Divider,
+  IconButton,
 
-const Header = ({ setSearch } ) => {
+} from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import { useNavigate } from "react-router-dom";
+import { Button } from "antd";
+import { useOne } from "@refinedev/core";
+import { CaretRightOutlined, UserOutlined } from "@ant-design/icons";
+
+const Header = () => {
   const userid = localStorage.getItem("userid");
-  
+  const [anchorEl, setAnchorEl] = useState(null);
+  const theme = useTheme();
+
+  const handleMenuClick = (event) => {
+    setAnchorEl(event.currentTarget); // Set the clicked element as anchor
+  };
+ 
+   
+  const handleMenuClose = () => {
+    setAnchorEl(null); // Close the menu
+  };
   const navigate = useNavigate();
+  const logo = "/emeelan_logo.jpg";
   const {data, isLoading} = useOne({
     resource: "users",
     id: String(userid),
@@ -19,7 +40,7 @@ const Header = ({ setSearch } ) => {
     },
   })
   const user = data?.data;
-  console.log("logo",Logo)
+  // console.log("logo",Logo)
   console.log("Data for header ",user)
   if (isLoading){
     return <p>Loading...</p>;

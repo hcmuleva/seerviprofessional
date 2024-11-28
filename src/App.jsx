@@ -25,6 +25,8 @@ export const TOKEN_KEY = import.meta.env.VITE_TOKEN_KEY;
 const API_URL = import.meta.env.VITE_SERVER_URL;
 const basePath = import.meta.env.VITE_BASE_PATH || "/";
 
+console.log("HYYYYYYYYYYYYYYYYYy",API_URL)
+
 export default function App() {
   return (
     <ConfigProvider>
