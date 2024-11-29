@@ -2,13 +2,12 @@ import React, { useState } from "react";
 import { AppBar, Box, Toolbar, Typography, Avatar, Menu, MenuItem, Divider, IconButton, Button, useMediaQuery } from "@mui/material";
 import { CaretRightOutlined, MenuOutlined, UserOutlined } from "@ant-design/icons";
 // import { useTheme } from "@mui/material/styles";
-import { useOne, useSaveButton } from "@refinedev/core";
+import { useOne } from "@refinedev/core";
 import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 
-const Header = () => {
+const FirstHeader = () => {
   const [avatarAnchorEl, setAvatarAnchorEl] = useState(null);
-  const [isHome, setIsHome] = useState(true);
   const [roleAnchorEl, setRoleAnchorEl] = useState(null);
   const userid = localStorage.getItem("userid");
   const theme = useTheme();
@@ -51,10 +50,10 @@ const Header = () => {
   }
 
   return (
-    <AppBar position="sticky" sx={{ bgcolor: "#333", boxShadow: 2, paddingTop:"10px" }}>
+    <AppBar position="sticky" sx={{ bgcolor: "#333", boxShadow: 2 }}>
       <Toolbar sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         {/* Left Side: Logo */}
-        <Box sx={{ display: "flex", alignItems: "center", gap:"1rem" }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap:"0.2rem" }}>
           <Typography variant="h6" component="div" sx={{ fontWeight: 600, color: "text.primary", textAlign:"center" }}>
             <img src="/logo.png" alt="Logo" style={{ width: "40px", height: "40px" }} />
             <div style={{ color: "white", marginTop: "0.5rem" }}>
@@ -66,12 +65,11 @@ const Header = () => {
         {/* Right Side: Role Button, Avatar & Dropdowns */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           {/* Role Button */}
-          {isHome ?
           <Button
             variant="outlined"
             color="white"
             size={isMobile ? "small" : "medium"}
-            onClick={() => {navigate(`/hcmcard/${userid}`); setIsHome(false)}}
+            onClick={() => navigate(`/hcmcard/${userid}`)}
             sx={{
               textTransform: "capitalize",
               fontSize: isMobile ? "0.8rem" : "1rem",
@@ -81,22 +79,6 @@ const Header = () => {
           >
             Profile
           </Button>
-          :
-          <Button
-            variant="outlined"
-            color="white"
-            size={isMobile ? "small" : "medium"}
-            onClick={() => {navigate(`/dashboard`);setIsHome(true)}}
-            sx={{
-              textTransform: "capitalize",
-              fontSize: isMobile ? "0.8rem" : "1rem",
-              padding: isMobile ? "4px 8px" : "6px 12px",
-              border:"none"
-            }}
-          >
-            Home
-          </Button>
-          }
           <Button
             variant="outlined"
             color="white"
@@ -159,4 +141,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default FirstHeader;

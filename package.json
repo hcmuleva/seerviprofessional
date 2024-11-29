@@ -4,6 +4,9 @@
   "private": true,
   "dependencies": {
     "@ant-design/icons": "^5.0.1",
+    "@emotion/react": "^11.13.5",
+    "@emotion/styled": "^11.13.5",
+    "@mui/material": "^6.1.9",
     "@refinedev/antd": "^5.37.4",
     "@refinedev/cli": "^2.16.21",
     "@refinedev/core": "^4.54.1",
@@ -19,6 +22,7 @@
     "country-state-city": "^3.2.1",
     "dayjs": "^1.11.11",
     "dayjs-plugin-utc": "^0.1.2",
+    "gathjod": "file:",
     "hamburger-react": "^2.5.1",
     "idb": "^8.0.0",
     "lucide-react": "^0.460.0",

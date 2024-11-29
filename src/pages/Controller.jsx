@@ -4,7 +4,9 @@ import { AppstoreOutlined, MailOutlined, SettingOutlined } from '@ant-design/ico
 import { useNavigate } from "react-router-dom";
 import UserDashboard from "./UserDashboard";
 import { Menu } from "antd";
-import Header from "./Header";
+import FirstHeader from "./myProfile/header/firstheader";
+// import Header from "./myProfile/header/myHeader";
+// import MyHeader from "./header";
 
 export const TOKEN_KEY = import.meta.env.VITE_TOKEN_KEY;
 
@@ -79,7 +81,6 @@ export default function Controller() {
     
     return (
         <>
-       
         <Menu onClick={onClick} selectedKeys={[current]} mode="horizontal" items={items} />
         <UserDashboard/>
         </>
