@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Avatar,Button,Layout,Card, Progress, Tabs, Typography, Row, Col, List, Tag, Spin,Input,Space, } from 'antd';
+import { Avatar,Button,Layout,Card, Progress, Tabs, Typography, Row, Col, List, Tag, Spin,Input,Space, Modal, } from 'antd';
 import { EditOutlined, EnvironmentOutlined, BankOutlined, GlobalOutlined, UserOutlined ,PlusOutlined,HomeOutlined, } from '@ant-design/icons';
 import { useNavigate, useParams } from "react-router-dom";
 import { useLogout, useOne, useUpdate } from "@refinedev/core";
@@ -16,9 +16,17 @@ const { TabPane } = Tabs;
 
 const ProfilePage = () => {
   const [isEditProfile,setIsEditProfile]= useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const userid = localStorage.getItem("userid");
   const navigate = useNavigate();
   const {mutate: logout} = useLogout();
+  const showModal = () => {
+    setIsModalVisible(true);
+  }
+  
+  // const handleCancel = () => {
+  //   setIsModalVisible(false);
+  // }
 
   const [images, setImages] = useState([{
     uid: "0",
@@ -61,21 +69,24 @@ const ProfilePage = () => {
     </div>
   );
 
-  const sections = [
-    { key: "overview", label: "Overview" },
+  const overviewsect = [
     { key: "personalInfo", label: "Personal" },
     { key: "contactInfo", label: "Contact " },
+    { key: "familyDetails", label: "Family" },
+    // { key: "addressInfo", label: "Address" },
+    { key: "educationInfo", label: "Educational" },
+    // { key: "professionalInfo", label: "Professional" },
+    { key: "lifestyle", label: "Lifestyle" },
+    { key: "preferences", label: "Preferences" },
+  ]
+
+  const sections = [
+    { key: "overview", label: "Overview" },
     { key: "professional", label: "Professional" },
     { key: "address", label: "Address" },
     { key: "project", label: "Project" },
     { key: "activities", label: "Activities" },
     { key: "subscriptions", label: "Subscription" },
-    { key: "familyDetails", label: "Family" },
-    { key: "addressInfo", label: "Address" },
-    { key: "educationInfo", label: "Educational" },
-    { key: "professionalInfo", label: "Professional" },
-    { key: "lifestyle", label: "Lifestyle" },
-    { key: "preferences", label: "Preferences" },
   ];
   
   console.log("user? object", user);
@@ -369,12 +380,15 @@ const ProfilePage = () => {
                   <Title level={3} style={{ marginBottom: '0' }}>{profileInfo.following}</Title>
                   <Text type="secondary">Following</Text>
                 </div>
-                <Button type="primary" icon={<EditOutlined />} onClick={()=>{setIsEditProfile(true)}}>
+                <Button type="primary" icon={<EditOutlined />} onClick={()=>{setIsEditProfile(true); showModal()}}>
                   Edit Profile
                 </Button>
               </div>
               {/* {!isEditProfile&& <ProfileCard user?={user?} setIsEditProfile={setIsEditProfile}/>} */}
-              {isEditProfile&&<EditProfile user={user} setIsEditProfile={setIsEditProfile}/>}
+              {isEditProfile&&
+              
+              <EditProfile user={user} setIsEditProfile={setIsEditProfile}/>
+             }
               <Tabs defaultActiveKey="1">
                 {sections.map( (section) => (
                   <TabPane tab={section.label} key={section.key}>
@@ -393,30 +407,18 @@ const ProfilePage = () => {
                     {/* Info Card */}
                     <Col xs={24} lg={12}>
                       <Card title={`${section.label}`+" "+"Info"} bordered={false}>
-                         {renderContent(section.key)}
-                        {/* <List
-                          itemLayout="horizontal"
-                          split={false}
-                          dataSource={[
-                            { label: 'Full Name', value: profileInfo.fullName },
-                            { label: 'Mobile', value: profileInfo.mobile },
-                            { label: 'E-mail', value: profileInfo.email },
-                            { label: 'Location', value: profileInfo.location },
-                            { label: 'Joining Date', value: profileInfo.joiningDate }
-                          ]}
-                          renderItem={item => (
-                            <List.Item>
-                              <Row style={{ width: '100%' }}>
-                                <Col span={8}>
-                                  <Text type="secondary">{item.label} :</Text>
-                                </Col>
-                                <Col span={16}>
-                                  <Text>{item.value}</Text>
-                                </Col>
-                              </Row>
-                            </List.Item>
-                          )}
-                        /> */}
+                      {section.key === "overview"  ? (
+                      <Tabs defaultActiveKey="1">
+                      {overviewsect.map((value) => (
+                        <Tabs.TabPane tab={value.label} key={value.key}>
+                         {renderContent(value.key)}
+                       </Tabs.TabPane>
+                      ))}
+                      </Tabs>
+                      ) : (
+                        renderContent(section.key)
+                      )};
+
                       </Card>
                     </Col>
 

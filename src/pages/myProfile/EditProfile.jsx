@@ -3,6 +3,7 @@ import { Card, Avatar, Button, Form, Input, Tabs, Typography, Space, notificatio
 import { EditOutlined, SettingOutlined } from "@ant-design/icons";
 import { useUpdate } from "@refinedev/core";
 import ChangePassword from "./ChangePassword"; // Import ChangePassword component
+import './editprofile.css';
 
 const { TabPane } = Tabs;
 const { Text } = Typography;
@@ -76,12 +77,12 @@ export default function EditProfile({ user , setIsEditProfile}) {
               onFinish={onFinish}
               initialValues={user}
             >
-              <Tabs defaultActiveKey="personalInfo">
+              <Tabs defaultActiveKey="personalInfo" >
                 {/* Personal Info Tab */}
-                <TabPane tab="Personal Info" key="personalInfo">
+                <TabPane tab="Personal Info" key="personalInfo" className="tabpane">
                   <Space direction="vertical" size="small" style={{ width: "100%" }}>
                     <Form.Item name="FirstName" label="First Name">
-                      <Input placeholder="Enter First Name" />
+                      <Input placeholder="Enter First Name"/>
                     </Form.Item>
                     <Form.Item name="LastName" label="Last Name">
                       <Input placeholder="Enter Last Name" />
@@ -111,7 +112,7 @@ export default function EditProfile({ user , setIsEditProfile}) {
                 </TabPane>
 
                 {/* Contact Info Tab */}
-                <TabPane tab="Contact Info" key="contactInfo">
+                <TabPane tab="Contact Info" key="contactInfo" className="tabpane">
                   <Space direction="vertical" size="small" style={{ width: "100%" }}>
                     <Form.Item name="MobileNumber" label="Mobile Number">
                       <Input placeholder="Enter Mobile Number" />
@@ -126,7 +127,7 @@ export default function EditProfile({ user , setIsEditProfile}) {
                 </TabPane>
 
                 {/* Family Details Tab */}
-                <TabPane tab="Family Details" key="familyDetails">
+                <TabPane tab="Family Details" key="familyDetails" className="tabpane">
                   <Space direction="vertical" size="small" style={{ width: "100%" }}>
                     <Form.Item name="FatherName" label="Father's Name">
                       <Input placeholder="Enter Father's Name" />
@@ -162,7 +163,7 @@ export default function EditProfile({ user , setIsEditProfile}) {
                 </TabPane>
 
                 {/* Address Tab */}
-                <TabPane tab="Address" key="addressInfo">
+                <TabPane tab="Address" key="addressInfo" className="tabpane">
                   <Space direction="vertical" size="small" style={{ width: "100%" }}>
                     <Form.Item name="Address" label="Home Address">
                       <Input placeholder="Enter Home Address" />
@@ -183,7 +184,7 @@ export default function EditProfile({ user , setIsEditProfile}) {
                 </TabPane>
 
                 {/* Education Tab */}
-                <TabPane tab="Education" key="educationInfo">
+                <TabPane tab="Education" key="educationInfo" className="tabpane">
                   <Space direction="vertical" size="small" style={{ width: "100%" }}>
                     <Form.Item name="education_level" label="Education Level">
                       <Input placeholder="Enter Education Level" />
@@ -201,7 +202,7 @@ export default function EditProfile({ user , setIsEditProfile}) {
                 </TabPane>
 
                 {/* Professional Tab */}
-                <TabPane tab="Professional" key="professionalInfo">
+                <TabPane tab="Professional" key="professionalInfo" className="tabpane">
                   <Space direction="vertical" size="small" style={{ width: "100%" }}>
                     <Form.Item name="Profession" label="Profession">
                       <Input placeholder="Enter Profession" />
@@ -225,7 +226,7 @@ export default function EditProfile({ user , setIsEditProfile}) {
                 </TabPane>
 
                 {/* Lifestyle Tab */}
-                <TabPane tab="Lifestyle" key="lifestyle">
+                <TabPane tab="Lifestyle" key="lifestyle" className="tabpane">
                   <Space direction="vertical" size="small" style={{ width: "100%" }}>
                     <Form.Item name="LifeStyle" label="Lifestyle">
                       <Input placeholder="Enter Lifestyle" />
@@ -239,7 +240,7 @@ export default function EditProfile({ user , setIsEditProfile}) {
                   </Space>
                 </TabPane>
 
-                <TabPane tab="Preference" key="preference">
+                <TabPane tab="Preference" key="preference" className="tabpane">
                   <Space direction="vertical" size="small" style={{ width: "100%" }}>
                     <Form.Item name="PreMinAge" label="Preferred Min Age">
                       <Input placeholder="Enter Lifestyle" />
