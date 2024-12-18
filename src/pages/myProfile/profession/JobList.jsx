@@ -4,12 +4,13 @@ import { EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import JobForm from './JobForm';
 
 
-
 const JobList = ({ jobs, onAddJob, onEditJob, onDeleteJob }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingJob, setEditingJob] = useState(null);
   const userid=localStorage.getItem('userid')
-  console.log("userid",userid)
+
+  console.log("userid",userid);
+
   const showModal = (job) => {
     setEditingJob(job || null);
     setIsModalVisible(true);
@@ -42,7 +43,7 @@ const JobList = ({ jobs, onAddJob, onEditJob, onDeleteJob }) => {
           <List.Item>
             <Card
               title={job.post}
-              extra={
+              extra = {
                 <>
                   <Button icon={<EditOutlined />} onClick={() => showModal(job)} />
                   <Button icon={<DeleteOutlined />} onClick={() => onDeleteJob(job.id)} style={{ marginLeft: 8 }} />
@@ -52,7 +53,7 @@ const JobList = ({ jobs, onAddJob, onEditJob, onDeleteJob }) => {
               <p><strong>Organization:</strong> {job.organization}</p>
               <p><strong>Experience:</strong> {job.experience} years</p>
               <p><strong>Type:</strong> {job.type}</p>
-              <p><strong>Job Type:</strong> {job.jobtype}</p>
+              <p><strong>Job Type:</strong> {job.job_type}</p>
               <p><strong>Period:</strong> {job.from} to {job.to}</p>
               <p><strong>Address:</strong> {job.address.village}, {job.address.tehsil}, {job.address.district}, {job.address.state}</p>
             </Card>

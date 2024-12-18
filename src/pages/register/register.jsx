@@ -1,5 +1,6 @@
 import {
   BookOutlined,
+  CameraOutlined,
   LockOutlined,
   MailOutlined,
   UserOutlined,
@@ -20,6 +21,7 @@ import {
   Space,
   Tabs,
   Typography,
+  Upload
 } from "antd";
 import { Country, State } from "country-state-city";
 import React, { useState } from "react";
@@ -27,6 +29,7 @@ import { useNavigate } from "react-router-dom";
 import AddressComponent from "../../components/address/AddressComponent";
 import "../../styles/register.css";
 import gotra from "../../utils/gotra.json";
+import { getValueProps, mediaUploadMapper } from "@refinedev/strapi-v4";
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -36,67 +39,47 @@ export const TOKEN_KEY = import.meta.env.VITE_TOKEN_KEY;
 const API_URL = import.meta.env.VITE_SERVER_URL;
 
 export const RegisterPage = ({ userrole, createdBy }) => {
+  console.log("Hasrish");
+  
   const [form] = Form.useForm();
   const [currentStep, setCurrentStep] = useState(1);
   const [country, setCountry] = useState({});
   const [state, setState] = useState({});
   const { mutate: createUser } = useCreate();
   const navigate = useNavigate();
+  const [uploadedPhoto, setUploadedPhoto] = useState(null);
 
   const onFinish = async (values) => {
-    try {
-      values["org"] = "SEERVI";
-      values["username"] = values["MobileNumber"];
-      values["email"] = values["email"]
-        ? values["email"]
-        : `${values["MobileNumber"]}@hph.com`;
-      values["role"] = 1;
-      createUser(
-        { resource: "users", values },
-        {
-          onSuccess: async () => {
-            try {
-              const res = await fetch(`${API_URL}/api/auth/local`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  identifier: values.email,
-                  password: values.password,
-                }),
-              });
 
-              if (res.ok) {
-                const logindata = await res.json();
-                localStorage.setItem(TOKEN_KEY, logindata.jwt);
-                localStorage.setItem("userid", logindata.user.id);
-                navigate("/dashboard");
-              } else {
-                const errorData = await res.json();
-                notification.error({
-                  message: "Login Failed",
-                  description: errorData.message || "Error logging in.",
-                });
-              }
-            } catch (error) {
-              notification.error({
-                message: "Error",
-                description: "Something went wrong during login.",
-              });
-            }
-          },
-        }
-      );
-    } catch (error) {
-      notification.error({
-        message: "Error",
-        description: "Something went wrong during registration.",
-      });
-    }
-  };
+try{
+    console.log("INDIDE", values);
+    values['username']=values['email']
+    values['userstatus']='PENDING'
+  const res = await fetch(`${API_URL}/api/auth/local/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...values }),
+  });
+  const data = await res.json();
+  localStorage.setItem(TOKEN_KEY, data.jwt);
+        localStorage.setItem("userid", String(data?.user?.id));
+        localStorage.setItem("userstatus",String(data?.user?.userstatus));
+        navigate("/dashboard");
+  console.log("TRYYYYYYYYYYY",res);
+}
 
-  const handleTabChange = (activeKey) => setCurrentStep(Number(activeKey));
+catch(error)
+{
+  console.log("INDSIDE CATCH",error);
+}
+  //  console.log(error);
+   
+  }
 
- 
+const handleTabChange = (activeKey) => setCurrentStep(Number(activeKey));
+
+  
+
 
   return (
     <Layout
@@ -132,7 +115,6 @@ export const RegisterPage = ({ userrole, createdBy }) => {
               We bring Professionals Together
             </Text>
           </div>
-
           <Progress
             percent={(currentStep / 3) * 100}
             showInfo={false}
@@ -246,6 +228,7 @@ export const RegisterPage = ({ userrole, createdBy }) => {
                     placeholder="Enter Email Address"
                   />
                 </Form.Item>
+
                 <Row gutter={16}>
                   <Col xs={24} sm={12}>
                     <Form.Item
@@ -311,68 +294,9 @@ export const RegisterPage = ({ userrole, createdBy }) => {
                 </Form.Item>
               </Tabs.TabPane>
 
-            
 
-              {/* Profession Tab */}
-              <Tabs.TabPane
-                tab={
-                  <span>
-                    <BookOutlined />
-                    Profession
-                  </span>
-                }
-                key="2"
-              >
-                <Row gutter={16}>
-                  <Col xs={24} sm={12}>
-                    <Form.Item name="profession" label="Profession">
-                      <Input placeholder="Enter Profession" />
-                    </Form.Item>
-                  </Col>
-                  <Col xs={24} sm={12}>
-                    <Form.Item name="CompanyName" label="Company Name">
-                      <Input placeholder="Enter Company Name" />
-                    </Form.Item>
-                  </Col>
-                </Row>
-                <Row gutter={16}>
-                  <Col xs={24} sm={12}>
-                    <Form.Item name="Designation" label="Designation">
-                      <Input placeholder="Enter Designation" />
-                    </Form.Item>
-                  </Col>
-                  <Col xs={24} sm={12}>
-                    <Form.Item name="WorkingCity" label="Working City">
-                      <Input placeholder="Enter Working City" />
-                    </Form.Item>
-                  </Col>
-                </Row>
-                <Row gutter={16}>
-                  <Col xs={24} sm={12}>
-                    <Form.Item name="Income" label="Income">
-                      <Input placeholder="Enter Income" />
-                    </Form.Item>
-                  </Col>
-                  <Col xs={24} sm={12}>
-                    <Form.Item name="PreProfession" label="Previous Profession">
-                      <Input placeholder="Enter Previous Profession" />
-                    </Form.Item>
-                  </Col>
-                </Row>
-              </Tabs.TabPane>
-                {/* Address Info Tab */}
-                <Tabs.TabPane
-                tab={
-                  <span>
-                    <BookOutlined />
-                    Address
-                  </span>
-                }
-                key="3"
-              >
-                <AddressComponent form={form}/>
-               
-              </Tabs.TabPane>
+             {/* Profession Tab */}
+          
             </Tabs>
 
             <Form.Item>

@@ -1,67 +1,90 @@
-import React, { useEffect, useState } from 'react';
-import { Avatar,Button,Layout,Card, Progress, Tabs, Typography, Row, Col, List, Tag, Spin,Input,Space, Modal, } from 'antd';
-import { EditOutlined, EnvironmentOutlined, BankOutlined, GlobalOutlined, UserOutlined ,PlusOutlined,HomeOutlined, } from '@ant-design/icons';
+import React, { useEffect, useState } from "react";
+import {
+  Avatar,
+  Button,
+  Layout,
+  Card,
+  Progress,
+  Tabs,
+  Typography,
+  Row,
+  Col,
+  List,
+  Tag,
+  Spin,
+  Input,
+  Space,
+  Modal,
+} from "antd";
+import {
+  EditOutlined,
+  EnvironmentOutlined,
+  BankOutlined,
+  GlobalOutlined,
+  UserOutlined,
+  PlusOutlined,
+  HomeOutlined,
+} from "@ant-design/icons";
 import { useNavigate, useParams } from "react-router-dom";
 import { useLogout, useOne, useUpdate } from "@refinedev/core";
-import ProfileCard from './ProfileCard';
-import EditProfile from './EditProfile'
-import MyProfile from '.';
-import JobManager from './profession/JobManager';
-import AddressDetails from './addresses'
+import ProfileCard from "./ProfileCard";
+import EditProfile from "./EditProfile";
+import MyProfile from ".";
+import JobManager from "./profession/JobManager";
+import AddressDetails from "./addresses";
+import JobDisplay from "./profession/jobDisplay";
 const { Content } = Layout;
 const { TextArea } = Input;
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
 
-
 const ProfilePage = () => {
-  const [isEditProfile,setIsEditProfile]= useState(false);
+  const [isEditProfile, setIsEditProfile] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const userid = localStorage.getItem("userid");
   const navigate = useNavigate();
-  const {mutate: logout} = useLogout();
+  const { mutate: logout } = useLogout();
   const showModal = () => {
     setIsModalVisible(true);
-  }
-  
+  };
+
   // const handleCancel = () => {
   //   setIsModalVisible(false);
   // }
 
-  const [images, setImages] = useState([{
-    uid: "0",
-    name: "0",
-    url: "0"
-  }]);
+  const [images, setImages] = useState([
+    {
+      uid: "0",
+      name: "0",
+      url: "0",
+    },
+  ]);
 
-  const [profilePhotos,setProfilePhotos]=useState([]);
+  const [profilePhotos, setProfilePhotos] = useState([]);
 
-  
-  
   //const { id } = useParams();
   const { data, isLoading } = useOne({
     resource: "users",
     id: String(userid),
     meta: {
-      populate: ["photos"],
+      populate: ["photo", "jobs"],
     },
   });
   const user = data?.data;
-  if(isLoading){
-    <Spin>
-      Page Loading
-    </Spin>
+  if (isLoading) {
+    <Spin>Page Loading</Spin>;
   }
 
+  console.log("USERS DATAAAAA ", user?.photo?.formats?.thumbnail?.url);
 
   // const [edit, setEdit] = useState(false);
 
   const handleLogout = () => {
-    console.log("sdsfsf")
-    localStorage.clear()
-    navigate('/login');
-  }
-  
+    console.log("sdsfsf");
+    localStorage.clear();
+    navigate("/login");
+  };
+
   const uploadButton = (
     <div>
       <PlusOutlined />
@@ -71,6 +94,7 @@ const ProfilePage = () => {
 
   const overviewsect = [
     { key: "personalInfo", label: "Personal" },
+    { key: "jobs", label: "Job" },
     { key: "contactInfo", label: "Contact " },
     { key: "familyDetails", label: "Family" },
     // { key: "addressInfo", label: "Address" },
@@ -78,7 +102,7 @@ const ProfilePage = () => {
     // { key: "professionalInfo", label: "Professional" },
     { key: "lifestyle", label: "Lifestyle" },
     { key: "preferences", label: "Preferences" },
-  ]
+  ];
 
   const sections = [
     { key: "overview", label: "Overview" },
@@ -88,13 +112,13 @@ const ProfilePage = () => {
     { key: "activities", label: "Activities" },
     { key: "subscriptions", label: "Subscription" },
   ];
-  
-  console.log("user? object", user);
+
+  console.log("user object", user);
 
   const profileInfo = {
-    name:`${user?.username}`,
+    name: `${user?.username}`,
     title: `${user?.Profession}`,
-    location: `${user?.City}`+" "+`${user?.State}`,
+    location: `${user?.City}` + " " + `${user?.State}`,
     company: `${user?.CompanyName}`,
     followers: "24.3K",
     following: "1.3K",
@@ -106,7 +130,7 @@ const ProfilePage = () => {
     email: `${user?.email}`,
     joiningDate: "24 Nov 2021",
     designation: "Lead Designer / Developer",
-    website: "www.velzon.com"
+    website: "www.velzon.com",
   };
   const renderField = (label, value) => {
     if (label === "Have Children") {
@@ -116,9 +140,20 @@ const ProfilePage = () => {
         </Text>
       );
     }
-    return (
+
+    return label !== "Mobile Number" ? (
       <Text>
         <strong>{label}:</strong> {value || "N/A"}
+      </Text>
+    ) : (
+      <Text>
+        {user?.myprefrence?.mysetting?.[0]?.IsMobile ? (
+          <>
+            <strong>{label}:</strong> {value || "N/A"}
+          </>
+        ) : (
+          <strong>Not Visible</strong>
+        )}
       </Text>
     );
   };
@@ -197,7 +232,6 @@ const ProfilePage = () => {
 
   const completionPercentage = calculateCompletionPercentage();
 
-
   const renderContent = (activeSection) => {
     switch (activeSection) {
       case "overview":
@@ -209,7 +243,7 @@ const ProfilePage = () => {
       case "personalInfo":
         return (
           <Space direction="vertical" size="small">
-            {renderField("First Name", user?.FirstName)}
+            {renderField("First Name", user?.username)}
             {renderField("Last Name", user?.LastName)}
             {renderField("Date of Birth", user?.DOB)}
             {renderField("Sex", user?.Sex)}
@@ -220,45 +254,51 @@ const ProfilePage = () => {
             {renderField("Have Children", user?.have_child)}
           </Space>
         );
-       case "professional":
-        return(
+      case "jobs":
+        return (
           <>
-          <Card bordered={false}>
-                   <JobManager user={profileInfo}/>
-          </Card>
+            <JobDisplay users={user?.jobs} />
           </>
         );
-        case "address":
-        return(
+      case "professional":
+        return (
           <>
-          <Card bordered={false}>
-                    <Text type="secondary">Address</Text>
-                    <AddressDetails/>
-          </Card>
+            <Card bordered={false}>
+              <JobManager user={profileInfo} />
+            </Card>
           </>
         );
-        case "project":
-        return(
+      case "address":
+        return (
           <>
-          <Card bordered={false}>
-                    <Text type="secondary">Project</Text>
-          </Card>
+            <Card bordered={false}>
+              <Text type="secondary">Address</Text>
+              <AddressDetails />
+            </Card>
           </>
         );
-        case "activities":
-        return(
+      case "project":
+        return (
           <>
-          <Card bordered={false}>
-                    <Text type="secondary">Activites</Text>
-          </Card>
+            <Card bordered={false}>
+              <Text type="secondary">Project</Text>
+            </Card>
           </>
         );
-        case "subscriptions":
-        return(
+      case "activities":
+        return (
           <>
-          <Card bordered={false}>
-                    <Text type="secondary">Subscriptions</Text>
-          </Card>
+            <Card bordered={false}>
+              <Text type="secondary">Activites</Text>
+            </Card>
+          </>
+        );
+      case "subscriptions":
+        return (
+          <>
+            <Card bordered={false}>
+              <Text type="secondary">Subscriptions</Text>
+            </Card>
           </>
         );
 
@@ -300,7 +340,10 @@ const ProfilePage = () => {
           <Space direction="vertical" size="small">
             {renderField("Education", user?.education_level)}
             {renderField("Highest Degree", user?.HighestDegree)}
-            {renderField("Additional Qualification", user?.AdditionalQualification)}
+            {renderField(
+              "Additional Qualification",
+              user?.AdditionalQualification
+            )}
             {renderField("Last College", user?.LastCollege)}
           </Space>
         );
@@ -322,7 +365,7 @@ const ProfilePage = () => {
             {renderField("Horoscope", user?.Horoscope)}
             {renderField("Hobbies", user?.Hobbies)}
           </Space>
-        );     
+        );
       case "preferences":
         return (
           <Space direction="vertical" size="small">
@@ -338,21 +381,25 @@ const ProfilePage = () => {
     }
   };
   return (
-    <div style={{ background: '#f0f2f5', minHeight: '100vh', padding: '1px' }}>
-      <div style={{ 
-        background: 'linear-gradient(to bottom, #4863A0 50%, #f0f2f5 50%)',
-        padding: '1px',
-        borderRadius: '1px'
-      }}>
+    <div style={{ background: "#f0f2f5", minHeight: "100vh", padding: "1px" }}>
+      <div
+        style={{
+          background: "linear-gradient(to bottom, #4863A0 50%, #f0f2f5 50%)",
+          padding: "1px",
+          borderRadius: "1px",
+        }}
+      >
         <Card bordered={false}>
           <Row gutter={[24, 24]}>
             {/* Profile Header */}
             <Col xs={24} md={8}>
-              <div style={{ textAlign: 'center' }}>
-              <Avatar src={user?.photo?.formats?.thumbnail?.url} size={64} />
-                <Title level={4} style={{ marginBottom: '4px' }}>{profileInfo.name}</Title>
+              <div style={{ textAlign: "center" }}>
+                <Avatar src={user?.photo?.formats?.thumbnail?.url} size={64} />
+                <Title level={4} style={{ marginBottom: "4px" }}>
+                  {profileInfo.name}
+                </Title>
                 <Text type="secondary">{profileInfo.title}</Text>
-                <div style={{ marginTop: '1px' }}>
+                <div style={{ marginTop: "1px" }}>
                   <Text type="secondary">
                     <EnvironmentOutlined /> {profileInfo.location}
                   </Text>
@@ -366,139 +413,206 @@ const ProfilePage = () => {
 
             {/* Main Content */}
             <Col xs={24} md={16}>
-              <div style={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center',
-                marginBottom: '24px'
-              }}>
-                <div style={{ textAlign: 'center' }}>
-                  <Title level={3} style={{ marginBottom: '0' }}>{profileInfo.followers}</Title>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "24px",
+                }}
+              >
+                <div style={{ textAlign: "center" }}>
+                  <Title level={3} style={{ marginBottom: "0" }}>
+                    {profileInfo.followers}
+                  </Title>
                   <Text type="secondary">Followers</Text>
                 </div>
-                <div style={{ textAlign: 'center' }}>
-                  <Title level={3} style={{ marginBottom: '0' }}>{profileInfo.following}</Title>
-                  <Text type="secondary">Following</Text>
+
+                <div
+                  style={{
+                    textAlign: "center",
+                    flex: "1 1 auto",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                  }}
+                >
+                  <Card
+                    style={{
+                      textAlign: "center",
+                      width: "fit-content",
+                      border: "none",
+                      background: "transparent",
+                      boxShadow: "none",
+                    }}
+                    bodyStyle={{ padding: 0 }}
+                  >
+                    <Tag color="blue">{completionPercentage}%</Tag>
+                    <Text type="secondary">Profile Completion</Text>
+                  </Card>
                 </div>
-                <Button type="primary" icon={<EditOutlined />} onClick={()=>{setIsEditProfile(true); showModal()}}>
+
+                <div style={{ textAlign: "center" }}>
+                  <Title level={3} style={{ marginBottom: "0" }}>
+                    {profileInfo.following}
+                  </Title>
+                  <Text type="secondary">Following</Text>
+                 
+                </div>
+
+                <div >
+                <Button
+                  type="primary"
+                  icon={<EditOutlined />}
+                  onClick={() => {
+                    setIsEditProfile(true);
+                    showModal();
+                  }}
+                >
                   Edit Profile
                 </Button>
+                </div>
+                
               </div>
+
               {/* {!isEditProfile&& <ProfileCard user?={user?} setIsEditProfile={setIsEditProfile}/>} */}
-              {isEditProfile&&
-              
-              <EditProfile user={user} setIsEditProfile={setIsEditProfile}/>
-             }
+              {isEditProfile && (
+                <Modal visible={isModalVisible} closable={false} footer={null}>
+                  <EditProfile
+                    user={user}
+                    setIsEditProfile={setIsEditProfile}
+                  />
+                </Modal>
+              )}
               <Tabs defaultActiveKey="1">
-                {sections.map( (section) => (
+                {sections.map((section) => (
                   <TabPane tab={section.label} key={section.key}>
-                  <Row gutter={[24, 24]}>
-                    {/* Complete Profile Card */}
-                    <Col xs={24} lg={12}>
-                      <Card 
-                        title="Complete Your Profile" 
-                        extra={<Tag color="blue">{completionPercentage}%</Tag>}
-                        bordered={false}
-                      >
-                        <Progress percent={completionPercentage} showInfo={true} strokeColor="#4863A0" />
-                      </Card>
-                    </Col>
+                    <Row gutter={[24, 24]}>
+                      {/* Complete Profile Card */}
 
-                    {/* Info Card */}
-                    <Col xs={24} lg={12}>
-                      <Card title={`${section.label}`+" "+"Info"} bordered={false}>
-                      {section.key === "overview"  ? (
-                      <Tabs defaultActiveKey="1">
-                      {overviewsect.map((value) => (
-                        <Tabs.TabPane tab={value.label} key={value.key}>
-                         {renderContent(value.key)}
-                       </Tabs.TabPane>
-                      ))}
-                      </Tabs>
-                      ) : (
-                        renderContent(section.key)
-                      )};
-
-                      </Card>
-                    </Col>
-
-                    {/* About Card */}
-                    <Col span={24}>
-                      <Card title="About" bordered={false}>
-                        <Paragraph style={{ marginBottom: 0 }}>
-                          {user?.AboutMe}
-                        </Paragraph>
-                      </Card>
-                    </Col>
-
-                    {/* Designation & Website */}
-                    <Col span={24}>
-                      <Card bordered={false}>
-                        <Row gutter={24}>
-                          <Col xs={24} sm={12}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                              <userOutlined />
-                              <div>
-                                <Text type="secondary">Designation :</Text>
-                                <div>{profileInfo.designation}</div>
-                              </div>
-                            </div>
-                          </Col>
-                          <Col xs={24} sm={12}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                              <GlobalOutlined />
-                              <div>
-                                <Text type="secondary">Website :</Text>
-                                <div>{profileInfo.website}</div>
-                              </div>
-                            </div>
-                          </Col>
-                        </Row>
-                      </Card>
-                    </Col>
-
-                    {/* Recent Activity */}
-                    <Col span={24}>
-                      <Card 
-                        title="Recent Activity"
-                        extra={
-                          <div>
-                            <Button type="text">Today</Button>
-                            <Button type="text">Weekly</Button>
-                            <Button type="text">Monthly</Button>
-                          </div>
-                        }
-                        bordered={false}
-                      >
-                        <List
-                          itemLayout="horizontal"
-                          dataSource={[{
-                            avatar: '/placeholder.svg?height=40&width=40',
-                            title: 'Jacqueline Steve',
-                            description: 'We has changed 2 attributes on 05:16PM'
-                          }]}
-                          renderItem={item => (
-                            <List.Item>
-                              <List.Item.Meta
-                                avatar={<Avatar src={item.avatar} />}
-                                title={item.title}
-                                description={item.description}
-                              />
-                            </List.Item>
+                      {/* Info Card */}
+                      <Col xs={24} lg={12}>
+                        <Card
+                          title={`${section.label}` + " " + "Info"}
+                          bordered={false}
+                        >
+                          {section.key === "overview" ? (
+                            <Tabs defaultActiveKey="1">
+                              {overviewsect.map((value) => (
+                                <Tabs.TabPane tab={value.label} key={value.key}>
+                                  {renderContent(value.key)}
+                                </Tabs.TabPane>
+                              ))}
+                            </Tabs>
+                          ) : (
+                            renderContent(section.key)
                           )}
-                        />
-                      </Card>
-                    </Col>
-                  </Row>
-                </TabPane>
+                          ;
+                        </Card>
+                      </Col>
+
+                      {/* About Card */}
+                      <Col span={24}>
+                        <Card title="About" bordered={false}>
+                          <Paragraph style={{ marginBottom: 0 }}>
+                            {user?.AboutMe}
+                          </Paragraph>
+                        </Card>
+                      </Col>
+
+                      {/* Designation & Website */}
+                      <Col span={24}>
+                        <Card bordered={false}>
+                          <Row gutter={24}>
+                            <Col xs={24} sm={12}>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "8px",
+                                }}
+                              >
+                                <userOutlined />
+                                <div>
+                                  <Text type="secondary">Designation :</Text>
+                                  <div>{profileInfo.designation}</div>
+                                </div>
+                              </div>
+                            </Col>
+                            <Col xs={24} sm={12}>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "8px",
+                                }}
+                              >
+                                <GlobalOutlined />
+                                <div>
+                                  <Text type="secondary">Website :</Text>
+                                  <div>{profileInfo.website}</div>
+                                </div>
+                              </div>
+                            </Col>
+                          </Row>
+                        </Card>
+                      </Col>
+
+                      {/* Recent Activity */}
+                      <Col span={24}>
+                        <Card
+                          title="Recent Activity"
+                          extra={
+                            <div>
+                              <Button type="text">Today</Button>
+                              <Button type="text">Weekly</Button>
+                              <Button type="text">Monthly</Button>
+                            </div>
+                          }
+                          bordered={false}
+                        >
+                          <List
+                            itemLayout="horizontal"
+                            dataSource={[
+                              {
+                                avatar: "/placeholder.svg?height=40&width=40",
+                                title: "Jacqueline Steve",
+                                description:
+                                  "We has changed 2 attributes on 05:16PM",
+                              },
+                            ]}
+                            renderItem={(item) => (
+                              <List.Item>
+                                <List.Item.Meta
+                                  avatar={<Avatar src={item.avatar} />}
+                                  title={item.title}
+                                  description={item.description}
+                                />
+                              </List.Item>
+                            )}
+                          />
+                        </Card>
+                      </Col>
+                    </Row>
+                  </TabPane>
                 ))}
               </Tabs>
             </Col>
           </Row>
-         
+
           {/* <ProfileCard/> */}
         </Card>
       </div>
+      <style>
+        {`
+      
+          @media (max-width: 768px) {
+            .complte_profile {
+              order: -2;
+            }
+          }
+        `}
+      </style>
     </div>
   );
 };

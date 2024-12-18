@@ -16,7 +16,7 @@
     "@refinedev/strapi-v4": "^6.0.1",
     "ag-grid-community": "^32.3.3",
     "ag-grid-react": "^32.3.3",
-    "antd": "^5.0.5",
+    "antd": "^5.22.3",
     "antd-img-crop": "^4.23.0",
     "axios": "^1.6.2",
     "country-state-city": "^3.2.1",
@@ -33,6 +33,7 @@
     "react-google-recaptcha": "^3.1.0",
     "react-router-dom": "^6.8.1",
     "react-router-hash-link": "^2.4.3",
+    "react-webcam": "^7.2.0",
     "recharts": "^2.12.7"
   },
   "devDependencies": {

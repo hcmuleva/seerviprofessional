@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AppBar, Box, Toolbar, Typography, Avatar, Menu, MenuItem, Divider, IconButton, Button, useMediaQuery } from "@mui/material";
 import { CaretRightOutlined, MenuOutlined, UserOutlined } from "@ant-design/icons";
 // import { useTheme } from "@mui/material/styles";
@@ -8,12 +8,21 @@ import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const [avatarAnchorEl, setAvatarAnchorEl] = useState(null);
-  const [isHome, setIsHome] = useState(true);
+  const [isHome, setIsHome] = useState(() => {
+    return localStorage.getItem("isHome") === "false" ? false : true;
+  });
+  
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Save the current state to localStorage whenever it changes
+    localStorage.setItem("isHome", isHome);
+  }, [isHome]);
+
   const [roleAnchorEl, setRoleAnchorEl] = useState(null);
   const userid = localStorage.getItem("userid");
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const navigate = useNavigate();
 
   const handleAvatarMenuClick = (event) => {
     setAvatarAnchorEl(event.currentTarget);

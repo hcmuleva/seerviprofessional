@@ -70,7 +70,7 @@ const JobForm = ({userid, job, onSave ,setIsModalVisible}) => {
                     user:userid,
                     type: values.type,
                     organization: values.organization,
-                    jobtype: values.jobtype,
+                    job_type: values.jobtype,
                     post: values.post,
                     experience: values.experience,
                     skills: values.skills,
@@ -93,18 +93,20 @@ const JobForm = ({userid, job, onSave ,setIsModalVisible}) => {
                 );
               },
             }
+            
           );
+          
         const jobData = {
             type: values.type,
             organization: values.organization,
-            jobtype: values.jobtype,
+            organizationtype: values.orgtype,
+            job_type: values.jobtype,
             post: values.post,
             experience: values.experience,
             skills: values.skills,
             from: values.from,
             to: values.to,
           };
-          
           const addressData = {
             //job_id: createdJob.id,
             pincode: values.pincode,
@@ -119,6 +121,7 @@ const JobForm = ({userid, job, onSave ,setIsModalVisible}) => {
             addresstype: values.addresstype,
           };
     };
+    
 
     React.useEffect(() => {
         if (job) {
@@ -133,6 +136,7 @@ const JobForm = ({userid, job, onSave ,setIsModalVisible}) => {
     function handleChange(values) {       
         console.log(`selected ${values}`);
     }
+    
     return (
         <Form form={form} layout="vertical" onFinish={onFinish}>
             <Form.Item name="type" label="Type" rules={[{ required: true }]}>

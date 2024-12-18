@@ -38,7 +38,8 @@ const LoginPage = () => {
         localStorage.setItem("userstatus",String(data?.user?.userstatus));
         localStorage.setItem("emeelanrole",String(data?.user?.emeelanrole))
         navigate("/dashboard");
-      } else {
+      } 
+      else {
         
         const errorData = await res.json(); // Get error response body
             notification.error({
@@ -95,6 +96,7 @@ const LoginPage = () => {
                     <span>Email or Mobile Number</span>
                   </div>
                   <Input
+                    id="input-username"
                     placeholder="Enter your Email or Mobile Number"
                     onChange={handleUserId}
                   />
@@ -102,11 +104,12 @@ const LoginPage = () => {
                     <span>Password</span>
                   </div>
                   <Input.Password
+                    id="input-pass"
                     placeholder="Enter your Password"
                     onChange={handlePassword}
                   />
                   <div className="login-buttons">
-                    <Button htmlType="submit" onClick={handleLogin} loading={isLoading}>
+                    <Button id="btnK" htmlType="submit" onClick={handleLogin} loading={isLoading}>
                       LOGIN
                     </Button>
                     <div>

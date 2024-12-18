@@ -1,6 +1,6 @@
 import React from "react";
 import "../../../styles/profile-header.css";
-import Logo from "../../../../public/logo.png";
+//import Logo from "../../../../public/logo.png";
 import { Button, Input } from "antd";
 import Hamburger, { Divide } from "hamburger-react";
 import { CaretRightOutlined, HomeOutlined, SearchOutlined } from "@ant-design/icons";
