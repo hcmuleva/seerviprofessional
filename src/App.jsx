@@ -21,7 +21,8 @@ import ProfilePage from "./pages/myProfile/HarishCard";
 import UserTable from "./pages/HCMTableView";
 // import Header from "./pages/Header";
 import LoginPage from "./pages/login/Loginpage";
-import Header from "./pages/header";
+import Header from "./pages/profileView/header/header";
+// import Header from "./pages/header";
 // import Header from "./pages/myProfile/header/header";
 
 export const TOKEN_KEY = import.meta.env.VITE_TOKEN_KEY;
