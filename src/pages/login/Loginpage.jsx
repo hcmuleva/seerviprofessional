@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLogin } from "@refinedev/core";
 import { Button, Card, Input, notification } from "antd";
 import { useNavigate } from "react-router-dom";
-
-import "../../styles/loginpage.css";
+import "./loginpage.css"; 
 
 const API_URL = import.meta.env.VITE_SERVER_URL;
 export const TOKEN_KEY = import.meta.env.VITE_TOKEN_KEY;
@@ -32,90 +31,93 @@ const LoginPage = () => {
 
       if (res.ok) {
         const data = await res.json();
-        console.log("data",data)
         localStorage.setItem(TOKEN_KEY, data.jwt);
         localStorage.setItem("userid", String(data?.user?.id));
-        localStorage.setItem("userstatus",String(data?.user?.userstatus));
-        localStorage.setItem("emeelanrole",String(data?.user?.emeelanrole))
+        localStorage.setItem("userstatus", String(data?.user?.userstatus));
+        localStorage.setItem("emeelanrole", String(data?.user?.emeelanrole));
         navigate("/dashboard");
-      } 
-      else {
-        
-        const errorData = await res.json(); // Get error response body
-            notification.error({
-                message: "Login Failed",
-                description: errorData?.message || "Envalid Credential.",
-            });
+      } else {
+        const errorData = await res.json();
+        notification.error({
+          message: "Login Failed",
+          description: errorData?.message || "Invalid Credential.",
+        });
       }
     } catch (error) {
       notification.error({
         message: "Error",
         description: "Something went wrong, please try again later.",
-    });
+      });
     }
   };
-  const handleHelpClick = () => {
-    navigate("/help");
-  };
+
   return (
-    <div>
-      <img src="/profession.png" className="root-img" alt="Background" />
-      <div className="container">
-        <Card className="card-container">
-          <div className="right-sider">
-            <div className="top">
-              <div className="emeelan-gath">
-                <div>
-                  <img
-                    src="/logo.png"
-                    alt="logo"
-                    style={{ width: "2.5rem", marginTop: "0.3rem" }}
-                  />
-                </div>
-                <div>
-                  <p style={{ margin: 0, fontWeight: "bold", fontSize: "1rem" }}>EMEELAN</p>
-                  <p id="gathjod" style={{ margin: 0, fontSize: "0.9rem", color: "#555", lineHeight: 1.2 }}>
-                    गठजोड़
-                  </p>
-                </div>
+    <div className="login-page">
+      <img src="/profession.png" className="background-image" alt="Background" />
+      <div className="login-container">
+        <Card className="login-card">
+          <div className="login-content">
+            <div className="brand-header">
+              <div className="logo-container">
+                <img
+                  src="/logo.png"
+                  alt="logo"
+                  className="logo"
+                />
               </div>
-             
+              <div className="brand-text">
+                <p className="brand-name">EMEELAN</p>
+                <p className="brand-subtitle">गठजोड़</p>
+              </div>
             </div>
-            <div className="login-details">
+            
+            <div className="login-form-container">
               <form
-                style={{ display: "flex", width: "100%", justifyContent: "center" }}
+                className="login-form"
                 onSubmit={(e) => {
                   e.preventDefault();
                   handleLogin();
                 }}
               >
-                <div className="login">
-                  <span>Welcome To EMEELAN</span>
-                  <span style={{ fontSize: "1rem" }}>गठजोड़</span>
-                  <div style={{ width: "100%", fontSize: "1rem", marginTop: "50px" }}>
-                    <span>Email or Mobile Number</span>
+                <div className="form-content">
+                  <h1 className="welcome-text">Welcome To EMEELAN</h1>
+                  <h2 className="welcome-subtitle">गठजोड़</h2>
+                  
+                  <div className="form-field">
+                    <label>Email or Mobile Number</label>
+                    <Input
+                      id="input-username"
+                      placeholder="Enter your Email or Mobile Number"
+                      onChange={handleUserId}
+                      className="input-field"
+                    />
                   </div>
-                  <Input
-                    id="input-username"
-                    placeholder="Enter your Email or Mobile Number"
-                    onChange={handleUserId}
-                  />
-                  <div style={{ width: "100%", fontSize: "1rem", marginTop: "10px" }}>
-                    <span>Password</span>
+                  
+                  <div className="form-field">
+                    <label>Password</label>
+                    <Input.Password
+                      id="input-pass"
+                      placeholder="Enter your Password"
+                      onChange={handlePassword}
+                      className="input-field"
+                    />
                   </div>
-                  <Input.Password
-                    id="input-pass"
-                    placeholder="Enter your Password"
-                    onChange={handlePassword}
-                  />
-                  <div className="login-buttons">
-                    <Button id="btnK" htmlType="submit" onClick={handleLogin} loading={isLoading}>
+                  
+                  <div className="form-actions">
+                    <Button 
+                      id="btnK" 
+                      htmlType="submit" 
+                      onClick={handleLogin} 
+                      loading={isLoading}
+                      className="login-button"
+                    >
                       LOGIN
                     </Button>
-                    <div>
+                    
+                    <div className="signup-prompt">
                       <span>Don't have an account?</span>
                       <span
-                        style={{ cursor: "pointer", color: "blue" }}
+                        className="signup-link"
                         onClick={() => navigate("/register")}
                       >
                         {" "}

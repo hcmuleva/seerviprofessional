@@ -71,7 +71,9 @@ export default function Controller() {
         },
         {
           label: (
-            <a href="https://ant.design" target="_blank" rel="noopener noreferrer">
+            <a target="_blank" rel="noopener noreferrer" onClick={() => {
+              navigate('/dashboard')
+            }}>
               Navigation Four - Link
             </a>
           ),
@@ -80,10 +82,10 @@ export default function Controller() {
       ];
     
     return (
-        <>
-        <Menu onClick={onClick} selectedKeys={[current]} mode="horizontal" items={items} />
-        <UserDashboard/>
-        </>
+          <>
+          <Menu onClick={onClick} selectedKeys={[current]} mode="horizontal" items={items} />
+          <UserDashboard/>
+          </>
     )
     
   

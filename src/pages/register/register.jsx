@@ -1,320 +1,244 @@
-import {
-  BookOutlined,
-  CameraOutlined,
-  LockOutlined,
-  MailOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
+import React, { useState } from "react";
 import { useCreate } from "@refinedev/core";
+import { useNavigate } from "react-router-dom";
+
+import "./k1register.css"; 
+
+
 import {
   Button,
   Card,
-  Col,
-  DatePicker,
   Form,
   Input,
-  Layout,
-  notification,
-  Progress,
-  Row,
+  DatePicker,
   Select,
-  Space,
-  Tabs,
-  Typography,
-  Upload
+  notification,
+  Space
 } from "antd";
+import {
+  UserOutlined,
+  LockOutlined,
+  MailOutlined,
+} from "@ant-design/icons";
 import { Country, State } from "country-state-city";
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import AddressComponent from "../../components/address/AddressComponent";
-import "../../styles/register.css";
 import gotra from "../../utils/gotra.json";
-import { getValueProps, mediaUploadMapper } from "@refinedev/strapi-v4";
 
-const { Content } = Layout;
-const { Title, Text } = Typography;
 const { Option } = Select;
 
 export const TOKEN_KEY = import.meta.env.VITE_TOKEN_KEY;
 const API_URL = import.meta.env.VITE_SERVER_URL;
 
 export const RegisterPage = ({ userrole, createdBy }) => {
-  console.log("Hasrish");
-  
   const [form] = Form.useForm();
-  const [currentStep, setCurrentStep] = useState(1);
-  const [country, setCountry] = useState({});
-  const [state, setState] = useState({});
-  const { mutate: createUser } = useCreate();
   const navigate = useNavigate();
-  const [uploadedPhoto, setUploadedPhoto] = useState(null);
 
   const onFinish = async (values) => {
-
-try{
-    console.log("INDIDE", values);
-    values['username']=values['email']
-    values['userstatus']='PENDING'
-  const res = await fetch(`${API_URL}/api/auth/local/register`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ ...values }),
-  });
-  const data = await res.json();
-  localStorage.setItem(TOKEN_KEY, data.jwt);
+    try {
+      values['username'] = values['email'];
+      values['userstatus'] = 'PENDING';
+      
+      const res = await fetch(`${API_URL}/api/auth/local/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...values }),
+      });
+      
+      const data = await res.json();
+      
+      if (res.ok) {
+        localStorage.setItem(TOKEN_KEY, data.jwt);
         localStorage.setItem("userid", String(data?.user?.id));
-        localStorage.setItem("userstatus",String(data?.user?.userstatus));
+        localStorage.setItem("userstatus", String(data?.user?.userstatus));
         navigate("/dashboard");
-  console.log("TRYYYYYYYYYYY",res);
-}
-
-catch(error)
-{
-  console.log("INDSIDE CATCH",error);
-}
-  //  console.log(error);
-   
-  }
-
-const handleTabChange = (activeKey) => setCurrentStep(Number(activeKey));
-
-  
-
+      } else {
+        notification.error({
+          message: "Registration Failed",
+          description: data.message || "Something went wrong",
+        });
+      }
+    } catch (error) {
+      notification.error({
+        message: "Error",
+        description: "Something went wrong, please try again later.",
+      });
+    }
+  };
 
   return (
-    <Layout
-      style={{
-        minHeight: "100vh",
-        background:
-          "linear-gradient(135deg, #2c3e50 0%, #34495e 99%, #34495e 100%)", // Dark blue gradient
-      }}
-    >
-      <Content style={{ padding: "40px 0" }}>
-        <Card
-          style={{
-            maxWidth: 800,
-            margin: "0 auto",
-            borderRadius: 15,
-            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-          }}
-        >
-          <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-            <Title
-              level={2}
-              style={{
-                background:
-                  "linear-gradient(135deg, #2c3e50 0%, #34495e 99%, #34495e 100%)",
-                WebkitBackgroundClip: "text",
-                color: "transparent", // Transparent to show gradient
-                marginBottom: 0,
-              }}
-            >
-              EMEELAN
-            </Title>
-            <Text style={{ display: "block", fontSize: "1.2rem" }}>
-              We bring Professionals Together
-            </Text>
-          </div>
-          <Progress
-            percent={(currentStep / 3) * 100}
-            showInfo={false}
-            strokeColor="linear-gradient(135deg, #2c3e50 0%, #34495e 99%, #34495e 100%)" // Match the background gradient
-            style={{ marginBottom: "1rem" }}
-          />
+    <div className="register-page">
+      <img src="/profession.png" className="background-image" alt="Background" />
+      <div className="register-container">
+        <Card className="register-card">
+          <div className="register-content">
+            <div className="brand-header">
+              <div className="logo-container">
+                <img
+                  src="/logo.png"
+                  alt="logo"
+                  className="logo"
+                />
+              </div>
+              <div className="brand-text">
+                <p className="brand-name">EMEELAN</p>
+                <p className="brand-subtitle">गठजोड़</p>
+              </div>
+            </div>
 
-          <Form form={form} layout="vertical" onFinish={onFinish}>
-            <Tabs defaultActiveKey="1" onChange={handleTabChange}>
-              {/* Personal Info Tab */}
-              <Tabs.TabPane
-                tab={
-                  <span>
-                    <UserOutlined />
-                    Personal
-                  </span>
-                }
-                key="1"
+            <div className="register-form-container">
+              <Form
+                form={form}
+                layout="vertical"
+                onFinish={onFinish}
+                className="register-form"
               >
-                <Row gutter={16}>
-                  <Col xs={24} sm={12}>
-                    <Form.Item
-                      name="firstname"
-                      label="First Name"
-                      rules={[
-                        { required: true, message: "Enter your first name" },
-                      ]}
-                    >
-                      <Input placeholder="Enter First Name" />
-                    </Form.Item>
-                  </Col>
-                  <Col xs={24} sm={12}>
-                    <Form.Item
-                      name="lastname"
-                      label="Father/Husband Name"
-                      rules={[
-                        { required: true, message: "Enter your Father/Husband name" },
-                      ]}
-                    >
-                      <Input placeholder="Enter Father/Husband Name" />
-                    </Form.Item>
-                  </Col>
-                </Row>
-                <Row gutter={16}>
-                  <Col xs={24} sm={12}>
-                    <Form.Item
-                      name="password"
-                      label="Password"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please enter your password",
-                        },
-                        {
-                          min: 6,
-                          message:
-                            "Password must be at least 6 characters long",
-                        },
-                      ]}
-                      hasFeedback
-                    >
-                      <Input.Password
-                        prefix={<LockOutlined />}
-                        placeholder="Enter Password"
-                      />
-                    </Form.Item>
-                  </Col>
-                  <Col xs={24} sm={12}>
-                    <Form.Item
-                      name="confirmPassword"
-                      label="Confirm Password"
-                      dependencies={["password"]}
-                      hasFeedback
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please confirm your password",
-                        },
-                        ({ getFieldValue }) => ({
-                          validator(_, value) {
-                            if (!value || getFieldValue("password") === value) {
-                              return Promise.resolve();
-                            }
-                            return Promise.reject(
-                              new Error("The two passwords do not match")
-                            );
-                          },
-                        }),
-                      ]}
-                    >
-                      <Input.Password
-                        prefix={<LockOutlined />}
-                        placeholder="Confirm Password"
-                      />
-                    </Form.Item>
-                  </Col>
-                </Row>
-                <Form.Item
-                  name="email"
-                  label="Email Address"
-                  rules={[
-                    {
-                      required: true,
-                      type: "email",
-                      message: "Please enter a valid email",
-                    },
-                  ]}
-                >
-                  <Input
-                    prefix={<MailOutlined />}
-                    placeholder="Enter Email Address"
-                  />
-                </Form.Item>
+                <h1 className="welcome-text">Create Your Account</h1>
+                <h2 className="welcome-subtitle">Join EMEELAN Today</h2>
 
-                <Row gutter={16}>
-                  <Col xs={24} sm={12}>
-                    <Form.Item
-                      name="dob"
-                      label="Date of Birth"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please select your date of birth",
-                        },
-                      ]}
-                    >
-                      <DatePicker
-                        style={{ width: "100%" }}
-                        format="DD/MM/YYYY"
-                        placeholder="Select Date of Birth"
-                      />
-                    </Form.Item>
-                  </Col>
-                  <Col xs={24} sm={12}>
-                    <Form.Item
-                      name="sex"
-                      label="Gender"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please select your gender",
-                        },
-                      ]}
-                    >
-                      <Select placeholder="Select Sex">
-                        <Option value="Male">Male</Option>
-                        <Option value="Female">Female</Option>
-                      </Select>
-                    </Form.Item>
-                  </Col>
-                </Row>
-                <Form.Item
-                  name="gotra"
-                  label="Gotra"
-                  rules={[
-                    { required: true, message: "Please select your gotra." },
-                  ]}
-                >
-                  <Select
-                    style={{ width: "100%" }}
-                    placeholder="Select Your Gotra"
-                    showSearch
-                    optionFilterProp="label"
+                <div className="form-grid">
+                  <Form.Item
+                    name="firstname"
+                    label="First Name"
+                    rules={[{ required: true, message: "Enter your first name" }]}
                   >
-                    {gotra.Gotra.map((g) => (
-                      <Option key={g.EName} value={g.EName} label={g.EName}>
-                        {g.EName} ({g.HName})
+                    <Input 
+                      prefix={<UserOutlined />}
+                      placeholder="Enter First Name" 
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                    name="lastname"
+                    label="Father/Husband Name"
+                    rules={[{ required: true, message: "Enter your Father/Husband name" }]}
+                  >
+                    <Input 
+                      prefix={<UserOutlined />}
+                      placeholder="Enter Father/Husband Name" 
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                    name="email"
+                    label="Email Address"
+                    rules={[
+                      {
+                        required: true,
+                        type: "email",
+                        message: "Please enter a valid email",
+                      },
+                    ]}
+                  >
+                    <Input
+                      prefix={<MailOutlined />}
+                      placeholder="Enter Email Address"
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                    name="mobile"
+                    label="Mobile Number"
+                    rules={[{ required: true, message: 'Please enter your mobile number' }]}
+                  >
+                    <Input placeholder="Enter Mobile Number" />
+                  </Form.Item>
+
+                  <Form.Item
+                    name="password"
+                    label="Password"
+                    rules={[
+                      { required: true, message: "Please enter your password" },
+                      { min: 6, message: "Password must be at least 6 characters long" },
+                    ]}
+                  >
+                    <Input.Password
+                      prefix={<LockOutlined />}
+                      placeholder="Enter Password"
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                    name="confirmPassword"
+                    label="Confirm Password"
+                    dependencies={["password"]}
+                    rules={[
+                      { required: true, message: "Please confirm your password" },
+                      ({ getFieldValue }) => ({
+                        validator(_, value) {
+                          if (!value || getFieldValue("password") === value) {
+                            return Promise.resolve();
+                          }
+                          return Promise.reject("Passwords do not match");
+                        },
+                      }),
+                    ]}
+                  >
+                    <Input.Password
+                      prefix={<LockOutlined />}
+                      placeholder="Confirm Password"
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                    name="dob"
+                    label="Date of Birth"
+                    rules={[{ required: true, message: "Please select your date of birth" }]}
+                  >
+                    <DatePicker
+                      className="w-full"
+                      format="DD/MM/YYYY"
+                      placeholder="Select Date of Birth"
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                    name="sex"
+                    label="Gender"
+                    rules={[{ required: true, message: "Please select your gender" }]}
+                  >
+                    <Select placeholder="Select Gender">
+                      <Option value="Male">Male</Option>
+                      <Option value="Female">Female</Option>
+                    </Select>
+                  </Form.Item>
+
+                  <Form.Item
+                    name="gotra"
+                    label="Gotra"
+                    rules={[{ required: true, message: "Please select your gotra" }]}
+                    className="gotra-select"
+                  >
+                    <Select
+                      placeholder="Select Your Gotra"
+                      showSearch
+                      optionFilterProp="label"
+                    >
+                      {gotra.Gotra.map((g) => (
+                        <Option key={g.EName} value={g.EName} label={g.EName}>
+                          {g.EName} ({g.HName})
+                        </Option>
+                      ))}
+                      <Option value="Other" label="Other">
+                        Other
                       </Option>
-                    ))}
-                    <Option value="Other" label="Other">
-                      Other
-                    </Option>
-                  </Select>
-                </Form.Item>
-                <Form.Item name="mobile" label="Mobile Number"  rules={[{ required: true, message: 'Please enter your mobile number' }]}>
-                  <Input placeholder="Enter Mobile Number" />
-                </Form.Item>
-              </Tabs.TabPane>
+                    </Select>
+                  </Form.Item>
+                </div>
 
-
-             {/* Profession Tab */}
-          
-            </Tabs>
-
-            <Form.Item>
-                  <Space>
-                  <Button htmlType="submit">
+                <div className="form-actions">
+                  <Button type="primary" htmlType="submit" className="submit-button">
                     Register
-                    </Button>
-
-                    <Button  onClick={() => navigate("/login")}>
+                  </Button>
+                  <Button onClick={() => navigate("/login")} className="back-button">
                     Back to Login
-                    </Button>
-            
-                  </Space>
-             
-            </Form.Item>
-          </Form>
+                  </Button>
+                </div>
+              </Form>
+            </div>
+          </div>
         </Card>
-      </Content>
-    </Layout>
+      </div>
+    </div>
   );
 };
+
+export default RegisterPage;

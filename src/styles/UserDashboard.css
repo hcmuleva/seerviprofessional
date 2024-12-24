@@ -1,0 +1,38 @@
+/* Base styles for the grid */
+.grid-container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 10px;
+    overflow-x: auto; /* Enable horizontal scrolling for smaller screens */
+  }
+  
+  /* Media queries for mobile responsiveness */
+  @media (max-width: 768px) {
+    .ag-theme-alpine {
+      font-size: 12px; /* Reduce font size */
+    }
+  
+    .ag-header-cell-label {
+      display: flex;
+      justify-content: center;
+    }
+  
+    .ag-cell {
+      padding: 4px; /* Reduce cell padding */
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .ag-theme-alpine {
+      font-size: 10px; /* Further reduce font size */
+    }
+  
+    .ag-cell {
+      padding: 2px; /* Minimize cell padding */
+    }
+  
+    .ag-header-cell {
+      min-width: 100px; /* Ensure headers fit within the screen */
+    }
+  }
+  
