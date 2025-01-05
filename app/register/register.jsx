@@ -91,7 +91,7 @@ export default function Register() {
         await AsyncStorage.setItem(TOKEN_KEY, data.jwt);
         await AsyncStorage.setItem('userid', String(data?.user?.id));
         await AsyncStorage.setItem('userstatus', String(data?.user?.userstatus));
-        navigation.navigate('Dashboard');
+        navigation.navigate('HomeScreen');
       } else {
         const errorData = await res.json();
         Alert.alert('Registration Failed', errorData?.message || 'Registration failed');
@@ -100,7 +100,7 @@ export default function Register() {
       Alert.alert('Error', 'Something went wrong. Please try again.');
     }
   };
-
+  
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollView}>
