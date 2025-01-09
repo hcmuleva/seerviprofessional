@@ -24,11 +24,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width } = Dimensions.get('window');
 
-const TinderProfileMobile = () => {
+const ProfileMobile = () => {
   const navigation = useNavigation();
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState('Personal Info');
-  
+    
   const [userid, setUserid] = useState(null);
  const [personalInfo, setPersonalInfo] = useState({
     name: 'Manish',
@@ -114,16 +114,21 @@ const TinderProfileMobile = () => {
               <Text style={styles.dashText}>—</Text>
               <FontAwesome name="check" size={16} color="#000" />
             </View>
+            <Text style={styles.seeAllText} onPress={() => {
+              
+           navigation.navigate('UserProfileOverview',{
+           userData : user,
+           itemKey: item,
+         })
+       }}>See</Text>
           </View>
         ))}
       </View>
-
+      
       <TouchableOpacity style={styles.seeAllButton}>
-        <Text style={styles.seeAllText} onPress={() => {
-          navigation.navigate('UserProfileOverview',{
-            userData : user,
-          });
-        }}>See All Features</Text>
+        
+        
+
       </TouchableOpacity>
     </View>
   );
@@ -264,34 +269,35 @@ const TinderProfileMobile = () => {
 
         {/* Feature Cards */}
         <View style={styles.featureCards}>
-          <TouchableOpacity style={styles.featureCard}>
+          <TouchableOpacity style={styles.featureCard}  onPress={
+             () => {navigation.navigate('AddJob', {
+              userid : userid
+             })}
+            }>
             <View style={styles.featureIconContainer}>
-              <FontAwesome name="star" size={20} color="#00B4FF" />
+              <Ionicons name="briefcase-outline" size={20} color="#00B4FF" />
               <View style={styles.plusIcon}>
                 <Feather name="plus" size={12} color="#fff" />
               </View>
             </View>
-            <Text style={styles.featureCount}>0 Super Likes</Text>
-            <Text style={[styles.featureAction, { color: '#00B4FF' }]}>
-              GET MORE
-            </Text>
+            <Text style={styles.featureCount}>Add Job</Text>
+            
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.featureCard}>
             <View style={styles.featureIconContainer}>
-              <MaterialCommunityIcons
-                name="lightning-bolt"
-                size={20}
-                color="#A020F0"
-              />
+            <MaterialCommunityIcons
+  name="map-marker"
+  size={20}
+  color="#A020F0"
+/>
+
               <View style={styles.plusIcon}>
                 <Feather name="plus" size={12} color="#fff" />
               </View>
             </View>
-            <Text style={styles.featureCount}>My Boosts</Text>
-            <Text style={[styles.featureAction, { color: '#A020F0' }]}>
-              GET MORE
-            </Text>
+            <Text style={styles.featureCount}>Add Address</Text>
+           
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.featureCard}>
@@ -318,7 +324,7 @@ const TinderProfileMobile = () => {
       </ScrollView>
 
       {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
+      {/* <View style={styles.bottomNav}>
         <TouchableOpacity style={styles.navItem}>
           <FontAwesome name="fire" size={24} color="#86878B" />
         </TouchableOpacity>
@@ -343,7 +349,7 @@ const TinderProfileMobile = () => {
         <TouchableOpacity style={styles.navItem}>
           <FontAwesome name="user" size={24} color="#FF406C" />
         </TouchableOpacity>
-      </View>
+      </View> */}
     </SafeAreaView>
   );
 };
@@ -351,7 +357,7 @@ const TinderProfileMobile = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#fff',
   },
   header: {
     flexDirection: 'row',
@@ -362,6 +368,10 @@ const styles = StyleSheet.create({
   logo: {
     width: 80,
     height: 32,
+  },
+  templeImage: {
+    width: '20%',
+    height: '20%',
   },
   headerRight: {
     flexDirection: 'row',
@@ -607,5 +617,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TinderProfileMobile;
+export default ProfileMobile;
 

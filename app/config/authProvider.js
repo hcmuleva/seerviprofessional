@@ -10,8 +10,9 @@ export const axiosInstance = axios.create();
 const strapiAuthHelper = AuthHelper(API_URL + "/api");
 
 // Add request interceptor to automatically add token
-axiosInstance.interceptors.request.use((config) => {
-  const token = AsyncStorage.getItem(TOKEN_KEY);
+axiosInstance.interceptors.request.use(
+async (config) => {
+  const token = await AsyncStorage.getItem(TOKEN_KEY);
   if (token) {
     config.headers["Authorization"] = `Bearer ${token}`;
   }
@@ -173,7 +174,7 @@ export const authProvider = {
   },
 
   check: async () => {
-    const token = AsyncStorage.getItem(TOKEN_KEY);
+    const token = await AsyncStorage.getItem(TOKEN_KEY);
     
     if (!token || token === "undefined") {
       return {
@@ -215,7 +216,7 @@ export const authProvider = {
   },
   getPermissions: async () => null,
   getUserIdentity: async () => {
-    const token = AsyncStorage.getItem(TOKEN_KEY);
+    const token = await AsyncStorage.getItem(TOKEN_KEY);
     if (!token) {
         return null;
     }

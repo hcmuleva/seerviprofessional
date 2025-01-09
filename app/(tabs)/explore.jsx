@@ -1,7 +1,5 @@
 import React from 'react';
 import {  Text, View } from 'react-native';
-import { HelloWave } from '../../components/HelloWave';
-
 // import { Collapsible } from '@/components/Collapsible';
 // import { ExternalLink } from '@/components/ExternalLink';
 // import ParallaxScrollView from '@/components/ParallaxScrollView';
@@ -98,7 +96,7 @@ export default function TabTwoScreen() {
     // </ParallaxScrollView>
      <View>
       <Text>Tab TwoScreen</Text>
-      <HelloWave/>
+      {/* <HelloWave/> */}
     </View>
   );
 }

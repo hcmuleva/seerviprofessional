@@ -1,7 +1,7 @@
 // import { Tabs } from 'expo-router';
 import React from 'react';
 // import { Platform } from 'react-native';
-import { HelloWave } from '../../components/HelloWave';
+// import { HelloWave } from '../../components/HelloWave';
 
 // import { HapticTab } from '@/components/HapticTab';
 // import { IconSymbol } from '@/components/ui/IconSymbol';
@@ -46,7 +46,7 @@ export default function TabLayout() {
     <>
       <View>
         <Text>Tab Layout</Text>
-        <HelloWave/>
+        {/* <HelloWave/> */}
       </View>
     </>
   );

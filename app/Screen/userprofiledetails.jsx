@@ -13,8 +13,10 @@ const overviewsect = [
 ];
 
 const UserProfileOverview = ({ route }) => {
-  const { userData } = route.params;
-  console.log("USERPROFILEOVERVIEW", userData);
+  const { userData, itemKey } = route.params;
+
+  console.log("I AM IN USERPROFIEL", itemKey)
+  // console.log("USERPROFILEOVERVIEW", userData);
 
   const [selectedSection, setSelectedSection] = useState(null);
 

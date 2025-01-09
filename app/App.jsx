@@ -11,9 +11,10 @@ import { resourcesConfig } from "./config/resources";
 import { PageViewProvider } from "./contextprovider/PageProvider";
 import Register from "./register/register";
 import HomeScreen from "./Screen/HomeScreen";
-import TinderGoldScreen from "./Screen/tinderc";
 import { DataProvider } from "@refinedev/strapi-v4";
 import UserProfileOverview from "./Screen/userprofiledetails";
+import ProfileMobile from "./Screen/tinderc";
+import AddJob from "./pages/myprofile/profession.jsx/JobForm";
 
 const Stack = createStackNavigator();
 export const TOKEN_KEY = process.env.VITE_TOKEN_KEY;
@@ -39,10 +40,11 @@ export default function App() {
 
              <Stack.Screen name="login" component={Login} />
                <Stack.Screen name="Register" component={Register} />
-              
+                
               <Stack.Screen name="HomeScreen" component={HomeScreen} />
+              <Stack.Screen name="AddJob" component={AddJob} />
               <Stack.Screen name="UserProfileOverview" component={UserProfileOverview} options={{headerShown:false}} />
-              <Stack.Screen name="TinderGoldScreen" component={TinderGoldScreen} options={{headerShown:false}}/>
+              <Stack.Screen name="ProfileMobile" component={ProfileMobile} options={{headerShown:false}}/>
 
             </Stack.Navigator>
           </PageViewProvider>

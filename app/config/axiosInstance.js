@@ -12,7 +12,6 @@ axiosInstance.interceptors.request.use(
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
             console.log("From Axios mobile",token);
-            
         }
         return config;
     },

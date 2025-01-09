@@ -35,7 +35,7 @@ const HomeScreen = ({ navigation }) => {
       icon: 'briefcase',
       description: 'Professional networking',
       color: ['#6C63FF', '#5A52D5'],
-      navigationTarget: 'TinderGoldScreen'
+      navigationTarget: 'ProfileMobile'
     },
     {
       title: 'Temple Donation',
