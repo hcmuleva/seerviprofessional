@@ -130,7 +130,7 @@ const ProfileMobile = () => {
             <Text
               style={styles.seeAllText}
               onPress={() => {
-                navigation.navigate("UserProfileOverview", {
+                navigation.navigate("ProfessionalDetails", {
                   userData: user,
                   itemKey: item,
                 });

@@ -19,6 +19,7 @@ import { authProvider } from "./config/authProvider";
 import { axiosInstance } from "./config/axiosInstance";
 import { resourcesConfig } from "./config/resources";
 import { PageViewProvider } from "./contextprovider/PageProvider";
+import ProfessionDetails from "./Screen/ProfessionDetails";
 
 const Stack = createStackNavigator();
 export const TOKEN_KEY = process.env.VITE_TOKEN_KEY;
@@ -63,6 +64,11 @@ export default function App() {
               name="AddJob" 
               component={AddJob} 
               options={{ headerShown: true }}
+            />
+             <Stack.Screen 
+              name="ProfessionalDetails" 
+              component={ProfessionDetails} 
+              options={{ headerShown: false }}
             />
             <Stack.Screen 
               name="UserProfileOverview" 
