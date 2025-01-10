@@ -24,7 +24,7 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      AsyncStorage.clear();
+      // AsyncStorage.clear();
     }
     return Promise.reject(error);
   }
@@ -147,7 +147,7 @@ export const authProvider = {
     };
   },
   logout: async () => {
-    AsyncStorage.clear();
+    // AsyncStorage.clear();
     axiosInstance.defaults.headers.common["Authorization"] = null;
     return {
       success: true,
@@ -159,7 +159,7 @@ export const authProvider = {
     const status = error.response?.status;
     
     if (status === 401 || status === 403) {
-      AsyncStorage.clear();
+      // AsyncStorage.clear();
       return {
         logout: true,
         redirectTo: "/login",
@@ -197,7 +197,7 @@ export const authProvider = {
         };
       }
     } catch (error) {
-      AsyncStorage.clear();
+      // AsyncStorage.clear();
       return {
         authenticated: false,
         error: {

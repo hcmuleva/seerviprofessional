@@ -64,7 +64,6 @@ const ProfileMobile = () => {
   // console.log("OBJJJJJJJJJJJJJJJJJJ",user);
   
  
-
   const goldCards = [
     {
       id: '1',
