@@ -10,8 +10,7 @@ import {
   Dimensions,
   TextInput,
   FlatList,
-} from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
+} from 'react-native';
 import {
   Feather,
   FontAwesome,
@@ -27,27 +26,27 @@ const { width } = Dimensions.get("window");
 const ProfileMobile = () => {
   const navigation = useNavigation();
   const [isEditing, setIsEditing] = useState(false);
-  const [activeTab, setActiveTab] = useState("Personal Info");
-
+  const [activeTab, setActiveTab] = useState('Personal Info');
   const [userid, setUserid] = useState(null);
   const [personalInfo, setPersonalInfo] = useState({
-    name: "Manish",
-    age: "24",
-    bio: "I love coding and outdoor activities!",
+    name: 'Manish',
+    age: '24',
+    bio: 'I love coding and outdoor activities!',
   });
   const [education, setEducation] = useState({
     degree: "Bachelor of Science",
     school: "Tech University",
     graduationYear: "2022",
   });
+
   useEffect(() => {
     const getUserId = async () => {
-      const storedUserId = await AsyncStorage.getItem("userid");
-      setUserid(storedUserId); // Set the user ID state after retrieving it
+      const storedUserId = await AsyncStorage.getItem('userid');
+      setUserid(storedUserId);
     };
 
     getUserId();
-  }, []); // Runs only once on mount
+  }, []);
 
   const { data, isLoading, error } = useOne({
     resource: "users",
@@ -61,40 +60,14 @@ const ProfileMobile = () => {
   if (error) return <Text>Error: {error.message}</Text>;
 
   const user = data?.data;
+
   const sections = [
-    {
-      key: "overview",
-      label: "Overview",
-      features: [
-        "Personal",
-        "Job",
-        "Contact",
-        "Family",
-        "Educational",
-        "LifeStyle",
-      ],
-    },
-    { key: "professional", label: "Professional", features: [""] },
-    {
-      key: "address",
-      label: "Address",
-      features: ["See Who Likes You", "Top Picks"],
-    },
-    {
-      key: "project",
-      label: "Project",
-      features: ["See Who Likes You", "Top Picks"],
-    },
-    {
-      key: "activities",
-      label: "Activities",
-      features: ["See Who Likes You", "Top Picks"],
-    },
-    {
-      key: "subscriptions",
-      label: "Subscription",
-      features: ["See Who Likes You", "Top Picks"],
-    },
+    { key: "overview", label: "Overview", features: ['Personal', 'Job', 'Contact', 'Family', 'Educational', 'LifeStyle'] },
+    { key: "professional", label: "Professional", features: [''] },
+    { key: "address", label: "Address", features: ['See Who Likes You', 'Top Picks'] },
+    { key: "project", label: "Project", features: ['See Who Likes You', 'Top Picks'] },
+    { key: "activities", label: "Activities", features: ['See Who Likes You', 'Top Picks'] },
+    { key: "subscriptions", label: "Subscription", features: ['See Who Likes You', 'Top Picks'] },
   ];
 
   const renderGoldCard = ({ item }) => (
@@ -104,45 +77,22 @@ const ProfileMobile = () => {
           <FontAwesome name="fire" size={20} color="#FFB800" />
           <Text style={styles.goldTitle}>{item.label}</Text>
         </View>
-        <TouchableOpacity
-          style={styles.upgradeButton}
-          onPress={() =>
-            navigation.navigate("ProfileTabs", {
-              userData: user,
-              userid: userid,
-            })
-          }
-        >
+        <TouchableOpacity style={styles.upgradeButton} onPress={() => navigation.navigate('ProfileTabs', { userData: user, userid: userid })}>
           <Text style={styles.upgradeButtonText}>See</Text>
         </TouchableOpacity>
       </View>
-
       <Text style={styles.featuresTitle}>What's Included</Text>
-
       <View style={styles.featureTable}>
         {item.features.map((feature, index) => (
           <View key={index} style={styles.featureRow}>
             <Text style={styles.featureText}>{feature}</Text>
-            <View style={styles.featureColumns}>
-              <Text style={styles.dashText}>—</Text>
-              <FontAwesome name="check" size={16} color="#000" />
-            </View>
-            <Text
-              style={styles.seeAllText}
-              onPress={() => {
-                navigation.navigate("ProfessionalDetails", {
-                  userData: user,
-                  itemKey: item,
-                });
-              }}
-            >
-              See
-            </Text>
+            <FontAwesome name="check" size={16} color="#000" />
+            <TouchableOpacity onPress={() => navigation.navigate('UserProfileOverview', { userData: user, itemKey: item })}>
+              <Text style={styles.seeAllText}>See</Text>
+            </TouchableOpacity>
           </View>
         ))}
       </View>
-
-      <TouchableOpacity style={styles.seeAllButton}></TouchableOpacity>
     </View>
   );
 
@@ -223,13 +173,8 @@ const ProfileMobile = () => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
-        {/* Header */}
-        <Text></Text>
         <View style={styles.header}>
-          <Image
-            style={styles.logo}
-            resizeMode="contain"
-          />
+          <Image style={styles.logo} resizeMode="contain" />
           <View style={styles.headerRight}>
             <TouchableOpacity style={styles.iconButton}>
               <Feather name="shield" size={20} color="#86878B" />
@@ -240,47 +185,22 @@ const ProfileMobile = () => {
           </View>
         </View>
 
-        {/* Profile Section */}
         <View style={styles.profileSection}>
           <View style={styles.profileImageContainer}>
-            <LinearGradient
-              colors={["#FF406C", "#FF406C", "transparent", "transparent"]}
-              style={styles.progressRing}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-            >
-              <Image
-                // source={require('./assets/profile-placeholder.jpg')}
-                style={styles.profileImage}
-              />
-            </LinearGradient>
-            <TouchableOpacity
-              style={styles.editButton}
-              onPress={() => setIsEditing(!isEditing)}
-            >
-              <Feather
-                name={isEditing ? "check" : "edit-2"}
-                size={16}
-                color="#fff"
-              />
+            <Image style={styles.profileImage} />
+            <TouchableOpacity style={styles.editButton} onPress={() => setIsEditing(!isEditing)}>
+              <Feather name={isEditing ? "check" : "edit-2"} size={16} color="#fff" />
             </TouchableOpacity>
             <View style={styles.completionBadge}>
               <Text style={styles.completionText}>55% COMPLETE</Text>
             </View>
           </View>
           <View style={styles.nameContainer}>
-            <Text style={styles.nameText}>
-              {personalInfo.name}, {personalInfo.age}
-            </Text>
-            <MaterialCommunityIcons
-              name="check-decagram"
-              size={20}
-              color="#86878B"
-            />
+            <Text style={styles.nameText}>{personalInfo.name}, {personalInfo.age}</Text>
+            <MaterialCommunityIcons name="check-decagram" size={20} color="#86878B" />
           </View>
         </View>
 
-        {/* Edit Tabs */}
         {isEditing && (
           <View style={styles.editTabs}>
             <TouchableOpacity
@@ -304,19 +224,10 @@ const ProfileMobile = () => {
           </View>
         )}
 
-        {/* Edit Fields */}
         {isEditing && renderEditFields()}
 
-        {/* Feature Cards */}
         <View style={styles.featureCards}>
-          <TouchableOpacity
-            style={styles.featureCard}
-            onPress={() => {
-              navigation.navigate("AddJob", {
-                userid: userid,
-              });
-            }}
-          >
+          <TouchableOpacity style={styles.featureCard} onPress={() => navigation.navigate('AddJob', { userid: userid })}>
             <View style={styles.featureIconContainer}>
               <Ionicons name="briefcase-outline" size={20} color="#00B4FF" />
               <View style={styles.plusIcon}>
@@ -328,12 +239,7 @@ const ProfileMobile = () => {
 
           <TouchableOpacity style={styles.featureCard}>
             <View style={styles.featureIconContainer}>
-              <MaterialCommunityIcons
-                name="map-marker"
-                size={20}
-                color="#A020F0"
-              />
-
+              <MaterialCommunityIcons name="map-marker" size={20} color="#A020F0" />
               <View style={styles.plusIcon}>
                 <Feather name="plus" size={12} color="#fff" />
               </View>
@@ -352,7 +258,6 @@ const ProfileMobile = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Tinder Gold Cards */}
         <FlatList
           data={sections}
           renderItem={renderGoldCard}
@@ -362,34 +267,6 @@ const ProfileMobile = () => {
           contentContainerStyle={styles.goldCardsContainer}
         />
       </ScrollView>
-
-      {/* Bottom Navigation */}
-      {/* <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navItem}>
-          <FontAwesome name="fire" size={24} color="#86878B" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="search" size={24} color="#86878B" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <View style={styles.starContainer}>
-            <MaterialCommunityIcons
-              name="star-four-points"
-              size={24}
-              color="#86878B"
-            />
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>1</Text>
-            </View>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="chatbubble" size={24} color="#86878B" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <FontAwesome name="user" size={24} color="#FF406C" />
-        </TouchableOpacity>
-      </View> */}
     </SafeAreaView>
   );
 };
@@ -409,10 +286,6 @@ const styles = StyleSheet.create({
     width: 80,
     height: 32,
   },
-  templeImage: {
-    width: "20%",
-    height: "20%",
-  },
   headerRight: {
     flexDirection: "row",
     gap: 12,
@@ -428,17 +301,12 @@ const styles = StyleSheet.create({
     position: "relative",
     marginBottom: 12,
   },
-  progressRing: {
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-    justifyContent: "center",
-    alignItems: "center",
-  },
   profileImage: {
     width: 130,
     height: 130,
     borderRadius: 65,
+    borderWidth: 2,
+    borderColor: '#FF406C',
   },
   editButton: {
     position: "absolute",
@@ -473,8 +341,8 @@ const styles = StyleSheet.create({
   },
   nameText: {
     fontSize: 24,
-    fontWeight: "bold",
-    color: "#fff",
+    fontWeight: 'bold',
+    color: '#000',
   },
   editTabs: {
     flexDirection: "row",
@@ -486,18 +354,18 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 20,
-    backgroundColor: "#1A1A1A",
+    backgroundColor: '#f0f0f0',
   },
   activeTabButton: {
     backgroundColor: "#FF406C",
   },
   tabButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
+    color: '#000',
+    fontWeight: 'bold',
   },
   input: {
-    backgroundColor: "#1A1A1A",
-    color: "#fff",
+    backgroundColor: '#f0f0f0',
+    color: '#000',
     padding: 12,
     borderRadius: 8,
     marginBottom: 8,
@@ -515,10 +383,18 @@ const styles = StyleSheet.create({
   },
   featureCard: {
     flex: 1,
-    backgroundColor: "#1A1A1A",
+    backgroundColor: '#fff',
     borderRadius: 10,
     padding: 12,
-    alignItems: "center",
+    alignItems: 'center',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.23,
+    shadowRadius: 2.62,
+    elevation: 4,
   },
   featureIconContainer: {
     position: "relative",
@@ -536,13 +412,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   featureCount: {
-    color: "#fff",
+    color: '#000',
     fontSize: 12,
     marginBottom: 2,
-  },
-  featureAction: {
-    fontSize: 10,
-    fontWeight: "bold",
   },
   goldCardsContainer: {
     paddingHorizontal: 12,
@@ -553,6 +425,14 @@ const styles = StyleSheet.create({
     padding: 12,
     marginRight: 12,
     width: width - 48,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.23,
+    shadowRadius: 2.62,
+    elevation: 4,
   },
   goldHeader: {
     flexDirection: "row",
@@ -568,17 +448,6 @@ const styles = StyleSheet.create({
   goldTitle: {
     fontSize: 20,
     fontWeight: "bold",
-  },
-  goldBadge: {
-    backgroundColor: "#FFB800",
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
-  },
-  goldBadgeText: {
-    color: "#000",
-    fontWeight: "bold",
-    fontSize: 10,
   },
   upgradeButton: {
     backgroundColor: "#FFB800",
@@ -608,52 +477,10 @@ const styles = StyleSheet.create({
   featureText: {
     fontSize: 14,
   },
-  featureColumns: {
-    flexDirection: "row",
-    width: 80,
-    justifyContent: "space-between",
-  },
-  dashText: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  seeAllButton: {
-    alignItems: "center",
-    marginBottom: 12,
-  },
   seeAllText: {
     color: "#FFB800",
     fontSize: 14,
     fontWeight: "bolds",
-  },
-  bottomNav: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    paddingVertical: 10,
-    borderTopWidth: 1,
-    borderTopColor: "#1A1A1A",
-  },
-  navItem: {
-    padding: 6,
-  },
-  starContainer: {
-    position: "relative",
-  },
-  badge: {
-    position: "absolute",
-    top: -6,
-    right: -6,
-    backgroundColor: "#FF406C",
-    borderRadius: 8,
-    width: 16,
-    height: 16,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  badgeText: {
-    color: "#fff",
-    fontSize: 10,
-    fontWeight: "bold",
   },
 });
 
