@@ -46,7 +46,7 @@ const DonationScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <LinearGradient colors={['#4a90e2', '#357abd']} style={styles.header}>
+      <LinearGradient colors={["#007AFF", "#004ECC"]} style={styles.header}>
         <TouchableOpacity 
           onPress={() => navigation.goBack()} 
           style={styles.backButton}
