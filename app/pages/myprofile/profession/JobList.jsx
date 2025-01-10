@@ -56,7 +56,7 @@ const JobList = ({ jobs, onAddJob, onEditJob, onDeleteJob }) => {
         onPress={() => showModal()}
       >
         <Icon name="plus" size={20} color="white" />
-        <Text style={styles.buttonText}>Add Job</Text>
+        <Text style={styles.buttonText}>Add Job </Text>
       </TouchableOpacity>
 
       <Modal

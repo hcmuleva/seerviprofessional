@@ -1,3 +1,4 @@
+import { useNavigation } from 'expo-router';
 import React, { useState } from 'react';
 import {
   View,
@@ -8,11 +9,13 @@ import {
   SafeAreaView,
   StatusBar,
 } from 'react-native';
-import { ArrowLeft } from 'react-native-feather';
+import { ArrowLeft, Plus, Edit2 } from 'react-native-feather';
+
 
 const ProfileTabs = ({ route }) => {
-  const { userData } = route.params;
+  const { userData , userid} = route.params;
   const [activeTab, setActiveTab] = useState('personalInfo');
+   const navigation = useNavigation();
 
   const formatDate = (dateString) => {
     if (!dateString || dateString === "Not Provided") return "Not Provided";
@@ -135,6 +138,14 @@ const ProfileTabs = ({ route }) => {
     if (activeTab === 'jobs' && Array.isArray(content)) {
       return (
         <ScrollView style={styles.formContainer}>
+           <TouchableOpacity style={styles.addButton}  onPress={
+                        () => {navigation.navigate('AddJob', {
+                         userid : userid
+                        })}
+                       }>
+            <Plus stroke="white" width={24} height={24} />
+            <Text style={styles.addButtonText}>Add Job</Text>
+          </TouchableOpacity>
           {content.map((job, index) => (
             <View key={index} style={styles.infoContainer}>
               <View style={styles.infoRow}>
@@ -293,6 +304,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
   },
+  addButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#007AFF',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 16,
+  },
+  addButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    marginLeft: 8,
+  },
 });
-
 export default ProfileTabs;
