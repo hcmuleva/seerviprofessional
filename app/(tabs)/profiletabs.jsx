@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import { ArrowLeft, Plus, Edit2 } from 'react-native-feather';
 
-
 const ProfileTabs = ({ route }) => {
   const { userData , userid} = route.params;
   const [activeTab, setActiveTab] = useState('personalInfo');
@@ -89,6 +88,7 @@ const ProfileTabs = ({ route }) => {
           const duration = calculateDuration(job.from, job.to);
           
           return {
+            jobid : job.id || "Not Provided",
             jobTitle: job.post || "Not Provided",
             company: job.organization || "Not Provided",
             experience: job.experience || "Not Provided",
@@ -131,9 +131,10 @@ const ProfileTabs = ({ route }) => {
         return {};
     }
   };
-
+ console.log("JOB DETAILS",userData.jobs);
   const renderContent = () => {
     const content = getContent(activeTab);
+    console.log("ACTIVE CONTENT", content)
 
     if (activeTab === 'jobs' && Array.isArray(content)) {
       return (
@@ -146,26 +147,45 @@ const ProfileTabs = ({ route }) => {
             <Plus stroke="white" width={24} height={24} />
             <Text style={styles.addButtonText}>Add Job</Text>
           </TouchableOpacity>
+          
           {content.map((job, index) => (
-            <View key={index} style={styles.infoContainer}>
-              <View style={styles.infoRow}>
-                <Text style={styles.label}>Job Title:</Text>
-                <Text style={styles.value}>{job.jobTitle}</Text>
-              </View>
-              <View style={styles.infoRow}>
-                <Text style={styles.label}>Company:</Text>
-                <Text style={styles.value}>{job.company}</Text>
-              </View>
-              <View style={styles.infoRow}>
-                <Text style={styles.label}>Experience:</Text>
-                <Text style={styles.value}>{job.experience}</Text>
-              </View>
-              <View style={styles.infoRow}>
-                <Text style={styles.label}>Duration:</Text>
-                <Text style={styles.value}>{job.duration}</Text>
-              </View>
+            
+          <View key={index} style={styles.infoContainer}>
+            <View style={styles.infoRow}>
+              <Text style={styles.label}>Job Title:</Text>
+              <Text style={styles.value}>{job.jobTitle}</Text>
             </View>
+            <View style={styles.infoRow}>
+              <Text style={styles.label}>Company:</Text>
+              <Text style={styles.value}>{job.company}</Text>
+            </View>
+            <View style={styles.infoRow}>
+              <Text style={styles.label}>Experience:</Text>
+              <Text style={styles.value}>{job.experience}</Text>
+            </View>
+            <View style={styles.infoRow}>
+              <Text style={styles.label}>Duration:</Text>
+              <Text style={styles.value}>{job.duration}</Text>
+            </View>
+            
+            {/* Edit Button */}
+            <TouchableOpacity
+              style={styles.editButton}
+              onPress={() => {
+                navigation.navigate('EditJob', {
+                  user : userData,
+                  userid: userid,
+                  jobid: job.jobid, // Pass job-specific data (such as jobId) to the edit screen
+                });
+              }}
+            >
+              <Edit2 stroke="white" width={24} height={24} />
+              <Text style={styles.editButtonText}>Edit Job</Text>
+            </TouchableOpacity>
+          </View>
           ))}
+
+
         </ScrollView>
       );
     }
@@ -313,6 +333,19 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   addButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    marginLeft: 8,
+  },
+  editButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FF9500', // Customize this color as needed
+    padding: 4,
+    borderRadius: 8,
+    marginTop: 16,
+  },
+  editButtonText: {
     color: 'white',
     fontWeight: 'bold',
     marginLeft: 8,
