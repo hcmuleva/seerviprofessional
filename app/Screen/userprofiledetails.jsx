@@ -16,7 +16,7 @@ const UserProfileOverview = ({ route }) => {
   const { userData, itemKey } = route.params;
 
   console.log("I AM IN USERPROFIEL", itemKey)
-  // console.log("USERPROFILEOVERVIEW", userData);
+  console.log("USERPROFILEOVERVIEW", userData);
 
   const [selectedSection, setSelectedSection] = useState(null);
 

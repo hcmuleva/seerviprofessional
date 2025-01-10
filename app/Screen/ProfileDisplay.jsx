@@ -99,8 +99,8 @@ const ProfileMobile = () => {
           <FontAwesome name="fire" size={20} color="#FFB800" />
           <Text style={styles.goldTitle}>{item.label}</Text>
         </View>
-        <TouchableOpacity style={styles.upgradeButton}>
-          <Text style={styles.upgradeButtonText}>Upgrade</Text>
+        <TouchableOpacity style={styles.upgradeButton} onPress={() => (navigation.navigate('ProfileTabs',{userData : user}))}>
+          <Text style={styles.upgradeButtonText}>See</Text>
         </TouchableOpacity>
       </View>
 

@@ -13,8 +13,9 @@ import Register from "./register/register";
 import HomeScreen from "./Screen/HomeScreen";
 import { DataProvider } from "@refinedev/strapi-v4";
 import UserProfileOverview from "./Screen/userprofiledetails";
-import ProfileMobile from "./Screen/tinderc";
-import AddJob from "./pages/myprofile/profession.jsx/JobForm";
+import AddJob from "./pages/myprofile/profession/JobForm";
+import ProfileTabs from "./(tabs)/profiletabs";
+import ProfileMobile from "./Screen/ProfileDisplay";
 
 const Stack = createStackNavigator();
 export const TOKEN_KEY = process.env.VITE_TOKEN_KEY;
@@ -40,10 +41,10 @@ export default function App() {
 
              <Stack.Screen name="login" component={Login} />
                <Stack.Screen name="Register" component={Register} />
-                
               <Stack.Screen name="HomeScreen" component={HomeScreen} />
               <Stack.Screen name="AddJob" component={AddJob} />
               <Stack.Screen name="UserProfileOverview" component={UserProfileOverview} options={{headerShown:false}} />
+              <Stack.Screen name="ProfileTabs" component={ProfileTabs} options={{headerShown:false}}/>
               <Stack.Screen name="ProfileMobile" component={ProfileMobile} options={{headerShown:false}}/>
 
             </Stack.Navigator>

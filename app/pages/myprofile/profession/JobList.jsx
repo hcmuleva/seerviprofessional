@@ -15,7 +15,6 @@ const JobList = ({ jobs, onAddJob, onEditJob, onDeleteJob }) => {
   const [editingJob, setEditingJob] = useState(null);
   const [userid, setUserid] = useState(null);
 
-  // Replace localStorage with AsyncStorage
   const getUserId = async () => {
     try {
       const value = await AsyncStorage.getItem('userid');
@@ -26,7 +25,6 @@ const JobList = ({ jobs, onAddJob, onEditJob, onDeleteJob }) => {
     }
   };
 
-  // Call getUserId when component mounts
   React.useEffect(() => {
     getUserId();
   }, []);
