@@ -17,6 +17,7 @@ import AddJob from "./pages/myprofile/profession/JobForm";
 import ProfileTabs from "./(tabs)/profiletabs";
 import ProfileMobile from "./Screen/ProfileDisplay";
 import EditJob from "./pages/myprofile/profession/EditJob";
+import EditBasicAll from "./pages/myprofile/profession/EditBasicAll";
 
 const Stack = createStackNavigator();
 export const TOKEN_KEY = process.env.VITE_TOKEN_KEY;
@@ -45,6 +46,7 @@ export default function App() {
               <Stack.Screen name="HomeScreen" component={HomeScreen} />
               <Stack.Screen name="AddJob" component={AddJob} />
               <Stack.Screen name="EditJob" component={EditJob} />
+              <Stack.Screen name="EditBasicAll" component={EditBasicAll} />
               <Stack.Screen name="UserProfileOverview" component={UserProfileOverview} options={{headerShown:false}} />
               <Stack.Screen name="ProfileTabs" component={ProfileTabs} options={{headerShown:false}}/>
               <Stack.Screen name="ProfileMobile" component={ProfileMobile} options={{headerShown:false}}/>

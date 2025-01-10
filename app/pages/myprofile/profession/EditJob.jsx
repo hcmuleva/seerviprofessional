@@ -61,7 +61,7 @@ const EditJob = ({route}) => {
       setToDate(selectedDate);
     }
   };
-
+  
   const validateForm = () => {
     if (!post.trim() || !organization.trim() || !experience.trim()) {
       showErrorMessage('Please fill in all required fields');

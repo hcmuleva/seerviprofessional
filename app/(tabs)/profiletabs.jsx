@@ -12,9 +12,12 @@ import {
 import { ArrowLeft, Plus, Edit2 } from 'react-native-feather';
 
 const ProfileTabs = ({ route }) => {
-  const { userData , userid} = route.params;
-  const [activeTab, setActiveTab] = useState('personalInfo');
-   const navigation = useNavigation();
+  const { userData, userid, itemKey } = route.params;
+  const navigation = useNavigation();
+  const [activeTab, setActiveTab] = useState(itemKey.key === 'professional' ? 'jobs' :
+    itemKey.key === 'address' ? 'address' :
+    itemKey.key === 'project' ? 'project' : 
+    itemKey.key === 'activities' ? 'activities' : 'personalInfo');
 
   const formatDate = (dateString) => {
     if (!dateString || dateString === "Not Provided") return "Not Provided";
@@ -55,16 +58,39 @@ const ProfileTabs = ({ route }) => {
     return duration ? `(${duration})` : '';
   };
 
-
-  const tabs = [
-    { id: 'personalInfo', label: 'Personal' },
-    { id: 'jobs', label: 'Job' },
-    { id: 'contactInfo', label: 'Contact' },
-    { id: 'familyDetails', label: 'Family' },
-    { id: 'educationInfo', label: 'Educational' },
-    { id: 'lifestyle', label: 'LifeStyle' },
-    { id: 'preferences', label: 'Preferences' },
-  ];
+  // Define tabs based on itemKey.key
+  const getTabs = () => {
+    if (itemKey.key === 'professional') {
+      return [
+        { id: 'jobs', label: 'Jobs' },
+        { id: 'educationInfo', label: 'Education' },
+        { id: 'skills', label: 'Skills' }
+      ];
+    } else if (itemKey.key === 'address') {
+      return [
+        { id: 'address', label: 'Address' }, // Adding the 'address' tab here
+      ];
+    }
+    else if (itemKey.key === 'project') {
+      return [
+        { id: 'project', label: 'Project' }, // Adding the 'address' tab here
+      ];
+    }
+    else if (itemKey.key === 'activities') {
+      return [
+        { id: 'activities', label: 'activities' }, // Adding the 'address' tab here
+      ];
+    }
+    return [
+      { id: 'personalInfo', label: 'Personal' },
+      { id: 'jobs', label: 'Job' },
+      { id: 'contactInfo', label: 'Contact' },
+      { id: 'familyDetails', label: 'Family' },
+      { id: 'educationInfo', label: 'Educational' },
+      { id: 'lifestyle', label: 'LifeStyle' },
+      { id: 'preferences', label: 'Preferences' },
+    ];
+  };
 
   const getContent = (activeTab) => {
     switch (activeTab) {
@@ -88,15 +114,20 @@ const ProfileTabs = ({ route }) => {
           const duration = calculateDuration(job.from, job.to);
           
           return {
-            jobid : job.id || "Not Provided",
+            jobid: job.id || "Not Provided",
             jobTitle: job.post || "Not Provided",
             company: job.organization || "Not Provided",
             experience: job.experience || "Not Provided",
             duration: `${fromFormatted} to ${toFormatted} ${duration}`,
           }
-    }) || [];
-
-
+        }) || [];
+      case "skills":
+        return {
+          technicalSkills: "React Native, JavaScript, Python",
+          softSkills: "Leadership, Communication",
+          languages: "English, Spanish",
+          certifications: "AWS Certified Developer",
+        };
       case "contactInfo":
         return {
           phone: userData?.mobile || "Not Provided",
@@ -131,62 +162,121 @@ const ProfileTabs = ({ route }) => {
         return {};
     }
   };
- console.log("JOB DETAILS",userData.jobs);
+
   const renderContent = () => {
     const content = getContent(activeTab);
-    console.log("ACTIVE CONTENT", content)
 
     if (activeTab === 'jobs' && Array.isArray(content)) {
       return (
         <ScrollView style={styles.formContainer}>
-           <TouchableOpacity style={styles.addButton}  onPress={
-                        () => {navigation.navigate('AddJob', {
-                         userid : userid
-                        })}
-                       }>
+          <TouchableOpacity 
+            style={styles.addButton}  
+            onPress={() => {
+              navigation.navigate('AddJob', {
+                userid: userid
+              });
+            }}
+          >
             <Plus stroke="white" width={24} height={24} />
             <Text style={styles.addButtonText}>Add Job</Text>
           </TouchableOpacity>
           
           {content.map((job, index) => (
-            
-          <View key={index} style={styles.infoContainer}>
-            <View style={styles.infoRow}>
-              <Text style={styles.label}>Job Title:</Text>
-              <Text style={styles.value}>{job.jobTitle}</Text>
+            <View key={index} style={styles.infoContainer}>
+              <View style={styles.infoRow}>
+                <Text style={styles.label}>Job Title:</Text>
+                <Text style={styles.value}>{job.jobTitle}</Text>
+              </View>
+              <View style={styles.infoRow}>
+                <Text style={styles.label}>Company:</Text>
+                <Text style={styles.value}>{job.company}</Text>
+              </View>
+              <View style={styles.infoRow}>
+                <Text style={styles.label}>Experience:</Text>
+                <Text style={styles.value}>{job.experience}</Text>
+              </View>
+              <View style={styles.infoRow}>
+                <Text style={styles.label}>Duration:</Text>
+                <Text style={styles.value}>{job.duration}</Text>
+              </View>
+              
+              <TouchableOpacity
+                style={styles.editButton}
+                onPress={() => {
+                  navigation.navigate('EditJob', {
+                    jobid: job.jobid,
+                  });
+                }}
+              >
+                <Edit2 stroke="white" width={24} height={24} />
+                <Text style={styles.editButtonText}>Edit Job</Text>
+              </TouchableOpacity>
             </View>
-            <View style={styles.infoRow}>
-              <Text style={styles.label}>Company:</Text>
-              <Text style={styles.value}>{job.company}</Text>
-            </View>
-            <View style={styles.infoRow}>
-              <Text style={styles.label}>Experience:</Text>
-              <Text style={styles.value}>{job.experience}</Text>
-            </View>
-            <View style={styles.infoRow}>
-              <Text style={styles.label}>Duration:</Text>
-              <Text style={styles.value}>{job.duration}</Text>
-            </View>
-            
-            {/* Edit Button */}
-            <TouchableOpacity
-              style={styles.editButton}
-              onPress={() => {
-                navigation.navigate('EditJob', {
-                  jobid: job.jobid, // Pass job-specific data (such as jobId) to the edit screen
-                });
-              }}
-            >
-              <Edit2 stroke="white" width={24} height={24} />
-              <Text style={styles.editButtonText}>Edit Job</Text>
-            </TouchableOpacity>
-          </View>
           ))}
+        </ScrollView>
+      );
+    }
+    else if (activeTab === 'address') {
+      return (
+        <ScrollView style={styles.formContainer}>
+          <TouchableOpacity 
+            style={styles.addButton}  
+            onPress={() => {
+              navigation.navigate('AddAddress', {
+                userid: userid
+              });
+            }}
+          >
+            <Plus stroke="white" width={24} height={24} />
+            <Text style={styles.addButtonText}>Add Address</Text>
+          </TouchableOpacity>
 
+          <View style={styles.infoContainer}>
+            <View style={styles.infoRow}>
+              <Text style={styles.label}>Address:</Text>
+              <Text style={styles.value}>{content.address}</Text>
+            </View>
+          </View>
+        </ScrollView>
+      );
+    }
+    else if (activeTab === 'project') {
+      return (
+        <ScrollView style={styles.formContainer}>
+          <TouchableOpacity 
+            style={styles.addButton}  
+            onPress={() => {
+              navigation.navigate('AddProject', {
+                userid: userid
+              });
+            }}
+          >
+            <Plus stroke="white" width={24} height={24} />
+            <Text style={styles.addButtonText}>Add Project</Text>
+          </TouchableOpacity>
 
         </ScrollView>
       );
     }
+    else if (activeTab === 'activities') {
+      return (
+        <ScrollView style={styles.formContainer}>
+          <TouchableOpacity 
+            style={styles.addButton}  
+            onPress={() => {
+              navigation.navigate('AddActivities', {
+                userid: userid
+              });
+            }}
+          >
+            <Plus stroke="white" width={24} height={24} />
+            <Text style={styles.addButtonText}>Add Activities</Text>
+          </TouchableOpacity>
+
+        </ScrollView>
+      );
+    }
+
 
     return (
       <ScrollView style={styles.formContainer}>
@@ -197,47 +287,59 @@ const ProfileTabs = ({ route }) => {
               <Text style={styles.value}>{value}</Text>
             </View>
           ))}
+          
+          <TouchableOpacity
+            style={styles.editButton}
+            onPress={() => {
+              navigation.navigate('EditBasicAll', {
+                userid: userid,
+                currentData: content,
+                activeTab: activeTab
+              });
+            }}
+          >
+            <Edit2 stroke="white" width={24} height={24} />
+            <Text style={styles.editButtonText}>Edit {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     );
   };
+
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+    <StatusBar barStyle="dark-content" backgroundColor="#fff" />
     
-
-      {/* Tabs */}
-      <View style={styles.tabsWrapper}>
-        <ScrollView 
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.tabsScrollContainer}
-        >
-          {tabs.map((tab) => (
-            <TouchableOpacity
-              key={tab.id}
+    <View style={styles.tabsWrapper}>
+      <ScrollView 
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.tabsScrollContainer}
+      >
+        {getTabs().map((tab) => (
+          <TouchableOpacity
+            key={tab.id}
+            style={[
+              styles.tab,
+              activeTab === tab.id && styles.activeTab,
+            ]}
+            onPress={() => setActiveTab(tab.id)}
+          >
+            <Text
               style={[
-                styles.tab,
-                activeTab === tab.id && styles.activeTab,
+                styles.tabText,
+                activeTab === tab.id && styles.activeTabText,
               ]}
-              onPress={() => setActiveTab(tab.id)}
             >
-              <Text
-                style={[
-                  styles.tabText,
-                  activeTab === tab.id && styles.activeTabText,
-                ]}
-              >
-                {tab.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
+              {tab.label}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+    </View>
 
-      {/* Content */}
-      {renderContent()}
-    </SafeAreaView>
+    {renderContent()}
+  </SafeAreaView>
   );
 };
 
@@ -308,7 +410,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   infoRow: {
-    display:"flex",
+    display: "flex",
     marginBottom: 16,
   },
   label: {
@@ -337,7 +439,7 @@ const styles = StyleSheet.create({
   editButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FF9500', // Customize this color as needed
+    backgroundColor: '#FF9500',
     padding: 4,
     borderRadius: 8,
     marginTop: 16,
@@ -348,4 +450,5 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
 });
+
 export default ProfileTabs;

@@ -62,7 +62,7 @@ const ProfileMobile = () => {
   const user = data?.data;
 
   const sections = [
-    { key: "overview", label: "Overview", features: ['Personal', 'Job', 'Contact', 'Family', 'Educational', 'LifeStyle'] },
+    { key: "overview", label: "BasicInfo", features: ['Personal', 'Job', 'Contact', 'Family', 'Educational', 'LifeStyle'] },
     { key: "professional", label: "Professional", features: [''] },
     { key: "address", label: "Address", features: ['See Who Likes You', 'Top Picks'] },
     { key: "project", label: "Project", features: ['See Who Likes You', 'Top Picks'] },
@@ -77,8 +77,8 @@ const ProfileMobile = () => {
           <FontAwesome name="fire" size={20} color="#FFB800" />
           <Text style={styles.goldTitle}>{item.label}</Text>
         </View>
-        <TouchableOpacity style={styles.upgradeButton} onPress={() => navigation.navigate('ProfileTabs', { userData: user, userid: userid })}>
-          <Text style={styles.upgradeButtonText}>See</Text>
+        <TouchableOpacity style={styles.upgradeButton} onPress={() => navigation.navigate('ProfileTabs', { userData: user, userid: userid,itemKey: item })}>
+        <Text style={styles.upgradeButtonText}>See</Text>
         </TouchableOpacity>
       </View>
       <Text style={styles.featuresTitle}>What's Included</Text>
@@ -87,9 +87,9 @@ const ProfileMobile = () => {
           <View key={index} style={styles.featureRow}>
             <Text style={styles.featureText}>{feature}</Text>
             <FontAwesome name="check" size={16} color="#000" />
-            <TouchableOpacity onPress={() => navigation.navigate('UserProfileOverview', { userData: user, itemKey: item })}>
+            {/* <TouchableOpacity onPress={() => navigation.navigate('UserProfileOverview', { userData: user, itemKey: item })}>
               <Text style={styles.seeAllText}>See</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         ))}
       </View>
