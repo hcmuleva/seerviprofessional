@@ -1,237 +1,159 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
   View,
   Text,
-  StyleSheet,
-  ScrollView,
+  TextInput,
   TouchableOpacity,
+  StyleSheet,
+  Alert,
   SafeAreaView,
-  StatusBar,
 } from 'react-native';
-import { TextInput } from 'react-native-paper';
-import { ArrowLeft } from 'react-native-feather';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import { useUpdate } from "@refinedev/core";
 
-export default function EditJob({ route, navigation }) {
-  const { user, userid, jobid } = route.params;
-  
-  // Find the specific job from user data
-  const currentJob = user.jobs.find(job => job.id === jobid) || {};
+const EditJob = ({route}) => {
+   const{jobid} = route.params;
+   const { mutate: updateJob } = useUpdate();
+  const [post, setPost] = React.useState('');
+  const [isLoading, setIsLoading] = React.useState(false);
 
-  const [formData, setFormData] = useState({
-    post: currentJob.post || '',
-    organization: currentJob.organization || '',
-    experience: currentJob.experience || '',
-    from: currentJob.from ? new Date(currentJob.from) : new Date(),
-    to: currentJob.to ? new Date(currentJob.to) : new Date(),
-  });
-
-  const [showFromDate, setShowFromDate] = useState(false);
-  const [showToDate, setShowToDate] = useState(false);
-
-  const updateField = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+  const showSuccessMessage = () => {
+    Alert.alert(
+      'Success',
+      'Job post has been successfully updated.',
+      [{ text: 'OK' }]
+    );
   };
 
-  const formatDate = (date) => {
-    if (!date) return '';
-    const d = new Date(date);
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return `${months[d.getMonth()]} ${d.getFullYear()}`;
-  };
-
-  const onFromDateChange = (event, selectedDate) => {
-    setShowFromDate(false);
-    if (selectedDate) {
-      updateField('from', selectedDate);
-    }
-  };
-
-  const onToDateChange = (event, selectedDate) => {
-    setShowToDate(false);
-    if (selectedDate) {
-      updateField('to', selectedDate);
-    }
+  const showErrorMessage = (message) => {
+    Alert.alert(
+      'Error',
+      message || 'Failed to update job details.',
+      [{ text: 'OK' }]
+    );
   };
 
   const handleSubmit = async () => {
+    if (!post.trim()) {
+      showErrorMessage('Please enter the post');
+      return;
+    }
+
+    setIsLoading(true);
+
     try {
-      // Here you would typically make an API call to update the job
-      console.log('Updating job with data:', {
-        userid,
-        jobid,
-        ...formData
-      });
+      console.log("Attempting to update job with ID 89:", { post });
       
-      // After successful update
-      navigation.goBack();
+      await updateJob(
+        {
+          resource: "jobs",
+          id: jobid, // Hardcoded job ID
+          values: {
+            post: post,
+          },
+        },
+        {
+          onSuccess: (response) => {
+            console.log("Update success:", response);
+            showSuccessMessage();
+            setPost(''); // Clear the input after successful update
+          },
+          onError: (error) => {
+            console.error("Update error details:", error);
+            showErrorMessage('Failed to update job details.');
+          },
+        }
+      );
     } catch (error) {
-      console.error('Error updating job:', error);
-      // Handle error appropriately
+      console.error("Error occurred:", error);
+      showErrorMessage('There was an issue updating the job details.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-      
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <ArrowLeft stroke="#000" width={24} height={24} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Edit Job</Text>
-      </View>
-
-      {/* Form */}
-      <ScrollView style={styles.formContainer}>
-        <View style={styles.formSection}>
+      <View style={styles.card}>
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Post</Text>
           <TextInput
-            label="Job Title"
-            value={formData.post}
-            onChangeText={(text) => updateField('post', text)}
             style={styles.input}
-            mode="outlined"
+            placeholder="Enter job post"
+            value={post}
+            onChangeText={setPost}
+            multiline={true}
+            numberOfLines={3}
           />
-
-          <TextInput
-            label="Company/Organization"
-            value={formData.organization}
-            onChangeText={(text) => updateField('organization', text)}
-            style={styles.input}
-            mode="outlined"
-          />
-
-          <TextInput
-            label="Experience"
-            value={formData.experience}
-            onChangeText={(text) => updateField('experience', text)}
-            style={styles.input}
-            mode="outlined"
-            keyboardType="numeric"
-          />
-
-          {/* Date Pickers */}
-          <TouchableOpacity
-            style={styles.dateInput}
-            onPress={() => setShowFromDate(true)}
-          >
-            <Text style={styles.dateLabel}>From Date</Text>
-            <Text style={styles.dateValue}>{formatDate(formData.from)}</Text>
-          </TouchableOpacity>
-
-          {showFromDate && (
-            <DateTimePicker
-              value={formData.from}
-              mode="date"
-              display="default"
-              onChange={onFromDateChange}
-            />
-          )}
-
-          <TouchableOpacity
-            style={styles.dateInput}
-            onPress={() => setShowToDate(true)}
-          >
-            <Text style={styles.dateLabel}>To Date</Text>
-            <Text style={styles.dateValue}>{formatDate(formData.to)}</Text>
-          </TouchableOpacity>
-
-          {showToDate && (
-            <DateTimePicker
-              value={formData.to}
-              mode="date"
-              display="default"
-              onChange={onToDateChange}
-            />
-          )}
         </View>
 
-        {/* Submit Button */}
         <TouchableOpacity
-          style={styles.submitButton}
+          style={[
+            styles.button,
+            isLoading && styles.buttonDisabled
+          ]}
           onPress={handleSubmit}
+          disabled={isLoading}
         >
-          <Text style={styles.submitButtonText}>Update Job</Text>
+          <Text style={styles.buttonText}>
+            {isLoading ? 'Updating...' : 'Update Job Post'}
+          </Text>
         </TouchableOpacity>
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
-  },
-  backButton: {
-    marginRight: 16,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  formContainer: {
-    flex: 1,
+    backgroundColor: '#f5f5f5',
     padding: 16,
   },
-  formSection: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
+  card: {
+    backgroundColor: 'white',
+    borderRadius: 8,
     padding: 16,
-    marginBottom: 20,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  formGroup: {
+    marginBottom: 16,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 8,
+    color: '#333',
   },
   input: {
-    marginBottom: 16,
-    backgroundColor: '#fff',
-  },
-  dateInput: {
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: '#ddd',
     borderRadius: 4,
     padding: 12,
-    marginBottom: 16,
-  },
-  dateLabel: {
-    fontSize: 12,
-    color: '#666',
-    marginBottom: 4,
-  },
-  dateValue: {
     fontSize: 16,
-    color: '#000',
+    backgroundColor: '#fff',
+    textAlignVertical: 'top',
   },
-  submitButton: {
-    backgroundColor: '#007AFF',
-    padding: 16,
-    borderRadius: 8,
+  button: {
+    backgroundColor: '#1890ff',
+    padding: 14,
+    borderRadius: 4,
     alignItems: 'center',
-    marginBottom: 32,
   },
-  submitButtonText: {
-    color: '#fff',
+  buttonDisabled: {
+    backgroundColor: '#ccc',
+  },
+  buttonText: {
+    color: 'white',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '600',
   },
 });
+
+export default EditJob;

@@ -173,8 +173,6 @@ const ProfileTabs = ({ route }) => {
               style={styles.editButton}
               onPress={() => {
                 navigation.navigate('EditJob', {
-                  user : userData,
-                  userid: userid,
                   jobid: job.jobid, // Pass job-specific data (such as jobId) to the edit screen
                 });
               }}
@@ -203,7 +201,6 @@ const ProfileTabs = ({ route }) => {
       </ScrollView>
     );
   };
-
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
