@@ -39,7 +39,7 @@ export default function Login() {
   // }, []);
 
   useEffect(() => {
-    if (AsyncStorage.getItem("jwt-token")) navigation.navigate("HomeScreen");
+    if (AsyncStorage.getItem("jwt-token")) navigation.replace('MainApp');
   }, []);
 
   
@@ -60,7 +60,7 @@ export default function Login() {
         await AsyncStorage.setItem('userid', String(data?.user?.id));
         await AsyncStorage.setItem('userstatus', String(data?.user?.userstatus));
         await AsyncStorage.setItem('emeelanrole', String(data?.user?.emeelanrole));
-        navigation.navigate('HomeScreen');
+        navigation.replace('MainApp');
       } else {
         const errorData = await res.json();
         Alert.alert('Login Failed', errorData?.message || 'Invalid Credentials.');

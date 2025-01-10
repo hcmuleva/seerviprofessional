@@ -35,14 +35,13 @@ const HomeScreen = ({ navigation }) => {
       icon: 'briefcase',
       description: 'Professional networking',
       color: ['#6C63FF', '#5A52D5'],
-      navigationTarget: 'ProfileMobile'
+      navigationTarget: 'Profile'
     },
     {
       title: 'Temple Donation',
       icon: 'gift-outline',
       description: 'Support our temples',
-      color: ['#FFB75E', '#ED8F03'],
-      navigationTarget: 'DonationScreen'
+      color: ['#FFB75E', '#ED8F03'],      // navigationTarget: 'DonationScreen'
     }
   ];
 
@@ -55,14 +54,20 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient colors={['#4a90e2', '#357abd']} style={styles.header}>
-        <Text style={styles.headerTitle}>Seervi Samaj {userid}</Text>
+      <LinearGradient colors={["#007AFF", "#004ECC"]} style={styles.header}>
+      <View style={styles.headerLeft}>
+          <Image source={require("../images/logo.png")} style={styles.logo} />
+          <Text style={styles.headerTitle}>Seervi Samaj</Text>
+        </View>
         <View style={styles.headerIcons}>
           <TouchableOpacity style={styles.iconButton}>
             <Ionicons name="notifications-outline" size={24} color="#fff" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButton}>
-            <Ionicons name="search-outline" size={24} color="#fff" />
+          <TouchableOpacity
+            style={styles.iconButton}
+            onPress={() => navigation.navigate("ProfileScreen")} // Navigate to the ProfileScreen
+          >
+            <Ionicons name="person-outline" size={24} color="#fff" />
           </TouchableOpacity>
         </View>
       </LinearGradient>
@@ -143,14 +148,6 @@ const HomeScreen = ({ navigation }) => {
           </View>
         </View>
       </ScrollView>
-
-      <LinearGradient colors={['#fff', '#f8f8f8']} style={styles.bottomNav}>
-        {['home', 'calendar', 'people', 'menu'].map((icon, index) => (
-          <TouchableOpacity key={index} style={styles.navItem}>
-            <Ionicons name={icon} size={24} color={index === 0 ? '#4a90e2' : '#666'} />
-          </TouchableOpacity>
-        ))}
-      </LinearGradient>
     </SafeAreaView>
   );
 };
@@ -161,15 +158,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     padding: 16,
-    elevation: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
   },
   headerTitle: {
     fontSize: 24,
@@ -309,6 +306,18 @@ const styles = StyleSheet.create({
   },
   navItem: {
     alignItems: 'center',
+  },
+  headerLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  logo: {
+    width: 35, // Adjust size as needed
+    height: 35,
+    marginRight: 9,
+  },
+  iconButton: {
+    marginLeft: 16,
   },
 });
 

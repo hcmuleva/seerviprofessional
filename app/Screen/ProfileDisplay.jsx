@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -10,44 +10,44 @@ import {
   Dimensions,
   TextInput,
   FlatList,
-} from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+} from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import {
   Feather,
   FontAwesome,
   Ionicons,
   MaterialCommunityIcons,
-} from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import { useOne } from '@refinedev/core';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+} from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { useOne } from "@refinedev/core";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 
 const ProfileMobile = () => {
   const navigation = useNavigation();
   const [isEditing, setIsEditing] = useState(false);
-  const [activeTab, setActiveTab] = useState('Personal Info');
-    
+  const [activeTab, setActiveTab] = useState("Personal Info");
+
   const [userid, setUserid] = useState(null);
- const [personalInfo, setPersonalInfo] = useState({
-    name: 'Manish',
-    age: '24',
-    bio: 'I love coding and outdoor activities!',
+  const [personalInfo, setPersonalInfo] = useState({
+    name: "Manish",
+    age: "24",
+    bio: "I love coding and outdoor activities!",
   });
   const [education, setEducation] = useState({
-    degree: 'Bachelor of Science',
-    school: 'Tech University',
-    graduationYear: '2022',
+    degree: "Bachelor of Science",
+    school: "Tech University",
+    graduationYear: "2022",
   });
   useEffect(() => {
     const getUserId = async () => {
-      const storedUserId = await AsyncStorage.getItem('userid');
-      setUserid(storedUserId);  // Set the user ID state after retrieving it
+      const storedUserId = await AsyncStorage.getItem("userid");
+      setUserid(storedUserId); // Set the user ID state after retrieving it
     };
 
     getUserId();
-  }, []);  // Runs only once on mount
+  }, []); // Runs only once on mount
 
   const { data, isLoading, error } = useOne({
     resource: "users",
@@ -61,35 +61,41 @@ const ProfileMobile = () => {
   if (error) return <Text>Error: {error.message}</Text>;
 
   const user = data?.data;
-  // console.log("OBJJJJJJJJJJJJJJJJJJ",user);
-  
- 
-  const goldCards = [
+  const sections = [
     {
-      id: '1',
-      title: 'Tinder Gold',
-      features: ['See Who Likes You', 'Top Picks'],
+      key: "overview",
+      label: "Overview",
+      features: [
+        "Personal",
+        "Job",
+        "Contact",
+        "Family",
+        "Educational",
+        "LifeStyle",
+      ],
+    },
+    { key: "professional", label: "Professional", features: [""] },
+    {
+      key: "address",
+      label: "Address",
+      features: ["See Who Likes You", "Top Picks"],
     },
     {
-      id: '2',
-      title: 'Tinder Platinum',
-      features: ['Priority Likes', 'Message Before Match'],
+      key: "project",
+      label: "Project",
+      features: ["See Who Likes You", "Top Picks"],
     },
     {
-      id: '3',
-      title: 'Tinder Plus',
-      features: ['Unlimited Likes', 'Passport'],
+      key: "activities",
+      label: "Activities",
+      features: ["See Who Likes You", "Top Picks"],
+    },
+    {
+      key: "subscriptions",
+      label: "Subscription",
+      features: ["See Who Likes You", "Top Picks"],
     },
   ];
-  
-  const sections = [
-    { key: "overview", label: "Overview",features: ['Personal', 'Job', 'Contact','Family','Educational', 'LifeStyle'] },
-    { key: "professional", label: "Professional" ,features: ['']},
-    { key: "address", label: "Address", features: ['See Who Likes You', 'Top Picks']},
-    { key: "project", label: "Project" , features: ['See Who Likes You', 'Top Picks']},
-    { key: "activities", label: "Activities" , features: ['See Who Likes You', 'Top Picks'] },
-    { key: "subscriptions", label: "Subscription", features: ['See Who Likes You', 'Top Picks'] },
-  ]
 
   const renderGoldCard = ({ item }) => (
     <View style={styles.goldCard}>
@@ -98,7 +104,15 @@ const ProfileMobile = () => {
           <FontAwesome name="fire" size={20} color="#FFB800" />
           <Text style={styles.goldTitle}>{item.label}</Text>
         </View>
-        <TouchableOpacity style={styles.upgradeButton} onPress={() => (navigation.navigate('ProfileTabs',{userData : user, userid : userid}))}>
+        <TouchableOpacity
+          style={styles.upgradeButton}
+          onPress={() =>
+            navigation.navigate("ProfileTabs", {
+              userData: user,
+              userid: userid,
+            })
+          }
+        >
           <Text style={styles.upgradeButtonText}>See</Text>
         </TouchableOpacity>
       </View>
@@ -113,41 +127,45 @@ const ProfileMobile = () => {
               <Text style={styles.dashText}>—</Text>
               <FontAwesome name="check" size={16} color="#000" />
             </View>
-            <Text style={styles.seeAllText} onPress={() => {
-              
-           navigation.navigate('UserProfileOverview',{
-           userData : user,
-           itemKey: item,
-         })
-       }}>See</Text>
+            <Text
+              style={styles.seeAllText}
+              onPress={() => {
+                navigation.navigate("ProfessionalDetails", {
+                  userData: user,
+                  itemKey: item,
+                });
+              }}
+            >
+              See
+            </Text>
           </View>
         ))}
       </View>
-      
-      <TouchableOpacity style={styles.seeAllButton}>
-        
-        
 
-      </TouchableOpacity>
+      <TouchableOpacity style={styles.seeAllButton}></TouchableOpacity>
     </View>
   );
 
   const renderEditFields = () => {
     switch (activeTab) {
-      case 'Personal Info':
+      case "Personal Info":
         return (
           <View>
             <TextInput
               style={styles.input}
               value={personalInfo.name}
-              onChangeText={(text) => setPersonalInfo({ ...personalInfo, name: text })}
+              onChangeText={(text) =>
+                setPersonalInfo({ ...personalInfo, name: text })
+              }
               placeholder="Name"
               placeholderTextColor="#999"
             />
             <TextInput
               style={styles.input}
               value={personalInfo.age}
-              onChangeText={(text) => setPersonalInfo({ ...personalInfo, age: text })}
+              onChangeText={(text) =>
+                setPersonalInfo({ ...personalInfo, age: text })
+              }
               placeholder="Age"
               placeholderTextColor="#999"
               keyboardType="numeric"
@@ -155,34 +173,42 @@ const ProfileMobile = () => {
             <TextInput
               style={[styles.input, styles.multilineInput]}
               value={personalInfo.bio}
-              onChangeText={(text) => setPersonalInfo({ ...personalInfo, bio: text })}
+              onChangeText={(text) =>
+                setPersonalInfo({ ...personalInfo, bio: text })
+              }
               placeholder="Bio"
               placeholderTextColor="#999"
               multiline
             />
           </View>
         );
-      case 'Education':
+      case "Education":
         return (
           <View>
             <TextInput
               style={styles.input}
               value={education.degree}
-              onChangeText={(text) => setEducation({ ...education, degree: text })}
+              onChangeText={(text) =>
+                setEducation({ ...education, degree: text })
+              }
               placeholder="Degree"
               placeholderTextColor="#999"
             />
             <TextInput
               style={styles.input}
               value={education.school}
-              onChangeText={(text) => setEducation({ ...education, school: text })}
+              onChangeText={(text) =>
+                setEducation({ ...education, school: text })
+              }
               placeholder="School"
               placeholderTextColor="#999"
             />
             <TextInput
               style={styles.input}
               value={education.graduationYear}
-              onChangeText={(text) => setEducation({ ...education, graduationYear: text })}
+              onChangeText={(text) =>
+                setEducation({ ...education, graduationYear: text })
+              }
               placeholder="Graduation Year"
               placeholderTextColor="#999"
               keyboardType="numeric"
@@ -201,7 +227,6 @@ const ProfileMobile = () => {
         <Text></Text>
         <View style={styles.header}>
           <Image
-            // source={require('./assets/tinder-logo.png')}
             style={styles.logo}
             resizeMode="contain"
           />
@@ -219,7 +244,7 @@ const ProfileMobile = () => {
         <View style={styles.profileSection}>
           <View style={styles.profileImageContainer}>
             <LinearGradient
-              colors={['#FF406C', '#FF406C', 'transparent', 'transparent']}
+              colors={["#FF406C", "#FF406C", "transparent", "transparent"]}
               style={styles.progressRing}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
@@ -229,15 +254,24 @@ const ProfileMobile = () => {
                 style={styles.profileImage}
               />
             </LinearGradient>
-            <TouchableOpacity style={styles.editButton} onPress={() => setIsEditing(!isEditing)}>
-              <Feather name={isEditing ? "check" : "edit-2"} size={16} color="#fff" />
+            <TouchableOpacity
+              style={styles.editButton}
+              onPress={() => setIsEditing(!isEditing)}
+            >
+              <Feather
+                name={isEditing ? "check" : "edit-2"}
+                size={16}
+                color="#fff"
+              />
             </TouchableOpacity>
             <View style={styles.completionBadge}>
               <Text style={styles.completionText}>55% COMPLETE</Text>
             </View>
           </View>
           <View style={styles.nameContainer}>
-            <Text style={styles.nameText}>{personalInfo.name}, {personalInfo.age}</Text>
+            <Text style={styles.nameText}>
+              {personalInfo.name}, {personalInfo.age}
+            </Text>
             <MaterialCommunityIcons
               name="check-decagram"
               size={20}
@@ -250,14 +284,20 @@ const ProfileMobile = () => {
         {isEditing && (
           <View style={styles.editTabs}>
             <TouchableOpacity
-              style={[styles.tabButton, activeTab === 'Personal Info' && styles.activeTabButton]}
-              onPress={() => setActiveTab('Personal Info')}
+              style={[
+                styles.tabButton,
+                activeTab === "Personal Info" && styles.activeTabButton,
+              ]}
+              onPress={() => setActiveTab("Personal Info")}
             >
               <Text style={styles.tabButtonText}>Personal Info</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.tabButton, activeTab === 'Education' && styles.activeTabButton]}
-              onPress={() => setActiveTab('Education')}
+              style={[
+                styles.tabButton,
+                activeTab === "Education" && styles.activeTabButton,
+              ]}
+              onPress={() => setActiveTab("Education")}
             >
               <Text style={styles.tabButtonText}>Education</Text>
             </TouchableOpacity>
@@ -269,11 +309,14 @@ const ProfileMobile = () => {
 
         {/* Feature Cards */}
         <View style={styles.featureCards}>
-          <TouchableOpacity style={styles.featureCard}  onPress={
-             () => {navigation.navigate('AddJob', {
-              userid : userid
-             })}
-            }>
+          <TouchableOpacity
+            style={styles.featureCard}
+            onPress={() => {
+              navigation.navigate("AddJob", {
+                userid: userid,
+              });
+            }}
+          >
             <View style={styles.featureIconContainer}>
               <Ionicons name="briefcase-outline" size={20} color="#00B4FF" />
               <View style={styles.plusIcon}>
@@ -281,23 +324,21 @@ const ProfileMobile = () => {
               </View>
             </View>
             <Text style={styles.featureCount}>Add Job</Text>
-            
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.featureCard}>
             <View style={styles.featureIconContainer}>
-            <MaterialCommunityIcons
-  name="map-marker"
-  size={20}
-  color="#A020F0"
-/>
+              <MaterialCommunityIcons
+                name="map-marker"
+                size={20}
+                color="#A020F0"
+              />
 
               <View style={styles.plusIcon}>
                 <Feather name="plus" size={12} color="#fff" />
               </View>
             </View>
             <Text style={styles.featureCount}>Add Address</Text>
-           
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.featureCard}>
@@ -320,7 +361,6 @@ const ProfileMobile = () => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.goldCardsContainer}
         />
-
       </ScrollView>
 
       {/* Bottom Navigation */}
@@ -357,12 +397,12 @@ const ProfileMobile = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     padding: 12,
   },
   logo: {
@@ -370,30 +410,30 @@ const styles = StyleSheet.create({
     height: 32,
   },
   templeImage: {
-    width: '20%',
-    height: '20%',
+    width: "20%",
+    height: "20%",
   },
   headerRight: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 12,
   },
   iconButton: {
     padding: 4,
   },
   profileSection: {
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 16,
   },
   profileImageContainer: {
-    position: 'relative',
+    position: "relative",
     marginBottom: 12,
   },
   progressRing: {
     width: 140,
     height: 140,
     borderRadius: 70,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   profileImage: {
     width: 130,
@@ -401,44 +441,44 @@ const styles = StyleSheet.create({
     borderRadius: 65,
   },
   editButton: {
-    position: 'absolute',
+    position: "absolute",
     right: 0,
     top: 15,
-    backgroundColor: '#000',
+    backgroundColor: "#000",
     borderRadius: 15,
     width: 30,
     height: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     borderWidth: 2,
-    borderColor: '#FF406C',
+    borderColor: "#FF406C",
   },
   completionBadge: {
-    position: 'absolute',
+    position: "absolute",
     bottom: -8,
-    backgroundColor: '#FF406C',
+    backgroundColor: "#FF406C",
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
   },
   completionText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: "#fff",
+    fontWeight: "bold",
     fontSize: 12,
   },
   nameContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 6,
   },
   nameText: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
+    fontWeight: "bold",
+    color: "#fff",
   },
   editTabs: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    justifyContent: "space-around",
     marginTop: 16,
     marginBottom: 8,
   },
@@ -446,18 +486,18 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 20,
-    backgroundColor: '#1A1A1A',
+    backgroundColor: "#1A1A1A",
   },
   activeTabButton: {
-    backgroundColor: '#FF406C',
+    backgroundColor: "#FF406C",
   },
   tabButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: "#fff",
+    fontWeight: "bold",
   },
   input: {
-    backgroundColor: '#1A1A1A',
-    color: '#fff',
+    backgroundColor: "#1A1A1A",
+    color: "#fff",
     padding: 12,
     borderRadius: 8,
     marginBottom: 8,
@@ -465,157 +505,156 @@ const styles = StyleSheet.create({
   },
   multilineInput: {
     height: 100,
-    textAlignVertical: 'top',
+    textAlignVertical: "top",
   },
   featureCards: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     padding: 12,
     gap: 6,
   },
   featureCard: {
     flex: 1,
-    backgroundColor: '#1A1A1A',
+    backgroundColor: "#1A1A1A",
     borderRadius: 10,
     padding: 12,
-    alignItems: 'center',
+    alignItems: "center",
   },
   featureIconContainer: {
-    position: 'relative',
+    position: "relative",
     marginBottom: 6,
   },
   plusIcon: {
-    position: 'absolute',
+    position: "absolute",
     right: -6,
     top: -6,
-    backgroundColor: '#86878B',
+    backgroundColor: "#86878B",
     borderRadius: 10,
     width: 18,
     height: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   featureCount: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 12,
     marginBottom: 2,
   },
   featureAction: {
     fontSize: 10,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   goldCardsContainer: {
     paddingHorizontal: 12,
   },
   goldCard: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 14,
     padding: 12,
     marginRight: 12,
     width: width - 48,
   },
   goldHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 16,
   },
   goldTitleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 6,
   },
   goldTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   goldBadge: {
-    backgroundColor: '#FFB800',
+    backgroundColor: "#FFB800",
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,
   },
   goldBadgeText: {
-    color: '#000',
-    fontWeight: 'bold',
+    color: "#000",
+    fontWeight: "bold",
     fontSize: 10,
   },
   upgradeButton: {
-    backgroundColor: '#FFB800',
+    backgroundColor: "#FFB800",
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 16,
   },
   upgradeButtonText: {
-    color: '#000',
-    fontWeight: 'bold',
+    color: "#000",
+    fontWeight: "bold",
     fontSize: 14,
   },
   featuresTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 12,
   },
   featureTable: {
     marginBottom: 16,
   },
   featureRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 12,
   },
   featureText: {
     fontSize: 14,
   },
   featureColumns: {
-    flexDirection: 'row',
+    flexDirection: "row",
     width: 80,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   dashText: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   seeAllButton: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 12,
   },
   seeAllText: {
-    color: '#FFB800',
+    color: "#FFB800",
     fontSize: 14,
-    fontWeight: 'bold',
+    fontWeight: "bolds",
   },
   bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    justifyContent: "space-around",
     paddingVertical: 10,
     borderTopWidth: 1,
-    borderTopColor: '#1A1A1A',
+    borderTopColor: "#1A1A1A",
   },
   navItem: {
     padding: 6,
   },
   starContainer: {
-    position: 'relative',
+    position: "relative",
   },
   badge: {
-    position: 'absolute',
+    position: "absolute",
     top: -6,
     right: -6,
-    backgroundColor: '#FF406C',
+    backgroundColor: "#FF406C",
     borderRadius: 8,
     width: 16,
     height: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   badgeText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 10,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });
 
 export default ProfileMobile;
-

@@ -91,7 +91,7 @@ export default function Register() {
         await AsyncStorage.setItem(TOKEN_KEY, data.jwt);
         await AsyncStorage.setItem('userid', String(data?.user?.id));
         await AsyncStorage.setItem('userstatus', String(data?.user?.userstatus));
-        navigation.navigate('HomeScreen');
+        navigation.replace('MainApp');
       } else {
         const errorData = await res.json();
         Alert.alert('Registration Failed', errorData?.message || 'Registration failed');

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, Text, StyleSheet, PermissionsAndroid, Platform } from 'react-native';
-import Location from 'react-native-location'; // Import react-native-location
+//import Location from 'react-native-location'; // Import react-native-location
 import fetchGeoData from '../../utils/geoLocation';
 import ProfileTabs from '../../(tabs)/profiletabs';
 
@@ -47,20 +47,20 @@ const AddressComponent = ({ setValue }) => {
     }
 
     // Use react-native-location to get the current location
-    Location.getLatestLocation()
-      .then((location) => {
-        const lat = location.latitude.toString();
-        const lng = location.longitude.toString();
-        setLatitude(lat);
-        setLongitude(lng);
-        setValue('lat', lat);
-        setValue('lng', lng);
-        setLocationError(null);
-      })
-      .catch((error) => {
-        setLocationError('Error getting location');
-        console.error(error);
-      });
+    // Location.getLatestLocation()
+    //   .then((location) => {
+    //     const lat = location.latitude.toString();
+    //     const lng = location.longitude.toString();
+    //     setLatitude(lat);
+    //     setLongitude(lng);
+    //     setValue('lat', lat);
+    //     setValue('lng', lng);
+    //     setLocationError(null);
+    //   })
+    //   .catch((error) => {
+    //     setLocationError('Error getting location');
+    //     console.error(error);
+    //   });
   };
 
   return (

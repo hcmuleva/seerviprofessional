@@ -70,14 +70,8 @@ export const authProvider = {
         AsyncStorage.setItem("emeelanrole", String(data?.user?.emeelanrole));
         AsyncStorage.setItem("userstatus",String(data?.user?.userstatus))
         axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${data.jwt}`;
-        
-        return {
-          success: true,
-          redirectTo: "/user-dashboard",
-        };
-
-        return { success: true, redirectTo: "/user-dashboard" };
-   
+        navigation.replace('MainApp');
+       
       }
     } catch (error) {
       const errorObj = error?.response?.data?.message?.[0]?.messages?.[0];
