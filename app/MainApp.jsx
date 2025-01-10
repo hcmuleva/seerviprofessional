@@ -1,34 +1,67 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createStackNavigator } from "@react-navigation/stack";
 import { Ionicons } from "@expo/vector-icons";
-import { SafeAreaView, StyleSheet, View, Text } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import HomeScreen from "./Screen/HomeScreen";
 import ProfileMobile from "./Screen/ProfileDisplay";
+import AddJob from "./pages/myprofile/profession/JobForm";
+import UserProfileOverview from "./Screen/userprofiledetails";
+import ProfileTabs from "./(tabs)/profiletabs";
+import ProfessionDetails from "./Screen/ProfessionDetails";
+import EditJob from "./pages/myprofile/profession/EditJob";
 
 const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
 
-// Placeholder screens - replace these with your actual screens
+// Create stack navigators for each tab
+const HomeStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
+  </Stack.Navigator>
+);
+
+const JobStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen name="JobScreen" component={LocationScreen} options={{ headerShown: false }} />
+  </Stack.Navigator>
+);
+
+const HelpStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen name="HelpScreen" component={ApplicationsScreen} options={{ headerShown: false }} />
+  </Stack.Navigator>
+);
+
+// Profile stack with all profile-related screens
+const ProfileStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen name="ProfileScreen" component={ProfileMobile} options={{ headerShown: false }} />
+    <Stack.Screen name="AddJob" component={AddJob} options={{ headerShown: true }} />
+    <Stack.Screen name="ProfessionalDetails" component={ProfessionDetails} options={{ headerShown: false }} />
+    <Stack.Screen name="UserProfileOverview" component={UserProfileOverview} options={{ headerShown: false }} />
+    <Stack.Screen name="ProfileTabs" component={ProfileTabs} options={{ headerShown: false }} />
+    <Stack.Screen name="EditJob" component={EditJob} options={{ headerShown: true }} />
+  </Stack.Navigator>
+);
+
+// Placeholder screens
 const LocationScreen = () => (
-  <View style={styles.centeredScreen}>
+  <SafeAreaView style={styles.centeredScreen}>
     <Text>Location Screen</Text>
-  </View>
+  </SafeAreaView>
 );
 
 const ApplicationsScreen = () => (
-  <View style={styles.centeredScreen}>
+  <SafeAreaView style={styles.centeredScreen}>
     <Text>Applications Screen</Text>
-  </View>
-);
-
-const MenuScreen = () => (
-  <View style={styles.centeredScreen}>
-    <Text>Menu Screen</Text>
-  </View>
+  </SafeAreaView>
 );
 
 const MainApp = () => {
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaProvider>
       <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
@@ -38,26 +71,14 @@ const MainApp = () => {
               case "Home":
                 iconName = focused ? "home" : "home-outline";
                 break;
-              case "Location":
-                iconName = focused ? "location" : "location-outline";
+              case "Job":
+                iconName = focused ? "briefcase" : "briefcase-outline";
                 break;
-              case "Applications":
-                iconName = focused ? "documents" : "documents-outline";
-                break;
-              case "Menu":
-                iconName = focused ? "menu" : "menu-outline";
+              case "Help":
+                iconName = focused ? "help-circle" : "help-circle-outline";
                 break;
               case "Profile":
                 iconName = focused ? "person" : "person-outline";
-                break;
-              case "Donation":
-                iconName = focused ? "heart" : "heart-outline";
-                break;
-              case "Job": // Changed from 'Location'
-                iconName = focused ? "briefcase" : "briefcase-outline"; // Changed to job-related icon
-                break;
-              case "Help": // Changed from 'Applications'
-                iconName = focused ? "help-circle" : "help-circle-outline"; // Changed to help-related icon
                 break;
               default:
                 iconName = "help-outline";
@@ -75,20 +96,16 @@ const MainApp = () => {
           headerShown: false,
         })}
       >
-        <Tab.Screen name="Home" component={HomeScreen} />
-        <Tab.Screen name="Job" component={LocationScreen} />
-        <Tab.Screen name="Help" component={ApplicationsScreen} />
-        <Tab.Screen name="Profile" component={ProfileMobile} />
+        <Tab.Screen name="Home" component={HomeStack} />
+        <Tab.Screen name="Job" component={JobStack} />
+        <Tab.Screen name="Help" component={HelpStack} />
+        <Tab.Screen name="Profile" component={ProfileStack} />
       </Tab.Navigator>
-    </SafeAreaView>
+    </SafeAreaProvider>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "white", // Set the background color to your preference
-  },
   centeredScreen: {
     flex: 1,
     justifyContent: "center",
@@ -97,3 +114,4 @@ const styles = StyleSheet.create({
 });
 
 export default MainApp;
+

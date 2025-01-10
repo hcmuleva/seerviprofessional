@@ -7,16 +7,21 @@ import {
   StyleSheet,
   Alert,
   SafeAreaView,
+  KeyboardAvoidingView,
   Platform,
+  ScrollView,
 } from 'react-native';
 import { useUpdate } from "@refinedev/core";
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useNavigation } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const EditJob = ({route}) => {
+const EditJob = ({ route }) => {
+  const navigation = useNavigation();
   const { jobid, job } = route.params;
   const { mutate: updateJob } = useUpdate();
+  const insets = useSafeAreaInsets();
 
-  // Initialize all state variables
   const [post, setPost] = useState(job?.post || '');
   const [organization, setOrganization] = useState(job?.organization || '');
   const [experience, setExperience] = useState(job?.experience || '');
@@ -24,42 +29,27 @@ const EditJob = ({route}) => {
   const [toDate, setToDate] = useState(job?.to ? new Date(job.to) : new Date());
   const [isLoading, setIsLoading] = useState(false);
 
-  // Date picker states
   const [showFromPicker, setShowFromPicker] = useState(false);
   const [showToPicker, setShowToPicker] = useState(false);
 
-  const formatDate = (date) => {
-    return date.toISOString().split('T')[0];
-  };
+  const formatDate = (date) => date.toISOString().split('T')[0];
 
   const showSuccessMessage = () => {
-    Alert.alert(
-      'Success',
-      'Job post has been successfully updated.',
-      [{ text: 'OK' }]
-    );
+    Alert.alert('Success', 'Job post has been successfully updated.', [{ text: 'OK' }]);
   };
 
   const showErrorMessage = (message) => {
-    Alert.alert(
-      'Error',
-      message || 'Failed to update job details.',
-      [{ text: 'OK' }]
-    );
+    Alert.alert('Error', message || 'Failed to update job details.', [{ text: 'OK' }]);
   };
 
   const onFromDateChange = (event, selectedDate) => {
     setShowFromPicker(false);
-    if (selectedDate) {
-      setFromDate(selectedDate);
-    }
+    if (selectedDate) setFromDate(selectedDate);
   };
 
   const onToDateChange = (event, selectedDate) => {
     setShowToPicker(false);
-    if (selectedDate) {
-      setToDate(selectedDate);
-    }
+    if (selectedDate) setToDate(selectedDate);
   };
 
   const validateForm = () => {
@@ -74,10 +64,7 @@ const EditJob = ({route}) => {
     if (!validateForm()) return;
 
     setIsLoading(true);
-
     try {
-      console.log("Attempting to update job with ID:", jobid);
-      
       const updateData = {
         resource: "jobs",
         id: jobid,
@@ -90,23 +77,16 @@ const EditJob = ({route}) => {
         },
       };
 
-      console.log("Update data:", updateData);
-
-      await updateJob(
-        updateData,
-        {
-          onSuccess: (response) => {
-            console.log("Update success:", response);
-            showSuccessMessage();
-          },
-          onError: (error) => {
-            console.error("Update error details:", error);
-            showErrorMessage('Failed to update job details: ' + (error?.message || ''));
-          },
-        }
-      );
+      await updateJob(updateData, {
+        onSuccess: () => {
+          showSuccessMessage();
+          navigation.goBack();
+        },
+        onError: (error) => {
+          showErrorMessage('Failed to update job details: ' + (error?.message || ''));
+        },
+      });
     } catch (error) {
-      console.error("Error occurred:", error);
       showErrorMessage('There was an issue updating the job details: ' + error.message);
     } finally {
       setIsLoading(false);
@@ -114,115 +94,159 @@ const EditJob = ({route}) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.card}>
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Organization</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter organization name"
-            value={organization}
-            onChangeText={setOrganization}
-          />
-        </View>
-
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Post</Text>
-          <TextInput
-            style={[styles.input, styles.textArea]}
-            placeholder="Enter job post"
-            value={post}
-            onChangeText={setPost}
-            multiline={true}
-            numberOfLines={3}
-          />
-        </View>
-
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Experience</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter required experience"
-            value={experience}
-            onChangeText={setExperience}
-          />
-        </View>
-
-        <View style={styles.dateContainer}>
-          <View style={[styles.formGroup, styles.dateField]}>
-            <Text style={styles.label}>From Date</Text>
-            <TouchableOpacity 
-              style={styles.dateButton}
-              onPress={() => setShowFromPicker(true)}
-            >
-              <Text>{formatDate(fromDate)}</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={[styles.formGroup, styles.dateField]}>
-            <Text style={styles.label}>To Date</Text>
-            <TouchableOpacity 
-              style={styles.dateButton}
-              onPress={() => setShowToPicker(true)}
-            >
-              <Text>{formatDate(toDate)}</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {showFromPicker && (
-          <DateTimePicker
-            value={fromDate}
-            mode="date"
-            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-            onChange={onFromDateChange}
-          />
-        )}
-
-        {showToPicker && (
-          <DateTimePicker
-            value={toDate}
-            mode="date"
-            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-            onChange={onToDateChange}
-          />
-        )}
-
-        <TouchableOpacity
-          style={[
-            styles.button,
-            isLoading && styles.buttonDisabled
-          ]}
-          onPress={handleSubmit}
-          disabled={isLoading}
+    <SafeAreaView style={[styles.safeArea, { paddingTop: insets.top }]}>
+      <View style={[styles.header, { height: 44 + insets.top, paddingTop: insets.top }]}>
+        <TouchableOpacity 
+          onPress={() => navigation.goBack()}
+          style={[styles.backButton, { top: insets.top + 10 }]}
         >
-          <Text style={styles.buttonText}>
-            {isLoading ? 'Updating...' : 'Update Job Post'}
-          </Text>
+          <Text style={styles.backButtonText}>ProfileTabs</Text>
         </TouchableOpacity>
+        <Text style={[styles.headerTitle, { marginTop: insets.top }]}>EditJob</Text>
       </View>
+      
+      <KeyboardAvoidingView
+        style={styles.keyboardAvoid}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <ScrollView
+          contentContainerStyle={[styles.scrollContainer, { paddingBottom: insets.bottom + 16 }]}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.card}>
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>Organization</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter organization name"
+                value={organization}
+                onChangeText={setOrganization}
+                placeholderTextColor="#999"
+              />
+            </View>
+
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>Post</Text>
+              <TextInput
+                style={[styles.input, styles.textArea]}
+                placeholder="Enter job post"
+                value={post}
+                onChangeText={setPost}
+                multiline
+                placeholderTextColor="#999"
+              />
+            </View>
+
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>Experience</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter required experience"
+                value={experience}
+                onChangeText={setExperience}
+                placeholderTextColor="#999"
+              />
+            </View>
+
+            <View style={styles.dateContainer}>
+              <View style={[styles.formGroup, styles.dateField]}>
+                <Text style={styles.label}>From Date</Text>
+                <TouchableOpacity
+                  style={styles.dateButton}
+                  onPress={() => setShowFromPicker(true)}
+                >
+                  <Text style={styles.dateButtonText}>{formatDate(fromDate)}</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={[styles.formGroup, styles.dateField]}>
+                <Text style={styles.label}>To Date</Text>
+                <TouchableOpacity
+                  style={styles.dateButton}
+                  onPress={() => setShowToPicker(true)}
+                >
+                  <Text style={styles.dateButtonText}>{formatDate(toDate)}</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            {showFromPicker && (
+              <DateTimePicker
+                value={fromDate}
+                mode="date"
+                display="spinner"
+                onChange={onFromDateChange}
+              />
+            )}
+
+            {showToPicker && (
+              <DateTimePicker
+                value={toDate}
+                mode="date"
+                display="spinner"
+                onChange={onToDateChange}
+              />
+            )}
+
+            <TouchableOpacity
+              style={[styles.button, isLoading && styles.buttonDisabled]}
+              onPress={handleSubmit}
+              disabled={isLoading}
+            >
+              <Text style={styles.buttonText}>
+                {isLoading ? 'Updating...' : 'Update Job Post'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
     backgroundColor: '#f5f5f5',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    backgroundColor: '#f5f5f5',
+    borderBottomWidth: 0,
+  },
+  backButton: {
+    position: 'absolute',
+    left: 16,
+    zIndex: 1,
+  },
+  backButtonText: {
+    color: '#007AFF',
+    fontSize: 17,
+  },
+  headerTitle: {
+    flex: 1,
+    textAlign: 'center',
+    fontSize: 17,
+    fontWeight: '600',
+    color: '#000',
+  },
+  keyboardAvoid: {
+    flex: 1,
+  },
+  scrollContainer: {
+    flexGrow: 1,
     padding: 16,
   },
   card: {
     backgroundColor: 'white',
-    borderRadius: 8,
+    borderRadius: 10,
     padding: 16,
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   formGroup: {
     marginBottom: 16,
@@ -236,14 +260,15 @@ const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
     borderColor: '#ddd',
-    borderRadius: 4,
+    borderRadius: 8,
     padding: 12,
     fontSize: 16,
     backgroundColor: '#fff',
-    textAlignVertical: 'top',
+    color: '#000',
   },
   textArea: {
     minHeight: 100,
+    textAlignVertical: 'top',
   },
   dateContainer: {
     flexDirection: 'row',
@@ -255,16 +280,20 @@ const styles = StyleSheet.create({
   dateButton: {
     borderWidth: 1,
     borderColor: '#ddd',
-    borderRadius: 4,
+    borderRadius: 8,
     padding: 12,
     backgroundColor: '#fff',
   },
+  dateButtonText: {
+    fontSize: 16,
+    color: '#000',
+  },
   button: {
-    backgroundColor: '#1890ff',
-    padding: 14,
-    borderRadius: 4,
+    backgroundColor: '#007AFF',
+    padding: 16,
+    borderRadius: 8,
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: 16,
   },
   buttonDisabled: {
     backgroundColor: '#ccc',
@@ -277,3 +306,4 @@ const styles = StyleSheet.create({
 });
 
 export default EditJob;
+

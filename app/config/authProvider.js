@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthHelper } from "@refinedev/strapi-v4";
 import axios from "axios";
+import { NavigationActions } from '@react-navigation/native';
 
 const API_URL = process.env.VITE_SERVER_URL;
 const TOKEN_KEY = process.env.VITE_TOKEN_KEY;
@@ -8,6 +9,11 @@ const USER_ROLE = process.env.VITE_USERROLE;
 const USER_STATUS = process.env.VITE_USERSTATUS;
 export const axiosInstance = axios.create();
 const strapiAuthHelper = AuthHelper(API_URL + "/api");
+
+
+const navigateToMainApp = () => {
+  NavigationActions.navigate('MainApp');
+};
 
 // Add request interceptor to automatically add token
 axiosInstance.interceptors.request.use(
@@ -70,7 +76,7 @@ export const authProvider = {
         AsyncStorage.setItem("emeelanrole", String(data?.user?.emeelanrole));
         AsyncStorage.setItem("userstatus",String(data?.user?.userstatus))
         axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${data.jwt}`;
-        navigation.replace('MainApp');
+        navigation.replace(navigateToMainApp());
        
       }
     } catch (error) {

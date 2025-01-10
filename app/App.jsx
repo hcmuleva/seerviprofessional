@@ -12,7 +12,8 @@ import Register from "./register/register";
 import MainApp from "./MainApp";
 import AddJob from "./pages/myprofile/profession/JobForm";
 import UserProfileOverview from "./Screen/userprofiledetails";
-import ProfileTabs from "./(tabs)/profiletabs";
+import ProfileTabs from "./(tabs)/profiletabs"
+import EditJob from "./pages/myprofile/profession/EditJob";
 
 // Import providers and config
 import { authProvider } from "./config/authProvider";
@@ -80,6 +81,7 @@ export default function App() {
               component={ProfileTabs} 
               options={{ headerShown: false }}
             />
+
           </Stack.Navigator>
         </PageViewProvider>
       </Refine>
