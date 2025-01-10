@@ -17,19 +17,44 @@ async (config) => {
     config.headers["Authorization"] = `Bearer ${token}`;
   }
   return config;
+},
+(error) => {
+  return Promise.reject(error);
 });
 
 // Add response interceptor to handle 401 errors
 axiosInstance.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
+    // Only handle authentication-related errors
     if (error.response?.status === 401) {
-      // AsyncStorage.clear();
+      // Check if the error is from an authentication endpoint
+      const isAuthEndpoint = error.config.url.includes('/auth/');
+      
+      // Check if it's a token validation error
+      const isTokenError = error.response?.data?.message?.includes('Invalid token') ||
+                          error.response?.data?.message?.includes('Token expired');
+      
+      // Only clear storage if it's actually an authentication issue
+      if (isAuthEndpoint || isTokenError) {
+        await AsyncStorage.clear();
+        // Optionally redirect to login
+        window.location.href = '/login';
+      }
     }
+    
     return Promise.reject(error);
   }
 );
 
+export const isAuthenticationError = (error) => {
+  return (
+    error.response?.status === 401 &&
+    (error.response?.data?.message?.includes('Invalid token') ||
+     error.response?.data?.message?.includes('Token expired') ||
+     error.config.url.includes('/auth/'))
+  );
+};
 
 export const authProvider = {
   login: async ({
@@ -147,7 +172,7 @@ export const authProvider = {
     };
   },
   logout: async () => {
-    // AsyncStorage.clear();
+    AsyncStorage.clear();
     axiosInstance.defaults.headers.common["Authorization"] = null;
     return {
       success: true,
@@ -159,7 +184,7 @@ export const authProvider = {
     const status = error.response?.status;
     
     if (status === 401 || status === 403) {
-      // AsyncStorage.clear();
+      AsyncStorage.clear();
       return {
         logout: true,
         redirectTo: "/login",
@@ -197,7 +222,7 @@ export const authProvider = {
         };
       }
     } catch (error) {
-      // AsyncStorage.clear();
+      AsyncStorage.clear();
       return {
         authenticated: false,
         error: {

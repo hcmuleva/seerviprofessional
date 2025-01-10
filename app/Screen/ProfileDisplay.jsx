@@ -98,7 +98,7 @@ const ProfileMobile = () => {
           <FontAwesome name="fire" size={20} color="#FFB800" />
           <Text style={styles.goldTitle}>{item.label}</Text>
         </View>
-        <TouchableOpacity style={styles.upgradeButton} onPress={() => (navigation.navigate('ProfileTabs',{userData : user}))}>
+        <TouchableOpacity style={styles.upgradeButton} onPress={() => (navigation.navigate('ProfileTabs',{userData : user, userid : userid}))}>
           <Text style={styles.upgradeButtonText}>See</Text>
         </TouchableOpacity>
       </View>
@@ -198,6 +198,7 @@ const ProfileMobile = () => {
     <SafeAreaView style={styles.container}>
       <ScrollView>
         {/* Header */}
+        <Text></Text>
         <View style={styles.header}>
           <Image
             // source={require('./assets/tinder-logo.png')}
