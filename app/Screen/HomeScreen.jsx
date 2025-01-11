@@ -60,12 +60,12 @@ const HomeScreen = ({ navigation }) => {
           <Text style={styles.headerTitle}>Seervi Samaj</Text>
         </View>
         <View style={styles.headerIcons}>
-          <TouchableOpacity style={styles.iconButton}>
+          {/* <TouchableOpacity style={styles.iconButton}>
             <Ionicons name="notifications-outline" size={24} color="#fff" />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <TouchableOpacity
             style={styles.iconButton}
-            onPress={() => navigation.navigate("ProfileScreen")} // Navigate to the ProfileScreen
+            onPress={() => navigation.navigate("Profile")} // Navigate to the ProfileScreen
           >
             <Ionicons name="person-outline" size={24} color="#fff" />
           </TouchableOpacity>
