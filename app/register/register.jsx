@@ -22,9 +22,16 @@ const TOKEN_KEY = process.env.VITE_TOKEN_KEY;
 export default function Register() {
   const gotra = {
     "Gotra": [
-      { "HName": "choyal" },
-      { "HName": "kag" },
-      { "EName": "Kartik", "HName": "septa" },
+      {
+        "HName": "choyal"
+      },
+      {
+        "HName": "kag"
+      },
+      {
+        "EName": "Kartik",
+        "HName": "septa"
+      },
     ]
   };
 
@@ -40,7 +47,7 @@ export default function Register() {
     gotra: '',
     mobile: '',
   });
-  
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -60,6 +67,37 @@ export default function Register() {
       handleInputChange('dob', selectedDate);
     }
   };
+
+  // iOS-specific picker modal component
+  const PickerModal = ({ visible, onClose, selectedValue, onValueChange, items, title }) => (
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={visible}
+      onRequestClose={onClose}
+    >
+      <View style={styles.modalContainer}>
+        <View style={styles.pickerModalContent}>
+          <View style={styles.pickerHeader}>
+            <TouchableOpacity onPress={onClose}>
+              <Text style={styles.cancelButton}>Cancel</Text>
+            </TouchableOpacity>
+            <Text style={styles.pickerTitle}>{title}</Text>
+            <TouchableOpacity onPress={onClose}>
+              <Text style={styles.doneButton}>Done</Text>
+            </TouchableOpacity>
+          </View>
+          <Picker
+            selectedValue={selectedValue}
+            onValueChange={onValueChange}
+            style={styles.iosPicker}
+          >
+            {items}
+          </Picker>
+        </View>
+      </View>
+    </Modal>
+  );
 
   const handleRegister = async () => {
     if (formData.password !== formData.confirmPassword) {
@@ -85,7 +123,7 @@ export default function Register() {
         await AsyncStorage.setItem(TOKEN_KEY, data.jwt);
         await AsyncStorage.setItem('userid', String(data?.user?.id));
         await AsyncStorage.setItem('userstatus', String(data?.user?.userstatus));
-        navigation.navigate('Dashboard');
+        navigation.replace('MainApp');
       } else {
         const errorData = await res.json();
         Alert.alert('Registration Failed', errorData?.message || 'Registration failed');
@@ -94,33 +132,6 @@ export default function Register() {
       Alert.alert('Error', 'Something went wrong. Please try again.');
     }
   };
-
-  const renderPicker = (visible, setVisible, selectedValue, onValueChange, items, placeholder) => (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={visible}
-      onRequestClose={() => setVisible(false)}
-    >
-      <View style={styles.modalView}>
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={selectedValue}
-            onValueChange={onValueChange}
-            style={styles.picker}
-          >
-            <Picker.Item label={placeholder} value="" />
-            {items.map((item, index) => (
-              <Picker.Item key={index} label={item.label} value={item.value} />
-            ))}
-          </Picker>
-        </View>
-        <TouchableOpacity style={styles.doneButton} onPress={() => setVisible(false)}>
-          <Text style={styles.doneButtonText}>Done</Text>
-        </TouchableOpacity>
-      </View>
-    </Modal>
-  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -131,34 +142,65 @@ export default function Register() {
         </View>
 
         <View style={styles.formContainer}>
-          {/* First Name Input */}
+          <TextInput
+            style={styles.input}
+            placeholder="First Name"
+            value={formData.firstname}
+            onChangeText={(text) => handleInputChange('firstname', text)}
+            placeholderTextColor="#999"
+          />
+
+          <TextInput
+            style={styles.input}
+            placeholder="Father/Husband Name"
+            value={formData.lastname}
+            onChangeText={(text) => handleInputChange('lastname', text)}
+            placeholderTextColor="#999"
+          />
+
+          <TextInput
+            style={styles.input}
+            placeholder="Email Address"
+            value={formData.email}
+            onChangeText={(text) => handleInputChange('email', text)}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            placeholderTextColor="#999"
+          />
+
           <View style={styles.inputContainer}>
             <TextInput
-              style={styles.input}
-              placeholder="First Name"
-              value={formData.firstname}
-              onChangeText={(text) => handleInputChange('firstname', text)}
+              style={styles.passwordInput}
+              placeholder="Password"
+              value={formData.password}
+              onChangeText={(text) => handleInputChange('password', text)}
+              secureTextEntry={!showPassword}
               placeholderTextColor="#999"
             />
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+              <Text style={styles.showHideText}>{showPassword ? 'Hide' : 'Show'}</Text>
+            </TouchableOpacity>
           </View>
 
-          {/* Last Name Input */}
           <View style={styles.inputContainer}>
             <TextInput
-              style={styles.input}
-              placeholder="Father/Husband Name"
-              value={formData.lastname}
-              onChangeText={(text) => handleInputChange('lastname', text)}
+              style={styles.passwordInput}
+              placeholder="Confirm Password"
+              value={formData.confirmPassword}
+              onChangeText={(text) => handleInputChange('confirmPassword', text)}
+              secureTextEntry={!showConfirmPassword}
               placeholderTextColor="#999"
             />
+            <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
+              <Text style={styles.showHideText}>{showConfirmPassword ? 'Hide' : 'Show'}</Text>
+            </TouchableOpacity>
           </View>
 
-          {/* Date of Birth */}
           <TouchableOpacity
-            style={styles.inputContainer}
+            style={styles.selectButton}
             onPress={() => setShowDatePicker(true)}
           >
-            <Text style={styles.dateText}>
+            <Text style={styles.selectButtonText}>
               {formData.dob.toLocaleDateString()}
             </Text>
           </TouchableOpacity>
@@ -173,60 +215,33 @@ export default function Register() {
             />
           )}
 
-          {/* Gender Selection */}
           <TouchableOpacity
-            style={styles.inputContainer}
+            style={styles.selectButton}
             onPress={() => setShowGenderPicker(true)}
           >
-            <Text style={styles.pickerText}>
+            <Text style={styles.selectButtonText}>
               {formData.sex || 'Select Gender'}
             </Text>
           </TouchableOpacity>
 
-          {renderPicker(
-            showGenderPicker,
-            setShowGenderPicker,
-            formData.sex,
-            (value) => handleInputChange('sex', value),
-            [
-              { label: 'Male', value: 'Male' },
-              { label: 'Female', value: 'Female' },
-            ],
-            'Select Gender'
-          )}
-
-          {/* Gotra Selection */}
           <TouchableOpacity
-            style={styles.inputContainer}
+            style={styles.selectButton}
             onPress={() => setShowGotraPicker(true)}
           >
-            <Text style={styles.pickerText}>
+            <Text style={styles.selectButtonText}>
               {formData.gotra || 'Select Gotra'}
             </Text>
           </TouchableOpacity>
 
-          {renderPicker(
-            showGotraPicker,
-            setShowGotraPicker,
-            formData.gotra,
-            (value) => handleInputChange('gotra', value),
-            gotra.Gotra.map(g => ({ label: `${g.EName || ''} (${g.HName})`, value: g.EName || g.HName })),
-            'Select Gotra'
-          )}
+          <TextInput
+            style={styles.input}
+            placeholder="Mobile Number"
+            value={formData.mobile}
+            onChangeText={(text) => handleInputChange('mobile', text)}
+            keyboardType="phone-pad"
+            placeholderTextColor="#999"
+          />
 
-          {/* Mobile Input */}
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.input}
-              placeholder="Mobile Number"
-              value={formData.mobile}
-              onChangeText={(text) => handleInputChange('mobile', text)}
-              keyboardType="phone-pad"
-              placeholderTextColor="#999"
-            />
-          </View>
-
-          {/* Buttons */}
           <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
             <Text style={styles.buttonText}>Register</Text>
           </TouchableOpacity>
@@ -238,6 +253,43 @@ export default function Register() {
             <Text style={styles.loginButtonText}>Back to Login</Text>
           </TouchableOpacity>
         </View>
+
+        <PickerModal
+          visible={showGenderPicker}
+          onClose={() => setShowGenderPicker(false)}
+          selectedValue={formData.sex}
+          onValueChange={(value) => {
+            handleInputChange('sex', value);
+            setShowGenderPicker(false);
+          }}
+          title="Select Gender"
+          items={[
+            <Picker.Item key="empty" label="Select Gender" value="" />,
+            <Picker.Item key="male" label="Male" value="Male" />,
+            <Picker.Item key="female" label="Female" value="Female" />
+          ]}
+        />
+
+        <PickerModal
+          visible={showGotraPicker}
+          onClose={() => setShowGotraPicker(false)}
+          selectedValue={formData.gotra}
+          onValueChange={(value) => {
+            handleInputChange('gotra', value);
+            setShowGotraPicker(false);
+          }}
+          title="Select Gotra"
+          items={[
+            <Picker.Item key="empty" label="Select Gotra" value="" />,
+            ...gotra.Gotra.map((g) => (
+              <Picker.Item 
+                key={g.EName} 
+                label={`${g.EName || ''} (${g.HName})`} 
+                value={g.EName || g.HName}
+              />
+            ))
+          ]}
+        />
       </ScrollView>
     </SafeAreaView>
   );
@@ -279,6 +331,17 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
+  input: {
+    height: 50,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    marginBottom: 15,
+    paddingHorizontal: 15,
+    backgroundColor: '#fff',
+    fontSize: 16,
+    color: '#333',
+  },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -286,33 +349,67 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     borderRadius: 8,
     marginBottom: 15,
-    paddingHorizontal: 10,
+    paddingHorizontal: 15,
     backgroundColor: '#fff',
-    height: 50,
   },
-  input: {
+  passwordInput: {
     flex: 1,
     height: 50,
-    color: '#333',
     fontSize: 16,
-    textAlignVertical: 'center',
-    paddingVertical: 0,
+    color: '#333',
   },
-  pickerText: {
-    flex: 1,
-    height: 50,
-    textAlignVertical: 'center',
+  showHideText: {
+    color: '#3498db',
     fontSize: 16,
-    color: '#333',
-    paddingVertical: 0,
   },
-  dateText: {
-    flex: 1,
+  selectButton: {
     height: 50,
-    textAlignVertical: 'center',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    marginBottom: 15,
+    paddingHorizontal: 15,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+  },
+  selectButtonText: {
     fontSize: 16,
     color: '#333',
-    paddingVertical: 0,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  pickerModalContent: {
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
+  },
+  pickerHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
+  pickerTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#333',
+  },
+  cancelButton: {
+    color: '#666',
+    fontSize: 16,
+  },
+  doneButton: {
+    color: '#3498db',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  iosPicker: {
+    height: 215,
   },
   registerButton: {
     backgroundColor: '#3498db',
@@ -342,32 +439,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   datePicker: {
-    marginTop: 10,
+    width: '100%',
     backgroundColor: 'white',
-  },
-  modalView: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  pickerContainer: {
-    backgroundColor: 'white',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    paddingTop: 20,
-  },
-  picker: {
-    height: 200,
-  },
-  doneButton: {
-    backgroundColor: '#3498db',
-    padding: 15,
-    alignItems: 'center',
-  },
-  doneButtonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
+  }
 });
-
