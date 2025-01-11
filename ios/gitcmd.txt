@@ -1,0 +1,7 @@
+# It could be one of these variations depending on your actual repository structure:
+git checkout origin/kartik -- Testrepo/app/images/
+# or
+git checkout origin/kartik -- app/images/ -- these will working
+# or
+git checkout origin/kartik -- images/
+If i am in same branch the i can do like that 
