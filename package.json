@@ -32,6 +32,7 @@
     "@refinenative/expo-router": "^0.1.12",
     "@refinenative/react-native-paper": "^0.1.12",
     "@tanstack/react-query": "^5.62.11",
+    "axios": "^1.7.9",
     "easyapp": "file:",
     "expo": "~52.0.23",
     "expo-blur": "~14.0.1",
