@@ -28,16 +28,6 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const { mutate: login, isLoading } = useLogin();
 
-  // useEffect(() => {
-  //   const checkToken = async () => {
-  //     const token = await AsyncStorage.getItem(TOKEN_KEY);
-  //     if (token) {
-  //       navigation.navigate('HomeScreen');
-  //     }
-  //   };
-  //   checkToken();
-  // }, []);
-
   useEffect(() => {
     if (AsyncStorage.getItem("jwt-token")) navigation.replace('MainApp');
   }, []);
@@ -54,7 +44,7 @@ export default function Login() {
        
       if (res.ok) {
         const data = await res.json();
-        console.log("INSIDE LOGIN",data);
+        // console.log("INSIDE LOGIN",data);
         
         await AsyncStorage.setItem(TOKEN_KEY, data.jwt);
         await AsyncStorage.setItem('userid', String(data?.user?.id));

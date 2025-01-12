@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
   },
   roleBadge: {
     position: 'absolute',
-    top: 10,
+    top: 70,
     left: 10,
     paddingHorizontal: 10,
     paddingVertical: 5,

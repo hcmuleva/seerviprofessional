@@ -49,7 +49,7 @@ export default function App() {
             <Stack.Screen 
               name="Register" 
               component={Register} 
-              options={{ headerShown: false }}
+              options={{ headerShown: true }}
             />
             
             {/* Main app with bottom tabs */}

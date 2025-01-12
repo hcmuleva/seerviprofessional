@@ -22,13 +22,16 @@ const HomeScreen = ({ navigation }) => {
       title: 'Matrimonial',
       icon: 'heart-multiple',
       description: 'Find your life partner',
-      color: ['#FF6B6B', '#FF8E8E']
+      color: ['#FF6B6B', '#FF8E8E'],
+      navigationTarget: 'Matrimonial'
     },
     {
       title: 'Community Members',
       icon: 'account-group',
       description: 'Connect with members',
-      color: ['#4ECDC4', '#45B7AF']
+      color: ['#4ECDC4', '#45B7AF'],
+      navigationTarget: 'CommunityMembers'
+
     },
     {
       title: 'Business Network',
@@ -41,7 +44,9 @@ const HomeScreen = ({ navigation }) => {
       title: 'Temple Donation',
       icon: 'gift-outline',
       description: 'Support our temples',
-      color: ['#FFB75E', '#ED8F03'],      // navigationTarget: 'DonationScreen'
+      color: ['#FFB75E', '#ED8F03'],   
+      navigationTarget: 'DonationScreen'
+      // navigationTarget: 'DonationScreen'
     }
   ];
 
