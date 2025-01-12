@@ -8,7 +8,6 @@ import {
   SafeAreaView,
   ScrollView,
   Platform,
-  ScrollView,
 } from 'react-native';
 import { useUpdate } from "@refinedev/core";
 import { Picker } from '@react-native-picker/picker';
