@@ -30,18 +30,18 @@ const AddJob = ({ route }) => {
   const { control, handleSubmit, setValue } = useForm();
   const { mutate: createAddress } = useCreate();
   const { mutate: createJobs } = useCreate();
-  const { userid, job, setIsModalVisible } = route.params;
+  const { userid, job} = route.params;
 
-  const [showFromDate, setShowFromDate] = useState(false);
-  const [showToDate, setShowToDate] = useState(false);
   const [fromDate, setFromDate] = useState(new Date());
   const [toDate, setToDate] = useState(new Date());
+  const [showFromDate, setShowFromDate] = useState(false);
+  const [showToDate, setShowToDate] = useState(false);
 
   const onFromDateChange = (event, selectedDate) => {
     setShowFromDate(false);
     if (selectedDate) {
       setFromDate(selectedDate);
-      setValue('from', selectedDate.toISOString());
+      setValue('from', selectedDate.toISOString().split('T')[0]);
     }
   };
 
@@ -49,71 +49,52 @@ const AddJob = ({ route }) => {
     setShowToDate(false);
     if (selectedDate) {
       setToDate(selectedDate);
-      setValue('to', selectedDate.toISOString());
+      setValue('to', selectedDate.toISOString().split('T')[0]);
     }
   };
 
   const onSubmit = (values) => {
-    values['user'] = userid;
-    values['addresstype'] = 'JOB';
-    console.log("Submitting values:", values);
-    // Save job and address
-    createAddress(
+    const payload = {
+      user: userid,
+      orgtype: values.orgtype,
+      organization: values.organization,
+      job_type: values.job_type,
+      post: values.post,
+      experience: values.experience,
+      skills: values.skills,
+      from: values.from,
+      to: values.to,
+      annual_compensation: values.annual_compensation ? Number(values.annual_compensation) : null,
+      employees_count: values.employees_count ? Number(values.employees_count) : null,
+    };
+
+    createJobs(
       {
-        resource: 'addresses',
-        values: {
-          addresstype: values.addresstype,
-          district: values.district,
-          housename: values.housename,
-          landmark: values.landmark,
-          lat: values.lat,
-          lng: values.lng,
-          pincode: values.pincode,
-          state: values.state,
-          tehsil: values.tehsil,
-          village: values.village,
-        },
+        resource: 'jobs',
+        values: payload,
       },
       {
-        onSuccess: (data) => {
-          const payload = {
-            address: data.data.data.id,
-            user: userid,
-            type: values.type,
-            organization: values.organization,
-            job_type: values.jobtype,
-            post: values.post,
-            experience: values.experience,
-            skills: values.skills,
-            from: values.from,
-            to: values.to,
-          };
-          // Create Job after saving address
-          createJobs(
-            {
-              resource: 'jobs',
-              values: payload,
-            },
-            {
-              onError: (error) => {
-                console.error("Error saving job:", error);
-              },
-            }
-          );
+        onSuccess: (response) => {
+          console.log("Job created successfully:", response);
+        },
+        onError: (error) => {
+          console.error("Error creating job:", error);
         },
       }
     );
   };
-  // Initialize form values if job exists
-  useEffect(() => {
+
+ useEffect(() => {
     if (job) {
-      setValue('type', job.type);
       setValue('orgtype', job.orgtype);
       setValue('organization', job.organization);
-      setValue('jobtype', job.jobtype);
+      setValue('job_type', job.job_type);
       setValue('post', job.post);
       setValue('experience', job.experience);
       setValue('skills', job.skills);
+      setValue('annual_compensation', job.annual_compensation?.toString());
+      setValue('employees_count', job.employees_count?.toString());
+      
       if (job.from) {
         setFromDate(new Date(job.from));
         setValue('from', job.from);
@@ -127,200 +108,207 @@ const AddJob = ({ route }) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView style={styles.container}>
-        <Card style={styles.card}>
-          <Card.Content>
-            <Title style={styles.title}>Job Application</Title>
+    <ScrollView style={styles.container}>
+      <Card style={styles.card}>
+        <Card.Content>
+          <Title style={styles.title}>Add Job</Title>
 
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>Job Type</Text>
             <Controller
               control={control}
-              name="type"
-              rules={{ required: true }}
+              name="job_type"
               defaultValue=""
               render={({ field: { onChange, value } }) => (
-                <View style={styles.formGroup}>
-                  <Text style={styles.label}>Type *</Text>
-                  <View style={styles.pickerContainer}>
-                    <Picker
-                      selectedValue={value}
-                      onValueChange={onChange}
-                      style={styles.picker}
-                    >
-                      <Picker.Item label="Select Type" value="" />
-                      {jobTypes.map((type) => (
-                        <Picker.Item key={type.value} label={type.label} value={type.value} />
-                      ))}
-                    </Picker>
-                  </View>
+                <View style={styles.pickerContainer}>
+                  <Picker
+                    selectedValue={value}
+                    onValueChange={onChange}
+                    style={styles.picker}
+                  >
+                    <Picker.Item label="Select Job Type" value="" />
+                    {employmentTypes.map((item) => (
+                      <Picker.Item key={item.value} label={item.label} value={item.value} />
+                    ))}
+                  </Picker>
                 </View>
               )}
             />
+          </View>
 
-            <Controller
-              control={control}
-              name="orgtype"
-              defaultValue=""
-              render={({ field: { onChange, value } }) => (
-                <TextInput
-                  label="Organization Type"
-                  mode="outlined"
-                  style={styles.input}
-                  value={value}
-                  onChangeText={onChange}
-                  placeholder="E.g. HARDWARE/SOFTWARE"
-                  left={<TextInput.Icon icon="domain" />}
-                />
-              )}
-            />
+          <Controller
+            control={control}
+            name="orgtype"
+            defaultValue=""
+            render={({ field: { onChange, value } }) => (
+              <TextInput
+                label="Organization Type"
+                mode="outlined"
+                style={styles.input}
+                value={value}
+                onChangeText={onChange}
+                placeholder="E.g. HARDWARE/SOFTWARE"
+                left={<TextInput.Icon icon="domain" />}
+              />
+            )}
+          />
 
-            <Controller
-              control={control}
-              name="organization"
-              rules={{ required: true }}
-              defaultValue=""
-              render={({ field: { onChange, value } }) => (
-                <TextInput
-                  label="Organization Name *"
-                  mode="outlined"
-                  style={styles.input}
-                  value={value}
-                  onChangeText={onChange}
-                  left={<TextInput.Icon icon="office-building" />}
-                />
-              )}
-            />
+          <Controller
+            control={control}
+            name="organization"
+            rules={{ required: true }}
+            defaultValue=""
+            render={({ field: { onChange, value } }) => (
+              <TextInput
+                label="Organization Name *"
+                mode="outlined"
+                style={styles.input}
+                value={value}
+                onChangeText={onChange}
+                left={<TextInput.Icon icon="office-building" />}
+              />
+            )}
+          />
 
-            <Controller
-              control={control}
-              name="jobtype"
-              defaultValue=""
-              render={({ field: { onChange, value } }) => (
-                <View style={styles.formGroup}>
-                  <Text style={styles.label}>Job Type</Text>
-                  <View style={styles.pickerContainer}>
-                    <Picker
-                      selectedValue={value}
-                      onValueChange={onChange}
-                      style={styles.picker}
-                    >
-                      <Picker.Item label="Select Job Type" value="" />
-                      {employmentTypes.map((type) => (
-                        <Picker.Item key={type.value} label={type.label} value={type.value} />
-                      ))}
-                    </Picker>
-                  </View>
-                </View>
-              )}
-            />
+          <Controller
+            control={control}
+            name="post"
+            defaultValue=""
+            render={({ field: { onChange, value } }) => (
+              <TextInput
+                label="Post"
+                mode="outlined"
+                style={styles.input}
+                value={value}
+                onChangeText={onChange}
+                left={<TextInput.Icon icon="briefcase" />}
+              />
+            )}
+          />
 
-            <Controller
-              control={control}
-              name="post"
-              defaultValue=""
-              render={({ field: { onChange, value } }) => (
-                <TextInput
-                  label="Post"
-                  mode="outlined"
-                  style={styles.input}
-                  value={value}
-                  onChangeText={onChange}
-                  left={<TextInput.Icon icon="briefcase" />}
-                />
-              )}
-            />
+          <Controller
+            control={control}
+            name="experience"
+            defaultValue=""
+            render={({ field: { onChange, value } }) => (
+              <TextInput
+                label="Experience (years)"
+                mode="outlined"
+                style={styles.input}
+                value={value}
+                onChangeText={onChange}
+                keyboardType="numeric"
+                left={<TextInput.Icon icon="clock-outline" />}
+              />
+            )}
+          />
 
-            <Controller
-              control={control}
-              name="experience"
-              defaultValue=""
-              render={({ field: { onChange, value } }) => (
-                <TextInput
-                  label="Experience (years)"
-                  mode="outlined"
-                  style={styles.input}
-                  value={value}
-                  onChangeText={onChange}
-                  keyboardType="numeric"
-                  left={<TextInput.Icon icon="clock-outline" />}
-                />
-              )}
-            />
+          <Controller
+            control={control}
+            name="annual_compensation"
+            defaultValue=""
+            render={({ field: { onChange, value } }) => (
+              <TextInput
+                label="Annual Compensation"
+                mode="outlined"
+                style={styles.input}
+                value={value}
+                onChangeText={onChange}
+                keyboardType="numeric"
+                left={<TextInput.Icon icon="currency-usd" />}
+                placeholder="Enter annual compensation"
+              />
+            )}
+          />
 
-            <Controller
-              control={control}
-              name="skills"
-              defaultValue=""
-              render={({ field: { onChange, value } }) => (
-                <TextInput
-                  label="Skills (comma-separated)"
-                  mode="outlined"
-                  style={styles.input}
-                  value={value}
-                  onChangeText={onChange}
-                  placeholder="React, JavaScript, TypeScript"
-                  left={<TextInput.Icon icon="lightbulb-on" />}
-                />
-              )}
-            />
+          <Controller
+            control={control}
+            name="employees_count"
+            defaultValue=""
+            render={({ field: { onChange, value } }) => (
+              <TextInput
+                label="Number of Employees"
+                mode="outlined"
+                style={styles.input}
+                value={value}
+                onChangeText={onChange}
+                keyboardType="numeric"
+                left={<TextInput.Icon icon="account-group" />}
+                placeholder="Enter number of employees"
+              />
+            )}
+          />
 
-<View style={styles.formGroup}>
-              <Text style={styles.label}>From Date</Text>
-              <TouchableOpacity 
-                style={styles.datePickerButton}
-                onPress={() => setShowFromDate(true)}
-              >
-                <Text style={styles.dateText}>
-                  {fromDate.toLocaleDateString()}
-                </Text>
-                <MaterialCommunityIcons name="calendar" size={24} color="#666" />
-              </TouchableOpacity>
-              {showFromDate && (
-                <DateTimePicker
-                  value={fromDate}
-                  mode="date"
-                  display="default"
-                  onChange={onFromDateChange}
-                />
-              )}
-            </View>
+          <Controller
+            control={control}
+            name="skills"
+            defaultValue=""
+            render={({ field: { onChange, value } }) => (
+              <TextInput
+                label="Skills (comma-separated)"
+                mode="outlined"
+                style={styles.input}
+                value={value}
+                onChangeText={onChange}
+                placeholder="React, JavaScript, TypeScript"
+                left={<TextInput.Icon icon="lightbulb-on" />}
+              />
+            )}
+          />
 
-            <View style={styles.formGroup}>
-              <Text style={styles.label}>To Date</Text>
-              <TouchableOpacity 
-                style={styles.datePickerButton}
-                onPress={() => setShowToDate(true)}
-              >
-                <Text style={styles.dateText}>
-                  {toDate.toLocaleDateString()}
-                </Text>
-                <MaterialCommunityIcons name="calendar" size={24} color="#666" />
-              </TouchableOpacity>
-              {showToDate && (
-                <DateTimePicker
-                  value={toDate}
-                  mode="date"
-                  display="default"
-                  onChange={onToDateChange}
-                />
-              )}
-            </View>
-            
-           
-           <Text>JobAddress</Text>
-
-           {/* <AddressComponent  setValue={setValue} /> */}
-          
-            <TouchableOpacity
-              style={styles.submitButton}
-              onPress={handleSubmit(onSubmit)}
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>From Date</Text>
+            <TouchableOpacity 
+              style={styles.datePickerButton}
+              onPress={() => setShowFromDate(true)}
             >
-              <Text style={styles.submitButtonText}>Save</Text>
-              <MaterialCommunityIcons name="content-save" size={24} color="#fff" />
+              <Text style={styles.dateText}>
+                {fromDate.toLocaleDateString()}
+              </Text>
+              <MaterialCommunityIcons name="calendar" size={24} color="#666" />
             </TouchableOpacity>
-          </Card.Content>
-        </Card>
-      </ScrollView>
-    </SafeAreaView>
+            {showFromDate && (
+              <DateTimePicker
+                value={fromDate}
+                mode="date"
+                display="default"
+                onChange={onFromDateChange}
+              />
+            )}
+          </View>
+
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>To Date</Text>
+            <TouchableOpacity 
+              style={styles.datePickerButton}
+              onPress={() => setShowToDate(true)}
+            >
+              <Text style={styles.dateText}>
+                {toDate.toLocaleDateString()}
+              </Text>
+              <MaterialCommunityIcons name="calendar" size={24} color="#666" />
+            </TouchableOpacity>
+            {showToDate && (
+              <DateTimePicker
+                value={toDate}
+                mode="date"
+                display="default"
+                onChange={onToDateChange}
+              />
+            )}
+          </View>
+
+          <TouchableOpacity
+            style={styles.submitButton}
+            onPress={handleSubmit(onSubmit)}
+          >
+            <Text style={styles.submitButtonText}>Save Job</Text>
+            <MaterialCommunityIcons name="content-save" size={24} color="#fff" />
+          </TouchableOpacity>
+        </Card.Content>
+      </Card>
+    </ScrollView>
+  </SafeAreaView>
   );
 };
 
@@ -398,4 +386,3 @@ const styles = StyleSheet.create({
 });
 
 export default AddJob;
-
