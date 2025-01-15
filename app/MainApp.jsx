@@ -53,7 +53,7 @@ const ProfileStack = () => (
     <Stack.Screen name="AddJob" component={AddJob} options={{ headerShown: true }} />
     <Stack.Screen name="ProfessionalDetails" component={ProfessionDetails} options={{ headerShown: false }} />
     <Stack.Screen name="UserProfileOverview" component={UserProfileOverview} options={{ headerShown: false }} />
-    <Stack.Screen name="ProfileTabs" component={ProfileTabs} options={{ headerShown: false }} />
+    <Stack.Screen name="ProfileTabs" component={ProfileTabs} options={{ headerShown: true }} />
     <Stack.Screen name="EditJob" component={EditJob} options={{ headerShown: true }} />
     <Stack.Screen name="EditBasicAll" component={EditBasicAll} />
     <Stack.Screen name="login" component={Login} />
