@@ -74,6 +74,7 @@ const HomeScreen = ({ navigation }) => {
           >
             <Ionicons name="person-outline" size={24} color="#fff" />
           </TouchableOpacity>
+
         </View>
       </LinearGradient>
 
@@ -324,6 +325,25 @@ const styles = StyleSheet.create({
   iconButton: {
     marginLeft: 16,
   },
+  logoutButton: {
+    backgroundColor: '#e74c3c',
+    borderRadius: 8,
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+  },
+  logoutButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  
 });
 
 export default HomeScreen;

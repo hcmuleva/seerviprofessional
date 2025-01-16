@@ -235,12 +235,22 @@ const ProfileMobile = () => {
         <View style={styles.header}>
           <Image source={{ uri: "../images/logo.png" }} style={styles.logo} />
           <View style={styles.headerRight}>
-            <TouchableOpacity style={styles.iconButton} onPress={pickImage}>
+            {/* <TouchableOpacity style={styles.iconButton} onPress={pickImage}>
               <Image
                 source={{ uri: profileImageUrl || "../images/logo.png" }}
                 style={styles.profileIcon}
               />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
+            <TouchableOpacity
+                style={styles.editButton}Edit
+                onPress={pickImage}
+              >
+                <Feather
+                  name="edit-2"
+                  size={12}
+                  color="#fff"
+                />
+              </TouchableOpacity>
             <TouchableOpacity style={styles.iconButton}>
               <Feather name="settings" size={20} color="#86878B" />
             </TouchableOpacity>
@@ -331,19 +341,20 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: "#FF406C",
   },
-  // editButton: {
-  //   position: "absolute",
-  //   right: 0,
-  //   top: 15,
-  //   backgroundColor: "#000",
-  //   borderRadius: 15,
-  //   width: 30,
-  //   height: 30,
-  //   justifyContent: "center",
-  //   alignItems: "center",
-  //   borderWidth: 2,
-  //   borderColor: "#FF406C",
-  // },
+  editButton: {
+    position: "absolute",
+    right: 109, // Adjust this value to position the button closer to or further from the image
+    bottom: -135, // Adjust this value to position the button higher or lower
+    backgroundColor: "#000",
+    borderRadius: 15,
+    width: 30,
+    height: 30,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 2,
+    borderColor: "#FF406C",
+    zIndex: 1,
+  },
   completionBadge: {
     position: "absolute",
     bottom: -8,

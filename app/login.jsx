@@ -32,6 +32,17 @@ export default function Login() {
     if (AsyncStorage.getItem("jwt-token")) navigation.replace('MainApp');
   }, []);
 
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.removeItem(TOKEN_KEY);
+      await AsyncStorage.removeItem('userid');
+      await AsyncStorage.removeItem('userstatus');
+      await AsyncStorage.removeItem('emeelanrole');
+      navigation.replace('Login');
+    } catch (error) {
+      Alert.alert('Error', 'Failed to log out. Please try again.');
+    }
+  };
   
 
   const handleLogin = async () => {
