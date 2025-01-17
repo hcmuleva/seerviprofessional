@@ -27,8 +27,6 @@ const HomeStack = () => (
     <Stack.Screen name="DonationScreen" component={DonationScreen} options={{ headerShown: true, title: "Donation" }} />
     <Stack.Screen name="CommunityMembers" component={CommunityMembers} options={{ headerShown: true, title: "Donation" }} />
     <Stack.Screen name="Matrimonial" component={Matrimonial} options={{ headerShown: true, title: "Matrimonial" }} />
-
-
   </Stack.Navigator>
   
 
@@ -56,7 +54,6 @@ const ProfileStack = () => (
     <Stack.Screen name="ProfileTabs" component={ProfileTabs} options={{ headerShown: true }} />
     <Stack.Screen name="EditJob" component={EditJob} options={{ headerShown: true }} />
     <Stack.Screen name="EditBasicAll" component={EditBasicAll} />
-    <Stack.Screen name="login" component={Login} />
 
   </Stack.Navigator>
 );

@@ -8,15 +8,14 @@ import {
   SafeAreaView,
   ScrollView,
   Platform,
+  Modal,
 } from 'react-native';
 import { useUpdate } from "@refinedev/core";
 import { Picker } from '@react-native-picker/picker';
-import { TextInput, Card, Title } from 'react-native-paper';
+import { TextInput, Card, Title, Button } from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import AddressComponent from '../../../components/address/AddressComponent';
 
-// Job Types and Employment Types
 const jobTypes = [
   { label: 'Private', value: 'PRIVATE' },
   { label: 'Public', value: 'PUBLIC' },
@@ -35,12 +34,9 @@ const employmentTypes = [
 ];
 
 const EditJob = ({ route }) => {
-  const navigation = useNavigation();
   const { jobid, job } = route.params;
   const { mutate: updateJob } = useUpdate();
-  const insets = useSafeAreaInsets();
 
-  
   const [orgType, setOrgType] = useState(job?.orgtype || '');
   const [organization, setOrganization] = useState(job?.organization || '');
   const [jobType, setJobType] = useState(job?.job_type || '');
@@ -50,15 +46,16 @@ const EditJob = ({ route }) => {
   const [fromDate, setFromDate] = useState(job?.from ? new Date(job.from) : new Date());
   const [toDate, setToDate] = useState(job?.to ? new Date(job.to) : new Date());
   const [isLoading, setIsLoading] = useState(false);
-  const [annualCompensation, setAnnualCompensation] = useState(job?.annual_compensation || '');
-  const [employeesCount, setEmployeesCount] = useState(job?.employees_count || '');
-  
+  const [annualCompensation, setAnnualCompensation] = useState(job?.annual_compensation?.toString() || '');
+  const [employeesCount, setEmployeesCount] = useState(job?.employees_count?.toString() || '');
 
-  // Date picker states
   const [showFromPicker, setShowFromPicker] = useState(false);
   const [showToPicker, setShowToPicker] = useState(false);
+  const [showJobTypePicker, setShowJobTypePicker] = useState(false);
 
-  const formatDate = (date) => date.toISOString().split('T')[0];
+  const formatDate = (date) => {
+    return date.toISOString().split('T')[0];
+  };
 
   const showSuccessMessage = () => {
     Alert.alert(
@@ -69,21 +66,29 @@ const EditJob = ({ route }) => {
   };
 
   const showErrorMessage = (message) => {
-    Alert.alert('Error', message || 'Failed to update job details.', [{ text: 'OK' }]);
+    Alert.alert(
+      'Error',
+      message || 'Failed to update job details.',
+      [{ text: 'OK' }]
+    );
   };
 
   const onFromDateChange = (event, selectedDate) => {
-    setShowFromPicker(false);
-    if (selectedDate) setFromDate(selectedDate);
+    setShowFromPicker(Platform.OS === 'ios');
+    if (selectedDate) {
+      setFromDate(selectedDate);
+    }
   };
 
   const onToDateChange = (event, selectedDate) => {
-    setShowToPicker(false);
-    if (selectedDate) setToDate(selectedDate);
+    setShowToPicker(Platform.OS === 'ios');
+    if (selectedDate) {
+      setToDate(selectedDate);
+    }
   };
-  
+
   const validateForm = () => {
-    if (!organization.trim() || !type || !post.trim()) {
+    if (!organization.trim() || !jobType || !post.trim()) {
       showErrorMessage('Please fill in all required fields');
       return false;
     }
@@ -94,6 +99,7 @@ const EditJob = ({ route }) => {
     if (!validateForm()) return;
 
     setIsLoading(true);
+
     try {
       const updateData = {
         resource: "jobs",
@@ -112,24 +118,53 @@ const EditJob = ({ route }) => {
         },
       };
 
-      await updateJob(
-        updateData,
-        {
-          onSuccess: (response) => {
-            console.log("Update success:", response);
-            showSuccessMessage();
-          },
-          onError: (error) => {
-            console.error("Update error details:", error);
-            showErrorMessage('Failed to update job details: ' + (error?.message || ''));
-          },
-        }
-      );
+      await updateJob(updateData, {
+        onSuccess: (response) => {
+          console.log("Update success:", response);
+          showSuccessMessage();
+        },
+        onError: (error) => {
+          console.error("Update error details:", error);
+          showErrorMessage('Failed to update job details: ' + (error?.message || ''));
+        },
+      });
     } catch (error) {
+      console.error("Error occurred:", error);
       showErrorMessage('There was an issue updating the job details: ' + error.message);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const renderPicker = () => {
+    if (Platform.OS === 'ios') {
+      return (
+        <TouchableOpacity
+          style={styles.pickerButton}
+          onPress={() => setShowJobTypePicker(true)}
+        >
+          <Text style={styles.pickerButtonText}>
+            {jobType ? employmentTypes.find(type => type.value === jobType)?.label : 'Select Job Type'}
+          </Text>
+          <MaterialCommunityIcons name="chevron-down" size={24} color="#666" />
+        </TouchableOpacity>
+      );
+    }
+
+    return (
+      <View style={styles.pickerContainer}>
+        <Picker
+          selectedValue={jobType}
+          onValueChange={(value) => setJobType(value)}
+          style={styles.picker}
+        >
+          <Picker.Item label="Select Job Type" value="" />
+          {employmentTypes.map((item) => (
+            <Picker.Item key={item.value} label={item.label} value={item.value} />
+          ))}
+        </Picker>
+      </View>
+    );
   };
 
   return (
@@ -141,18 +176,7 @@ const EditJob = ({ route }) => {
 
             <View style={styles.formGroup}>
               <Text style={styles.label}>Job Type</Text>
-              <View style={styles.pickerContainer}>
-                <Picker
-                  selectedValue={jobType}
-                  onValueChange={(value) => setJobType(value)}
-                  style={styles.picker}
-                >
-                  <Picker.Item label="Select Job Type" value="" />
-                  {employmentTypes.map((item) => (
-                    <Picker.Item key={item.value} label={item.label} value={item.value} />
-                  ))}
-                </Picker>
-              </View>
+              {renderPicker()}
             </View>
 
             <TextInput
@@ -174,8 +198,6 @@ const EditJob = ({ route }) => {
               left={<TextInput.Icon icon="office-building" />}
             />
 
-            
-
             <TextInput
               label="Post"
               mode="outlined"
@@ -194,11 +216,12 @@ const EditJob = ({ route }) => {
               keyboardType="numeric"
               left={<TextInput.Icon icon="clock-outline" />}
             />
-<TextInput
+
+            <TextInput
               label="Annual Compensation"
               mode="outlined"
               style={styles.input}
-              value={annualCompensation.toString()}
+              value={annualCompensation}
               onChangeText={setAnnualCompensation}
               keyboardType="numeric"
               left={<TextInput.Icon icon="currency-usd" />}
@@ -209,12 +232,13 @@ const EditJob = ({ route }) => {
               label="Number of Employees"
               mode="outlined"
               style={styles.input}
-              value={employeesCount.toString()}
+              value={employeesCount}
               onChangeText={setEmployeesCount}
               keyboardType="numeric"
               left={<TextInput.Icon icon="account-group" />}
               placeholder="Enter number of employees"
             />
+
             <TextInput
               label="Skills (comma-separated)"
               mode="outlined"
@@ -236,14 +260,6 @@ const EditJob = ({ route }) => {
                 </Text>
                 <MaterialCommunityIcons name="calendar" size={24} color="#666" />
               </TouchableOpacity>
-              {showFromPicker && (
-                <DateTimePicker
-                  value={fromDate}
-                  mode="date"
-                  display="default"
-                  onChange={onFromDateChange}
-                />
-              )}
             </View>
 
             <View style={styles.formGroup}>
@@ -257,18 +273,7 @@ const EditJob = ({ route }) => {
                 </Text>
                 <MaterialCommunityIcons name="calendar" size={24} color="#666" />
               </TouchableOpacity>
-              {showToPicker && (
-                <DateTimePicker
-                  value={toDate}
-                  mode="date"
-                  display="default"
-                  onChange={onToDateChange}
-                />
-              )}
             </View>
-
-            <Text style={[styles.label, { marginTop: 16 }]}>Job Address</Text>
-            {/* <AddressComponent /> */}
 
             <TouchableOpacity
               style={[styles.submitButton, isLoading && styles.buttonDisabled]}
@@ -283,6 +288,45 @@ const EditJob = ({ route }) => {
           </Card.Content>
         </Card>
       </ScrollView>
+
+      <Modal
+        visible={showJobTypePicker}
+        animationType="slide"
+        transparent={true}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.pickerModalContent}>
+            <Picker
+              selectedValue={jobType}
+              onValueChange={(value) => setJobType(value)}
+              style={styles.modalPicker}
+            >
+              <Picker.Item label="Select Job Type" value="" />
+              {employmentTypes.map((item) => (
+                <Picker.Item key={item.value} label={item.label} value={item.value} />
+              ))}
+            </Picker>
+            <Button onPress={() => setShowJobTypePicker(false)}>Done</Button>
+          </View>
+        </View>
+      </Modal>
+
+      {showFromPicker && (
+        <DateTimePicker
+          value={fromDate}
+          mode="date"
+          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          onChange={onFromDateChange}
+        />
+      )}
+      {showToPicker && (
+        <DateTimePicker
+          value={toDate}
+          mode="date"
+          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          onChange={onToDateChange}
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -360,6 +404,34 @@ const styles = StyleSheet.create({
   dateText: {
     fontSize: 16,
     color: '#333',
+  },
+  pickerButton: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 4,
+    padding: 12,
+    backgroundColor: '#fff',
+  },
+  pickerButtonText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  pickerModalContent: {
+    backgroundColor: '#fff',
+    padding: 16,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  modalPicker: {
+    height: 200,
   },
 });
 

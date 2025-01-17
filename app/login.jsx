@@ -14,7 +14,6 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Feather } from '@expo/vector-icons';
-import { useLogin } from '@refinedev/core';
 
 const API_URL = process.env.VITE_SERVER_URL;
 const TOKEN_KEY = process.env.VITE_TOKEN_KEY;
@@ -26,24 +25,16 @@ export default function Login() {
   const [userid, setUserId] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const { mutate: login, isLoading } = useLogin();
 
   useEffect(() => {
-    if (AsyncStorage.getItem("jwt-token")) navigation.replace('MainApp');
+    const checkToken = async () => {
+      const token = await AsyncStorage.getItem(TOKEN_KEY);
+      if (token) {
+        navigation.navigate('MainApp');
+      }
+    };
+    checkToken();
   }, []);
-
-  const handleLogout = async () => {
-    try {
-      await AsyncStorage.removeItem(TOKEN_KEY);
-      await AsyncStorage.removeItem('userid');
-      await AsyncStorage.removeItem('userstatus');
-      await AsyncStorage.removeItem('emeelanrole');
-      navigation.replace('Login');
-    } catch (error) {
-      Alert.alert('Error', 'Failed to log out. Please try again.');
-    }
-  };
-  
 
   const handleLogin = async () => {
     try {
@@ -55,13 +46,11 @@ export default function Login() {
        
       if (res.ok) {
         const data = await res.json();
-        // console.log("INSIDE LOGIN",data);
-        
         await AsyncStorage.setItem(TOKEN_KEY, data.jwt);
         await AsyncStorage.setItem('userid', String(data?.user?.id));
         await AsyncStorage.setItem('userstatus', String(data?.user?.userstatus));
         await AsyncStorage.setItem('emeelanrole', String(data?.user?.emeelanrole));
-        navigation.replace('MainApp');
+        navigation.navigate('MainApp');
       } else {
         const errorData = await res.json();
         Alert.alert('Login Failed', errorData?.message || 'Invalid Credentials.');
@@ -74,7 +63,6 @@ export default function Login() {
   const handleHelpClick = () => {
     navigation.navigate('Help');
   };
-  
 
   return (
     <SafeAreaView style={styles.container}>
@@ -85,7 +73,7 @@ export default function Login() {
         <ScrollView contentContainerStyle={styles.scrollView}>
           <View style={styles.logoContainer}>
             <Text style={styles.logo}>EMEELAN</Text>
-            <Text style={styles.logoSubtitle}>गठजोड़</Text>
+            <Text style={styles.logoSubtitle}>Professional</Text>
           </View>
           <Text style={styles.welcomeText}>Welcome Back!</Text>
           <Text style={styles.subWelcomeText}>Sign in to continue</Text>
@@ -159,7 +147,7 @@ const styles = StyleSheet.create({
     color: '#3498db',
   },
   logoSubtitle: {
-    fontSize: 18,
+    fontSize: 22.5,
     color: '#7f8c8d',
     marginTop: 5,
   },
@@ -239,4 +227,3 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-

@@ -92,6 +92,17 @@ const ProfileMobile = () => {
       console.error(error);
     }
   };
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.clear();
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'login' }],
+      });
+    } catch (error) {
+      Alert.alert('Error', 'Failed to logout');
+    }
+  };
 
   const uploadPhoto = async (photoAsset) => {
     setUploading(true);
@@ -235,22 +246,17 @@ const ProfileMobile = () => {
         <View style={styles.header}>
           <Image source={{ uri: "../images/logo.png" }} style={styles.logo} />
           <View style={styles.headerRight}>
-            {/* <TouchableOpacity style={styles.iconButton} onPress={pickImage}>
-              <Image
-                source={{ uri: profileImageUrl || "../images/logo.png" }}
-                style={styles.profileIcon}
-              />
-            </TouchableOpacity> */}
             <TouchableOpacity
-                style={styles.editButton}Edit
-                onPress={pickImage}
-              >
-                <Feather
-                  name="edit-2"
-                  size={12}
-                  color="#fff"
-                />
-              </TouchableOpacity>
+              style={styles.editButton}
+              Edit
+              onPress={pickImage}
+            >
+              <Feather name="edit-2" size={12} color="#fff" />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.iconButton} onPress={handleLogout}>
+              <Feather name="power" size={28} color="#86878B" />
+            </TouchableOpacity>
             <TouchableOpacity style={styles.iconButton}>
               <Feather name="settings" size={20} color="#86878B" />
             </TouchableOpacity>
@@ -266,7 +272,7 @@ const ProfileMobile = () => {
             />
             {/* Completion Badge */}
             <View style={styles.completionBadge}>
-              <Text style={styles.completionText}>55% COMPLETE</Text>
+              <Text style={styles.completionText}>Profile Photo</Text>
             </View>
           </View>
           {/* User Name */}
@@ -306,7 +312,7 @@ const styles = StyleSheet.create({
   logo: {
     width: 100,
     height: 40,
-    resizeMode: 'contain',
+    resizeMode: "contain",
   },
   logoText: {
     fontSize: 7,
@@ -362,6 +368,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
+    left: 12,
   },
   completionText: {
     color: "#fff",
