@@ -22,13 +22,16 @@ const HomeScreen = ({ navigation }) => {
       title: 'Matrimonial',
       icon: 'heart-multiple',
       description: 'Find your life partner',
-      color: ['#FF6B6B', '#FF8E8E']
+      color: ['#FF6B6B', '#FF8E8E'],
+      navigationTarget: 'Matrimonial'
     },
     {
       title: 'Community Members',
       icon: 'account-group',
       description: 'Connect with members',
-      color: ['#4ECDC4', '#45B7AF']
+      color: ['#4ECDC4', '#45B7AF'],
+      navigationTarget: 'CommunityMembers'
+
     },
     {
       title: 'Business Network',
@@ -41,7 +44,9 @@ const HomeScreen = ({ navigation }) => {
       title: 'Temple Donation',
       icon: 'gift-outline',
       description: 'Support our temples',
-      color: ['#FFB75E', '#ED8F03'],      // navigationTarget: 'DonationScreen'
+      color: ['#FFB75E', '#ED8F03'],   
+      navigationTarget: 'DonationScreen'
+      // navigationTarget: 'DonationScreen'
     }
   ];
 
@@ -69,6 +74,7 @@ const HomeScreen = ({ navigation }) => {
           >
             <Ionicons name="person-outline" size={24} color="#fff" />
           </TouchableOpacity>
+
         </View>
       </LinearGradient>
 
@@ -319,6 +325,25 @@ const styles = StyleSheet.create({
   iconButton: {
     marginLeft: 16,
   },
+  logoutButton: {
+    backgroundColor: '#e74c3c',
+    borderRadius: 8,
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+  },
+  logoutButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  
 });
 
 export default HomeScreen;

@@ -8,40 +8,34 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
-  TextInput,
   FlatList,
-} from 'react-native';
-import {
-  Feather,
-  FontAwesome,
-  Ionicons,
-  MaterialCommunityIcons,
-} from "@expo/vector-icons";
+  Alert,
+} from "react-native";
+import { Feather, FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useOne } from "@refinedev/core";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as ImagePicker from "expo-image-picker";
 
 const { width } = Dimensions.get("window");
+const API_URL = process.env.VITE_SERVER_URL;
+const TOKEN_KEY = process.env.VITE_TOKEN_KEY;
 
 const ProfileMobile = () => {
   const navigation = useNavigation();
   const [isEditing, setIsEditing] = useState(false);
-  const [activeTab, setActiveTab] = useState('Personal Info');
   const [userid, setUserid] = useState(null);
   const [personalInfo, setPersonalInfo] = useState({
-    name: 'Manish',
-    age: '24',
-    bio: 'I love coding and outdoor activities!',
+    name: "Manish",
+    age: "24",
+    bio: "I love coding and outdoor activities!",
   });
-  const [education, setEducation] = useState({
-    degree: "Bachelor of Science",
-    school: "Tech University",
-    graduationYear: "2022",
-  });
+  const [profileImageUrl, setProfileImageUrl] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     const getUserId = async () => {
-      const storedUserId = await AsyncStorage.getItem('userid');
+      const storedUserId = await AsyncStorage.getItem("userid");
       setUserid(storedUserId);
     };
 
@@ -56,18 +50,156 @@ const ProfileMobile = () => {
     },
   });
 
+  useEffect(() => {
+    if (data?.data) {
+      setProfileImageUrl(data.data.photo?.url); // Set initial profile image URL
+    }
+  }, [data]);
+
   if (isLoading) return <Text>Loading...</Text>;
   if (error) return <Text>Error: {error.message}</Text>;
 
   const user = data?.data;
 
+  const requestPermission = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert(
+        "Permission Required",
+        "Please grant camera roll permissions to upload photos."
+      );
+      return false;
+    }
+    return true;
+  };
+
+  const pickImage = async () => {
+    const hasPermission = await requestPermission();
+    if (!hasPermission) return;
+
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        uploadPhoto(result.assets[0]);
+      }
+    } catch (error) {
+      Alert.alert("Error", "Failed to pick image");
+      console.error(error);
+    }
+  };
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.clear();
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'login' }],
+      });
+    } catch (error) {
+      Alert.alert('Error', 'Failed to logout');
+    }
+  };
+
+  const uploadPhoto = async (photoAsset) => {
+    setUploading(true);
+
+    try {
+      const userId = await AsyncStorage.getItem("userid");
+      const token = await AsyncStorage.getItem(TOKEN_KEY);
+
+      if (!userId || !token) {
+        Alert.alert("Error", "Please login first");
+        return;
+      }
+
+      // First, upload the file
+      const formData = new FormData();
+      const fileExtension = photoAsset.uri.split(".").pop();
+      formData.append("files", {
+        uri: photoAsset.uri,
+        type: `image/${fileExtension}`,
+        name: `profile-photo.${fileExtension}`,
+      });
+
+      const uploadResponse = await fetch(`${API_URL}/api/upload`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (!uploadResponse.ok) throw new Error("Failed to upload image");
+
+      const uploadedFiles = await uploadResponse.json();
+      const photoId = uploadedFiles[0].id;
+
+      // Then update the user's photo field
+      const updateResponse = await fetch(`${API_URL}/api/users/${userId}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ photo: photoId }),
+      });
+
+      if (!updateResponse.ok) throw new Error("Failed to update user profile");
+
+      Alert.alert("Success", "Profile photo updated successfully");
+
+      // Refresh profile image URL after upload
+      setProfileImageUrl(uploadedFiles[0].url); // Assuming you get the URL back in response
+    } catch (error) {
+      console.error("Upload error:", error);
+      Alert.alert("Error", error.message || "Failed to upload photo");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const sections = [
-    { key: "overview", label: "BasicInfo", features: ['Personal', 'Job', 'Contact', 'Family', 'Educational', 'LifeStyle'] },
-    { key: "professional", label: "Professional", features: [''] },
-    { key: "address", label: "Address", features: ['See Who Likes You', 'Top Picks'] },
-    { key: "project", label: "Project", features: ['See Who Likes You', 'Top Picks'] },
-    { key: "activities", label: "Activities", features: ['See Who Likes You', 'Top Picks'] },
-    { key: "subscriptions", label: "Subscription", features: ['See Who Likes You', 'Top Picks'] },
+    {
+      key: "overview",
+      label: "BasicInfo",
+      features: [
+        "Personal",
+        "Job",
+        "Contact",
+        "Family",
+        "Educational",
+        "LifeStyle",
+      ],
+    },
+    {
+      key: "professional",
+      label: "Professional",
+      features: ["Experience", "Skills", "Certifications"],
+    },
+    {
+      key: "address",
+      label: "Address",
+      features: ["Current Address", "Permanent Address"],
+    },
+    {
+      key: "project",
+      label: "Project",
+      features: ["Current Projects", "Completed Projects"],
+    },
+    {
+      key: "activities",
+      label: "Activities",
+      features: ["Recent Activities", "Achievements"],
+    },
+    {
+      key: "subscriptions",
+      label: "Subscription",
+      features: ["Current Plan", "Benefits"],
+    },
   ];
 
   const renderGoldCard = ({ item }) => (
@@ -77,8 +209,17 @@ const ProfileMobile = () => {
           <FontAwesome name="fire" size={20} color="#FFB800" />
           <Text style={styles.goldTitle}>{item.label}</Text>
         </View>
-        <TouchableOpacity style={styles.upgradeButton} onPress={() => navigation.navigate('ProfileTabs', { userData: user, userid: userid,itemKey: item })}>
-        <Text style={styles.upgradeButtonText}>See</Text>
+        <TouchableOpacity
+          style={styles.upgradeButton}
+          onPress={() =>
+            navigation.navigate("ProfileTabs", {
+              userData: user,
+              userid: userid,
+              itemKey: item,
+            })
+          }
+        >
+          <Text style={styles.upgradeButtonText}>See</Text>
         </TouchableOpacity>
       </View>
       <Text style={styles.featuresTitle}>What's Included</Text>
@@ -87,97 +228,34 @@ const ProfileMobile = () => {
           <View key={index} style={styles.featureRow}>
             <Text style={styles.featureText}>{feature}</Text>
             <FontAwesome name="check" size={16} color="#000" />
-            {/* <TouchableOpacity onPress={() => navigation.navigate('UserProfileOverview', { userData: user, itemKey: item })}>
-              <Text style={styles.seeAllText}>See</Text>
-            </TouchableOpacity> */}
           </View>
         ))}
       </View>
     </View>
   );
 
-  const renderEditFields = () => {
-    switch (activeTab) {
-      case "Personal Info":
-        return (
-          <View>
-            <TextInput
-              style={styles.input}
-              value={personalInfo.name}
-              onChangeText={(text) =>
-                setPersonalInfo({ ...personalInfo, name: text })
-              }
-              placeholder="Name"
-              placeholderTextColor="#999"
-            />
-            <TextInput
-              style={styles.input}
-              value={personalInfo.age}
-              onChangeText={(text) =>
-                setPersonalInfo({ ...personalInfo, age: text })
-              }
-              placeholder="Age"
-              placeholderTextColor="#999"
-              keyboardType="numeric"
-            />
-            <TextInput
-              style={[styles.input, styles.multilineInput]}
-              value={personalInfo.bio}
-              onChangeText={(text) =>
-                setPersonalInfo({ ...personalInfo, bio: text })
-              }
-              placeholder="Bio"
-              placeholderTextColor="#999"
-              multiline
-            />
-          </View>
-        );
-      case "Education":
-        return (
-          <View>
-            <TextInput
-              style={styles.input}
-              value={education.degree}
-              onChangeText={(text) =>
-                setEducation({ ...education, degree: text })
-              }
-              placeholder="Degree"
-              placeholderTextColor="#999"
-            />
-            <TextInput
-              style={styles.input}
-              value={education.school}
-              onChangeText={(text) =>
-                setEducation({ ...education, school: text })
-              }
-              placeholder="School"
-              placeholderTextColor="#999"
-            />
-            <TextInput
-              style={styles.input}
-              value={education.graduationYear}
-              onChangeText={(text) =>
-                setEducation({ ...education, graduationYear: text })
-              }
-              placeholder="Graduation Year"
-              placeholderTextColor="#999"
-              keyboardType="numeric"
-            />
-          </View>
-        );
-      default:
-        return null;
-    }
-  };
-
   return (
     <SafeAreaView style={styles.container}>
+      {user?.myrole && (
+        <View style={[styles.roleBadge, { backgroundColor: "#86878B" }]}>
+          <Text style={styles.roleBadgeText}>{user.myrole}</Text>
+        </View>
+      )}
+
       <ScrollView>
         <View style={styles.header}>
-          <Image style={styles.logo} resizeMode="contain" />
+          <Image source={{ uri: "../images/logo.png" }} style={styles.logo} />
           <View style={styles.headerRight}>
-            <TouchableOpacity style={styles.iconButton}>
-              <Feather name="shield" size={20} color="#86878B" />
+            <TouchableOpacity
+              style={styles.editButton}
+              Edit
+              onPress={pickImage}
+            >
+              <Feather name="edit-2" size={12} color="#fff" />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.iconButton} onPress={handleLogout}>
+              <Feather name="power" size={28} color="#86878B" />
             </TouchableOpacity>
             <TouchableOpacity style={styles.iconButton}>
               <Feather name="settings" size={20} color="#86878B" />
@@ -187,77 +265,25 @@ const ProfileMobile = () => {
 
         <View style={styles.profileSection}>
           <View style={styles.profileImageContainer}>
-            <Image style={styles.profileImage} />
-            <TouchableOpacity style={styles.editButton} onPress={() => setIsEditing(!isEditing)}>
-              <Feather name={isEditing ? "check" : "edit-2"} size={16} color="#fff" />
-            </TouchableOpacity>
+            {/* Displaying Profile Image */}
+            <Image
+              style={styles.profileImage}
+              source={{ uri: profileImageUrl || "../images/logo.png" }}
+            />
+            {/* Completion Badge */}
             <View style={styles.completionBadge}>
-              <Text style={styles.completionText}>55% COMPLETE</Text>
+              <Text style={styles.completionText}>Profile Photo</Text>
             </View>
           </View>
-          <View style={styles.nameContainer}>
-            <Text style={styles.nameText}>{personalInfo.name}, {personalInfo.age}</Text>
-            <MaterialCommunityIcons name="check-decagram" size={20} color="#86878B" />
-          </View>
+          {/* User Name */}
+          <Text style={styles.nameText}>
+            {`${user?.firstname || ""} ${user?.lastname || ""}`}
+          </Text>
+          {/* User Username */}
+          <Text style={styles.usernameText}>{user?.username || ""}</Text>
         </View>
 
-        {isEditing && (
-          <View style={styles.editTabs}>
-            <TouchableOpacity
-              style={[
-                styles.tabButton,
-                activeTab === "Personal Info" && styles.activeTabButton,
-              ]}
-              onPress={() => setActiveTab("Personal Info")}
-            >
-              <Text style={styles.tabButtonText}>Personal Info</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.tabButton,
-                activeTab === "Education" && styles.activeTabButton,
-              ]}
-              onPress={() => setActiveTab("Education")}
-            >
-              <Text style={styles.tabButtonText}>Education</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
-        {isEditing && renderEditFields()}
-
-        <View style={styles.featureCards}>
-          <TouchableOpacity style={styles.featureCard} onPress={() => navigation.navigate('AddJob', { userid: userid })}>
-            <View style={styles.featureIconContainer}>
-              <Ionicons name="briefcase-outline" size={20} color="#00B4FF" />
-              <View style={styles.plusIcon}>
-                <Feather name="plus" size={12} color="#fff" />
-              </View>
-            </View>
-            <Text style={styles.featureCount}>Add Job</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.featureCard}>
-            <View style={styles.featureIconContainer}>
-              <MaterialCommunityIcons name="map-marker" size={20} color="#A020F0" />
-              <View style={styles.plusIcon}>
-                <Feather name="plus" size={12} color="#fff" />
-              </View>
-            </View>
-            <Text style={styles.featureCount}>Add Address</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.featureCard}>
-            <View style={styles.featureIconContainer}>
-              <FontAwesome name="fire" size={20} color="#FF406C" />
-              <View style={styles.plusIcon}>
-                <Feather name="plus" size={12} color="#fff" />
-              </View>
-            </View>
-            <Text style={styles.featureCount}>Subscriptions</Text>
-          </TouchableOpacity>
-        </View>
-
+        {/* Gold Cards Section */}
         <FlatList
           data={sections}
           renderItem={renderGoldCard}
@@ -281,17 +307,30 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     padding: 12,
+    backgroundColor: "#fff",
   },
   logo: {
-    width: 80,
-    height: 32,
+    width: 100,
+    height: 40,
+    resizeMode: "contain",
+  },
+  logoText: {
+    fontSize: 7,
+    fontWeight: "bold",
+    color: "#000",
   },
   headerRight: {
     flexDirection: "row",
+    alignItems: "center",
     gap: 12,
   },
   iconButton: {
     padding: 4,
+  },
+  profileIcon: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
   },
   profileSection: {
     alignItems: "center",
@@ -306,12 +345,12 @@ const styles = StyleSheet.create({
     height: 130,
     borderRadius: 65,
     borderWidth: 2,
-    borderColor: '#FF406C',
+    borderColor: "#FF406C",
   },
   editButton: {
     position: "absolute",
-    right: 0,
-    top: 15,
+    right: 109, // Adjust this value to position the button closer to or further from the image
+    bottom: -135, // Adjust this value to position the button higher or lower
     backgroundColor: "#000",
     borderRadius: 15,
     width: 30,
@@ -320,6 +359,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 2,
     borderColor: "#FF406C",
+    zIndex: 1,
   },
   completionBadge: {
     position: "absolute",
@@ -328,93 +368,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
+    left: 12,
   },
   completionText: {
     color: "#fff",
     fontWeight: "bold",
     fontSize: 12,
   },
-  nameContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
   nameText: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#000',
+    fontWeight: "bold",
+    color: "#000",
   },
-  editTabs: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginTop: 16,
-    marginBottom: 8,
+  usernameText: {
+    fontSize: 14,
+    color: "#86878B",
+    marginVertical: 4,
   },
-  tabButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-    backgroundColor: '#f0f0f0',
-  },
-  activeTabButton: {
-    backgroundColor: "#FF406C",
-  },
-  tabButtonText: {
-    color: '#000',
-    fontWeight: 'bold',
-  },
-  input: {
-    backgroundColor: '#f0f0f0',
-    color: '#000',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 8,
-    marginHorizontal: 16,
-  },
-  multilineInput: {
-    height: 100,
-    textAlignVertical: "top",
-  },
-  featureCards: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    padding: 12,
-    gap: 6,
-  },
-  featureCard: {
-    flex: 1,
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 12,
-    alignItems: 'center',
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-    elevation: 4,
-  },
-  featureIconContainer: {
-    position: "relative",
-    marginBottom: 6,
-  },
-  plusIcon: {
-    position: "absolute",
-    right: -6,
-    top: -6,
-    backgroundColor: "#86878B",
-    borderRadius: 10,
-    width: 18,
-    height: 18,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  featureCount: {
-    color: '#000',
-    fontSize: 12,
-    marginBottom: 2,
+  roleText: {
+    fontSize: 16,
+    marginTop: 4,
   },
   goldCardsContainer: {
     paddingHorizontal: 12,
@@ -465,9 +438,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 12,
   },
-  featureTable: {
-    marginBottom: 16,
-  },
   featureRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -477,10 +447,19 @@ const styles = StyleSheet.create({
   featureText: {
     fontSize: 14,
   },
-  seeAllText: {
-    color: "#FFB800",
-    fontSize: 14,
-    fontWeight: "bolds",
+  roleBadge: {
+    position: "absolute",
+    top: 70,
+    left: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 15,
+    zIndex: 1,
+  },
+  roleBadgeText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 12,
   },
 });
 

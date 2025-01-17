@@ -12,6 +12,10 @@ import ProfileTabs from "./(tabs)/profiletabs";
 import ProfessionDetails from "./Screen/ProfessionDetails";
 import EditJob from "./pages/myprofile/profession/EditJob";
 import EditBasicAll from "./pages/myprofile/profession/EditBasicAll";
+import Login from "./login";
+import DonationScreen from "./Screen/Cards/DonationScreen";
+import CommunityMembers from "./Screen/Cards/CommunityMembers";
+import Matrimonial from "./Screen/Cards/Matrimonial";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -20,7 +24,12 @@ const Stack = createStackNavigator();
 const HomeStack = () => (
   <Stack.Navigator>
     <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
+    <Stack.Screen name="DonationScreen" component={DonationScreen} options={{ headerShown: true, title: "Donation" }} />
+    <Stack.Screen name="CommunityMembers" component={CommunityMembers} options={{ headerShown: true, title: "Donation" }} />
+    <Stack.Screen name="Matrimonial" component={Matrimonial} options={{ headerShown: true, title: "Matrimonial" }} />
   </Stack.Navigator>
+  
+
 );
 
 const JobStack = () => (
@@ -42,9 +51,10 @@ const ProfileStack = () => (
     <Stack.Screen name="AddJob" component={AddJob} options={{ headerShown: true }} />
     <Stack.Screen name="ProfessionalDetails" component={ProfessionDetails} options={{ headerShown: false }} />
     <Stack.Screen name="UserProfileOverview" component={UserProfileOverview} options={{ headerShown: false }} />
-    <Stack.Screen name="ProfileTabs" component={ProfileTabs} options={{ headerShown: false }} />
+    <Stack.Screen name="ProfileTabs" component={ProfileTabs} options={{ headerShown: true }} />
     <Stack.Screen name="EditJob" component={EditJob} options={{ headerShown: true }} />
     <Stack.Screen name="EditBasicAll" component={EditBasicAll} />
+
   </Stack.Navigator>
 );
 

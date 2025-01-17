@@ -12,7 +12,7 @@ const strapiAuthHelper = AuthHelper(API_URL + "/api");
 
 
 const navigateToMainApp = () => {
-  NavigationActions.navigate('MainApp');
+  NavigationActions.navigate('login');
 };
 
 // Add request interceptor to automatically add token

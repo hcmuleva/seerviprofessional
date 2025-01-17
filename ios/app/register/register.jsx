@@ -68,37 +68,6 @@ export default function Register() {
     }
   };
 
-  // iOS-specific picker modal component
-  const PickerModal = ({ visible, onClose, selectedValue, onValueChange, items, title }) => (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={visible}
-      onRequestClose={onClose}
-    >
-      <View style={styles.modalContainer}>
-        <View style={styles.pickerModalContent}>
-          <View style={styles.pickerHeader}>
-            <TouchableOpacity onPress={onClose}>
-              <Text style={styles.cancelButton}>Cancel</Text>
-            </TouchableOpacity>
-            <Text style={styles.pickerTitle}>{title}</Text>
-            <TouchableOpacity onPress={onClose}>
-              <Text style={styles.doneButton}>Done</Text>
-            </TouchableOpacity>
-          </View>
-          <Picker
-            selectedValue={selectedValue}
-            onValueChange={onValueChange}
-            style={styles.iosPicker}
-          >
-            {items}
-          </Picker>
-        </View>
-      </View>
-    </Modal>
-  );
-
   const handleRegister = async () => {
     if (formData.password !== formData.confirmPassword) {
       Alert.alert('Error', 'Passwords do not match');
@@ -132,6 +101,53 @@ export default function Register() {
       Alert.alert('Error', 'Something went wrong. Please try again.');
     }
   };
+
+  const PickerModal = ({ visible, onClose, selectedValue, onValueChange, title }) => (
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={visible}
+      onRequestClose={onClose}
+    >
+      <View style={styles.modalContainer}>
+        <View style={styles.pickerModalContent}>
+          <View style={styles.pickerHeader}>
+            <TouchableOpacity onPress={onClose}>
+              <Text style={styles.cancelButton}>Cancel</Text>
+            </TouchableOpacity>
+            <Text style={styles.pickerTitle}>{title}</Text>
+            <TouchableOpacity onPress={onClose}>
+              <Text style={styles.doneButton}>Done</Text>
+            </TouchableOpacity>
+          </View>
+          <Picker
+            selectedValue={selectedValue}
+            onValueChange={(itemValue) => {
+              onValueChange(itemValue);
+              onClose();
+            }}
+            style={styles.iosPicker}
+          >
+            <Picker.Item key="default" label={title} value="" />
+            {title === "Select Gender" ? (
+              <>
+                <Picker.Item key="male" label="Male" value="Male" />
+                <Picker.Item key="female" label="Female" value="Female" />
+              </>
+            ) : (
+              gotra.Gotra.map((g, index) => (
+                <Picker.Item 
+                  key={`gotra-${index}-${g.EName || g.HName}`}
+                  label={`${g.EName || ''} ${g.HName}`.trim()}
+                  value={g.EName || g.HName}
+                />
+              ))
+            )}
+          </Picker>
+        </View>
+      </View>
+    </Modal>
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -219,7 +235,10 @@ export default function Register() {
             style={styles.selectButton}
             onPress={() => setShowGenderPicker(true)}
           >
-            <Text style={styles.selectButtonText}>
+            <Text style={[
+              styles.selectButtonText,
+              !formData.sex && { color: '#999' }
+            ]}>
               {formData.sex || 'Select Gender'}
             </Text>
           </TouchableOpacity>
@@ -228,7 +247,10 @@ export default function Register() {
             style={styles.selectButton}
             onPress={() => setShowGotraPicker(true)}
           >
-            <Text style={styles.selectButtonText}>
+            <Text style={[
+              styles.selectButtonText,
+              !formData.gotra && { color: '#999' }
+            ]}>
               {formData.gotra || 'Select Gotra'}
             </Text>
           </TouchableOpacity>
@@ -260,14 +282,8 @@ export default function Register() {
           selectedValue={formData.sex}
           onValueChange={(value) => {
             handleInputChange('sex', value);
-            setShowGenderPicker(false);
           }}
           title="Select Gender"
-          items={[
-            <Picker.Item key="empty" label="Select Gender" value="" />,
-            <Picker.Item key="male" label="Male" value="Male" />,
-            <Picker.Item key="female" label="Female" value="Female" />
-          ]}
         />
 
         <PickerModal
@@ -276,19 +292,8 @@ export default function Register() {
           selectedValue={formData.gotra}
           onValueChange={(value) => {
             handleInputChange('gotra', value);
-            setShowGotraPicker(false);
           }}
           title="Select Gotra"
-          items={[
-            <Picker.Item key="empty" label="Select Gotra" value="" />,
-            ...gotra.Gotra.map((g) => (
-              <Picker.Item 
-                key={g.EName} 
-                label={`${g.EName || ''} (${g.HName})`} 
-                value={g.EName || g.HName}
-              />
-            ))
-          ]}
         />
       </ScrollView>
     </SafeAreaView>

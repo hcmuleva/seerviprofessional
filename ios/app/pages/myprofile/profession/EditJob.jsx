@@ -2,58 +2,93 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
   Alert,
   SafeAreaView,
-  KeyboardAvoidingView,
-  Platform,
   ScrollView,
+  Platform,
+  Modal,
 } from 'react-native';
 import { useUpdate } from "@refinedev/core";
+import { Picker } from '@react-native-picker/picker';
+import { TextInput, Card, Title, Button } from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { useNavigation } from '@react-navigation/native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+
+const jobTypes = [
+  { label: 'Private', value: 'PRIVATE' },
+  { label: 'Public', value: 'PUBLIC' },
+  { label: 'Govt', value: 'GOVT' },
+  { label: 'SemiPrivate', value: 'SEMIPRIVATE' },
+  { label: 'PublicSector', value: 'PUBLICSECTOR' },
+  { label: 'Administrative', value: 'ADMINISTRATIVE' },
+  { label: 'Other', value: 'OTHER' }
+];
+
+const employmentTypes = [
+  { label: 'Permanent', value: 'PERMANENT' },
+  { label: 'Part Time', value: 'PARTTIME' },
+  { label: 'Contract', value: 'CONTRACT' },
+  { label: 'Other', value: 'OTHER' }
+];
 
 const EditJob = ({ route }) => {
-  const navigation = useNavigation();
   const { jobid, job } = route.params;
   const { mutate: updateJob } = useUpdate();
-  const insets = useSafeAreaInsets();
 
-  const [post, setPost] = useState(job?.post || '');
+  const [orgType, setOrgType] = useState(job?.orgtype || '');
   const [organization, setOrganization] = useState(job?.organization || '');
+  const [jobType, setJobType] = useState(job?.job_type || '');
+  const [post, setPost] = useState(job?.post || '');
   const [experience, setExperience] = useState(job?.experience || '');
+  const [skills, setSkills] = useState(job?.skills || '');
   const [fromDate, setFromDate] = useState(job?.from ? new Date(job.from) : new Date());
   const [toDate, setToDate] = useState(job?.to ? new Date(job.to) : new Date());
   const [isLoading, setIsLoading] = useState(false);
+  const [annualCompensation, setAnnualCompensation] = useState(job?.annual_compensation?.toString() || '');
+  const [employeesCount, setEmployeesCount] = useState(job?.employees_count?.toString() || '');
 
   const [showFromPicker, setShowFromPicker] = useState(false);
   const [showToPicker, setShowToPicker] = useState(false);
+  const [showJobTypePicker, setShowJobTypePicker] = useState(false);
 
-  const formatDate = (date) => date.toISOString().split('T')[0];
+  const formatDate = (date) => {
+    return date.toISOString().split('T')[0];
+  };
 
   const showSuccessMessage = () => {
-    Alert.alert('Success', 'Job post has been successfully updated.', [{ text: 'OK' }]);
+    Alert.alert(
+      'Success',
+      'Job has been successfully updated.',
+      [{ text: 'OK' }]
+    );
   };
 
   const showErrorMessage = (message) => {
-    Alert.alert('Error', message || 'Failed to update job details.', [{ text: 'OK' }]);
+    Alert.alert(
+      'Error',
+      message || 'Failed to update job details.',
+      [{ text: 'OK' }]
+    );
   };
 
   const onFromDateChange = (event, selectedDate) => {
-    setShowFromPicker(false);
-    if (selectedDate) setFromDate(selectedDate);
+    setShowFromPicker(Platform.OS === 'ios');
+    if (selectedDate) {
+      setFromDate(selectedDate);
+    }
   };
 
   const onToDateChange = (event, selectedDate) => {
-    setShowToPicker(false);
-    if (selectedDate) setToDate(selectedDate);
+    setShowToPicker(Platform.OS === 'ios');
+    if (selectedDate) {
+      setToDate(selectedDate);
+    }
   };
-  
+
   const validateForm = () => {
-    if (!post.trim() || !organization.trim() || !experience.trim()) {
+    if (!organization.trim() || !jobType || !post.trim()) {
       showErrorMessage('Please fill in all required fields');
       return false;
     }
@@ -64,142 +99,234 @@ const EditJob = ({ route }) => {
     if (!validateForm()) return;
 
     setIsLoading(true);
+
     try {
       const updateData = {
         resource: "jobs",
         id: jobid,
         values: {
-          post,
+          orgtype: orgType,
           organization,
+          job_type: jobType,
+          post,
           experience,
+          skills,
           from: formatDate(fromDate),
           to: formatDate(toDate),
+          annual_compensation: annualCompensation ? Number(annualCompensation) : null,
+          employees_count: employeesCount ? Number(employeesCount) : null,
         },
       };
 
       await updateJob(updateData, {
-        onSuccess: () => {
+        onSuccess: (response) => {
+          console.log("Update success:", response);
           showSuccessMessage();
-          navigation.goBack();
         },
         onError: (error) => {
+          console.error("Update error details:", error);
           showErrorMessage('Failed to update job details: ' + (error?.message || ''));
         },
       });
     } catch (error) {
+      console.error("Error occurred:", error);
       showErrorMessage('There was an issue updating the job details: ' + error.message);
     } finally {
       setIsLoading(false);
     }
   };
 
-  return (
-    <SafeAreaView style={[styles.safeArea, { paddingTop: insets.top }]}>
-      <View style={[styles.header, { height: 44 + insets.top, paddingTop: insets.top }]}>
-        <TouchableOpacity 
-          onPress={() => navigation.goBack()}
-          style={[styles.backButton, { top: insets.top + 10 }]}
+  const renderPicker = () => {
+    if (Platform.OS === 'ios') {
+      return (
+        <TouchableOpacity
+          style={styles.pickerButton}
+          onPress={() => setShowJobTypePicker(true)}
         >
-          <Text style={styles.backButtonText}>ProfileTabs</Text>
+          <Text style={styles.pickerButtonText}>
+            {jobType ? employmentTypes.find(type => type.value === jobType)?.label : 'Select Job Type'}
+          </Text>
+          <MaterialCommunityIcons name="chevron-down" size={24} color="#666" />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { marginTop: insets.top }]}>EditJob</Text>
-      </View>
-      
-      <KeyboardAvoidingView
-        style={styles.keyboardAvoid}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      >
-        <ScrollView
-          contentContainerStyle={[styles.scrollContainer, { paddingBottom: insets.bottom + 16 }]}
-          showsVerticalScrollIndicator={false}
+      );
+    }
+
+    return (
+      <View style={styles.pickerContainer}>
+        <Picker
+          selectedValue={jobType}
+          onValueChange={(value) => setJobType(value)}
+          style={styles.picker}
         >
-          <View style={styles.card}>
-            <View style={styles.formGroup}>
-              <Text style={styles.label}>Organization</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Enter organization name"
-                value={organization}
-                onChangeText={setOrganization}
-                placeholderTextColor="#999"
-              />
-            </View>
+          <Picker.Item label="Select Job Type" value="" />
+          {employmentTypes.map((item) => (
+            <Picker.Item key={item.value} label={item.label} value={item.value} />
+          ))}
+        </Picker>
+      </View>
+    );
+  };
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView style={styles.container}>
+        <Card style={styles.card}>
+          <Card.Content>
+            <Title style={styles.title}>Edit Job</Title>
 
             <View style={styles.formGroup}>
-              <Text style={styles.label}>Post</Text>
-              <TextInput
-                style={[styles.input, styles.textArea]}
-                placeholder="Enter job post"
-                value={post}
-                onChangeText={setPost}
-                multiline
-                placeholderTextColor="#999"
-              />
+              <Text style={styles.label}>Job Type</Text>
+              {renderPicker()}
+            </View>
+
+            <TextInput
+              label="Organization Type"
+              mode="outlined"
+              style={styles.input}
+              value={orgType}
+              onChangeText={setOrgType}
+              placeholder="E.g. HARDWARE/SOFTWARE"
+              left={<TextInput.Icon icon="domain" />}
+            />
+
+            <TextInput
+              label="Organization Name *"
+              mode="outlined"
+              style={styles.input}
+              value={organization}
+              onChangeText={setOrganization}
+              left={<TextInput.Icon icon="office-building" />}
+            />
+
+            <TextInput
+              label="Post"
+              mode="outlined"
+              style={styles.input}
+              value={post}
+              onChangeText={setPost}
+              left={<TextInput.Icon icon="briefcase" />}
+            />
+
+            <TextInput
+              label="Experience (years)"
+              mode="outlined"
+              style={styles.input}
+              value={experience.toString()}
+              onChangeText={setExperience}
+              keyboardType="numeric"
+              left={<TextInput.Icon icon="clock-outline" />}
+            />
+
+            <TextInput
+              label="Annual Compensation"
+              mode="outlined"
+              style={styles.input}
+              value={annualCompensation}
+              onChangeText={setAnnualCompensation}
+              keyboardType="numeric"
+              left={<TextInput.Icon icon="currency-usd" />}
+              placeholder="Enter annual compensation"
+            />
+
+            <TextInput
+              label="Number of Employees"
+              mode="outlined"
+              style={styles.input}
+              value={employeesCount}
+              onChangeText={setEmployeesCount}
+              keyboardType="numeric"
+              left={<TextInput.Icon icon="account-group" />}
+              placeholder="Enter number of employees"
+            />
+
+            <TextInput
+              label="Skills (comma-separated)"
+              mode="outlined"
+              style={styles.input}
+              value={skills}
+              onChangeText={setSkills}
+              placeholder="React, JavaScript, TypeScript"
+              left={<TextInput.Icon icon="lightbulb-on" />}
+            />
+
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>From Date</Text>
+              <TouchableOpacity 
+                style={styles.datePickerButton}
+                onPress={() => setShowFromPicker(true)}
+              >
+                <Text style={styles.dateText}>
+                  {fromDate.toLocaleDateString()}
+                </Text>
+                <MaterialCommunityIcons name="calendar" size={24} color="#666" />
+              </TouchableOpacity>
             </View>
 
             <View style={styles.formGroup}>
-              <Text style={styles.label}>Experience</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Enter required experience"
-                value={experience}
-                onChangeText={setExperience}
-                placeholderTextColor="#999"
-              />
+              <Text style={styles.label}>To Date</Text>
+              <TouchableOpacity 
+                style={styles.datePickerButton}
+                onPress={() => setShowToPicker(true)}
+              >
+                <Text style={styles.dateText}>
+                  {toDate.toLocaleDateString()}
+                </Text>
+                <MaterialCommunityIcons name="calendar" size={24} color="#666" />
+              </TouchableOpacity>
             </View>
-
-            <View style={styles.dateContainer}>
-              <View style={[styles.formGroup, styles.dateField]}>
-                <Text style={styles.label}>From Date</Text>
-                <TouchableOpacity
-                  style={styles.dateButton}
-                  onPress={() => setShowFromPicker(true)}
-                >
-                  <Text style={styles.dateButtonText}>{formatDate(fromDate)}</Text>
-                </TouchableOpacity>
-              </View>
-
-              <View style={[styles.formGroup, styles.dateField]}>
-                <Text style={styles.label}>To Date</Text>
-                <TouchableOpacity
-                  style={styles.dateButton}
-                  onPress={() => setShowToPicker(true)}
-                >
-                  <Text style={styles.dateButtonText}>{formatDate(toDate)}</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            {showFromPicker && (
-              <DateTimePicker
-                value={fromDate}
-                mode="date"
-                display="spinner"
-                onChange={onFromDateChange}
-              />
-            )}
-
-            {showToPicker && (
-              <DateTimePicker
-                value={toDate}
-                mode="date"
-                display="spinner"
-                onChange={onToDateChange}
-              />
-            )}
 
             <TouchableOpacity
-              style={[styles.button, isLoading && styles.buttonDisabled]}
+              style={[styles.submitButton, isLoading && styles.buttonDisabled]}
               onPress={handleSubmit}
               disabled={isLoading}
             >
-              <Text style={styles.buttonText}>
-                {isLoading ? 'Updating...' : 'Update Job Post'}
+              <Text style={styles.submitButtonText}>
+                {isLoading ? 'Updating...' : 'Update Job'}
               </Text>
+              <MaterialCommunityIcons name="content-save" size={24} color="#fff" />
             </TouchableOpacity>
+          </Card.Content>
+        </Card>
+      </ScrollView>
+
+      <Modal
+        visible={showJobTypePicker}
+        animationType="slide"
+        transparent={true}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.pickerModalContent}>
+            <Picker
+              selectedValue={jobType}
+              onValueChange={(value) => setJobType(value)}
+              style={styles.modalPicker}
+            >
+              <Picker.Item label="Select Job Type" value="" />
+              {employmentTypes.map((item) => (
+                <Picker.Item key={item.value} label={item.label} value={item.value} />
+              ))}
+            </Picker>
+            <Button onPress={() => setShowJobTypePicker(false)}>Done</Button>
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+        </View>
+      </Modal>
+
+      {showFromPicker && (
+        <DateTimePicker
+          value={fromDate}
+          mode="date"
+          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          onChange={onFromDateChange}
+        />
+      )}
+      {showToPicker && (
+        <DateTimePicker
+          value={toDate}
+          mode="date"
+          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          onChange={onToDateChange}
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -207,101 +334,104 @@ const EditJob = ({ route }) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#f0f2f5',
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    backgroundColor: '#f5f5f5',
-    borderBottomWidth: 0,
-  },
-  backButton: {
-    position: 'absolute',
-    left: 16,
-    zIndex: 1,
-  },
-  backButtonText: {
-    color: '#007AFF',
-    fontSize: 17,
-  },
-  headerTitle: {
+  container: {
     flex: 1,
-    textAlign: 'center',
-    fontSize: 17,
-    fontWeight: '600',
-    color: '#000',
-  },
-  keyboardAvoid: {
-    flex: 1,
-  },
-  scrollContainer: {
-    flexGrow: 1,
-    padding: 16,
   },
   card: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    margin: 16,
+    elevation: 4,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    color: '#1890ff',
   },
   formGroup: {
     marginBottom: 16,
   },
   label: {
     fontSize: 16,
-    fontWeight: '600',
     marginBottom: 8,
     color: '#333',
+    fontWeight: '600',
   },
   input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    backgroundColor: '#fff',
-    color: '#000',
-  },
-  textArea: {
-    minHeight: 100,
-    textAlignVertical: 'top',
-  },
-  dateContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  dateField: {
-    flex: 0.48,
-  },
-  dateButton: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 12,
+    marginBottom: 16,
     backgroundColor: '#fff',
   },
-  dateButtonText: {
-    fontSize: 16,
-    color: '#000',
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 4,
+    marginBottom: 16,
+    backgroundColor: '#fff',
   },
-  button: {
-    backgroundColor: '#007AFF',
+  picker: {
+    height: 50,
+  },
+  submitButton: {
+    backgroundColor: '#1890ff',
     padding: 16,
     borderRadius: 8,
+    flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
     marginTop: 16,
+  },
+  submitButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginRight: 8,
   },
   buttonDisabled: {
     backgroundColor: '#ccc',
   },
-  buttonText: {
-    color: 'white',
+  datePickerButton: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 4,
+    padding: 12,
+    backgroundColor: '#fff',
+    marginBottom: 16,
+  },
+  dateText: {
     fontSize: 16,
-    fontWeight: '600',
+    color: '#333',
+  },
+  pickerButton: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 4,
+    padding: 12,
+    backgroundColor: '#fff',
+  },
+  pickerButtonText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  pickerModalContent: {
+    backgroundColor: '#fff',
+    padding: 16,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  modalPicker: {
+    height: 200,
   },
 });
 
