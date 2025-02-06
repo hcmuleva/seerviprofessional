@@ -1,13 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-const Matrimonial = () => {
+const BusinessNetwork = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Matrimonial
-(Coming Soon)
-
-      </Text>
+      <Text style={styles.title}>Business Screen</Text>
+      <Text>(Coming Soon)</Text>
       {/* Add your donation form or content here */}
     </View>
   );
@@ -25,4 +23,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default  Matrimonial;
+export default BusinessNetwork;

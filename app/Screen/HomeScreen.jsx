@@ -8,22 +8,25 @@ const { width } = Dimensions.get('window');
 const TOKEN_KEY = process.env.VITE_TOKEN_KEY;
 const API_URL = process.env.VITE_SERVER_URL;
 const HomeScreen = ({ navigation }) => {
-
-
- 
-
   
+  
+
+
+
+
+
+
   const userid =  AsyncStorage.getItem('userid');
 
   
 
   const profileCards = [
     {
-      title: 'Matrimonial',
-      icon: 'heart-multiple',
-      description: 'Find your life partner',
-      color: ['#FF6B6B', '#FF8E8E'],
-      navigationTarget: 'Matrimonial'
+      title: 'Dashboard',
+      icon: 'view-dashboard',
+      description: 'community metrics at a glance',
+      color: ['#60A5FA', '#2563EB'],
+      navigationTarget: 'Dashboard'
     },
     {
       title: 'Community Members',
@@ -38,7 +41,7 @@ const HomeScreen = ({ navigation }) => {
       icon: 'briefcase',
       description: 'Professional networking',
       color: ['#6C63FF', '#5A52D5'],
-      navigationTarget: 'Profile'
+      navigationTarget: 'BusinessNetwork'
     },
     {
       title: 'Temple Donation',
@@ -137,12 +140,12 @@ const HomeScreen = ({ navigation }) => {
           <Text style={styles.sectionTitle}>Upcoming Events</Text>
           <View style={styles.eventContainer}>
             {[
-              { title: 'Annual Meeting', date: 'Dec 31, 2024', icon: 'people' },
-              { title: 'Youth Festival', date: 'Jan 15, 2025', icon: 'musical-notes' }
+              { title: 'Annual Meeting', date: 'Dec 31, 2024', icon: 'people', colors: ['#34D399', '#059669'] },
+              { title: 'Youth Festival', date: 'Jan 15, 2025', icon: 'musical-notes', colors: ['#F472B6', '#DB2777'] }
             ].map((event, index) => (
               <TouchableOpacity key={index} style={styles.eventCard}>
                 <LinearGradient
-                  colors={['#FF8C00', '#FFA500']}
+                  colors={event.colors}
                   style={styles.eventGradient}
                 >
                   <Ionicons name={event.icon} size={30} color="#fff" />

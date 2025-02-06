@@ -3,18 +3,18 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet, TextInput, Activity
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useInfiniteList } from "@refinedev/core";
 import UserItem from './UserItem';
-// import DashboardNav from './dashboardnav';/
+// import DashboardNav from './dashboardnav';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function Dashboard({navigation}) {
+export default function Dashboard({ navigation }) {
   const [userid, setUserid] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const pageSize = 10;
 
   useEffect(() => {
     const getUserId = async () => {
-        const storedUserId = await AsyncStorage.getItem('userid');
-        setUserid(storedUserId);
+      const storedUserId = await AsyncStorage.getItem('userid');
+      setUserid(storedUserId);
     };
     getUserId();
   }, []);
@@ -79,16 +79,18 @@ export default function Dashboard({navigation}) {
     <UserItem 
       user={item} 
       onPress={() => { 
-        if(item.id !== userid){
+        // If the user clicked is not the current user, pass the "NORMALUSER" role;
+        // otherwise, pass "LOGINUSER".
+        if (item.id !== userid) {
           navigation.navigate('ProfileMobile', {
-            PofileShown: "NORMALUSER",
+            ProfileShown: "NORMALUSER",
             CurrentUserId: item.id,
-          })
+          });
         } else {
           navigation.navigate('ProfileMobile', {
-            PofileShown: "LOGINUSER",
+            ProfileShown: "LOGINUSER",
             CurrentUserId: item.id,
-          })
+          });
         }
       }} 
     />
@@ -134,9 +136,12 @@ export default function Dashboard({navigation}) {
         <View style={styles.footer}>
           <TouchableOpacity
             style={styles.profileButton}
-            onPress={() => navigation.navigate('ProfileMobile', {
-              PofileShown: "LOGINUSER",
-            })}
+            onPress={() => 
+              navigation.navigate('ProfileMobile', {
+                ProfileShown: "LOGINUSER",
+                CurrentUserId: userid, // pass current user id here if needed
+              })
+            }
           >
             <Icon name="person" size={24} color="#fff" />
             <Text style={styles.profileButtonText}>My Profile</Text>

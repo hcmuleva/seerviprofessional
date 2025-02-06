@@ -14,72 +14,84 @@ import {
 } from 'react-native';
 import { useUpdate } from "@refinedev/core";
 import DateTimePicker from '@react-native-community/datetimepicker';
+import ImageUpload from './ImageUpload';
+import ProfileImageDisplay from './ProfileDisplay';
 
-const EditBasicAll = ({route}) => {
+const EditBasicAll = ({ route }) => {
   const { userid, currentData: userData, activeTab } = route.params;
   const { mutate: updateBasicInfo } = useUpdate();
 
-  // Get initial form data based on active tab
   const getInitialFormData = () => {
-    switch (activeTab) {
-      case "personalInfo":
-        return {
-          firstname: userData?.firstname || '',
-          lastname: userData?.lastname || '',
-          username: userData?.username || '',
-          dob: userData?.dob ? new Date(userData.dob) : new Date(),
-          sex: userData?.sex || '',
-          gotra: userData?.gotra || '',
-          cast: userData?.cast || '',
-          jati: userData?.jati || '',
-          bio: userData?.bio || '',
-          marital: userData?.marital || '',
-          isdivyang: userData?.isdivyang || false,
-          divyangdescription: userData?.divyangdescription || '',
-        };
-      case "contactInfo":
-        return {
-          mobile: userData?.mobile || '',
-          email: userData?.email || '',
-          dial_code: userData?.dial_code || '',
-          privacy: userData?.privacy || '',
-        };
-      case "familyDetails":
-        return {
-          father: userData?.father || '',
-          father_gotra: userData?.father_gotra || '',
-          mother: userData?.mother || '',
-          husband: userData?.husband || '',
-          relationship: userData?.relationship || '',
-        };
-      case "educationInfo":
-        return {
-          education_level: userData?.education_level || '',
-          profession: userData?.profession || '',
-          occupation: userData?.occupation || '',
-        };
-      case "lifestyle":
-        return {
-          language: userData?.language || '',
-        };
-      case "preferences":
-        return {
-          ISActiveProfile: userData?.ISActiveProfile || false,
-          provider: userData?.provider || '',
-        };
-      default:
-        return {};
-    }
+    const baseData = {
+      personalInfo: {
+        firstname: userData?.firstname || '',
+        lastname: userData?.lastname || '',
+        username: userData?.username || '',
+        dob: userData?.dob ? new Date(userData.dob) : new Date(),
+        sex: userData?.sex || '',
+        gotra: userData?.gotra || '',
+        cast: userData?.cast || '',
+        jati: userData?.jati || '',
+        bio: userData?.bio || '',
+        marital: userData?.marital || '',
+        isdivyang: userData?.isdivyang || false,
+        divyangdescription: userData?.divyangdescription || '',
+        photo: null,
+        photoId: null,
+      },
+      contactInfo: {
+        mobile: userData?.mobile || '',
+        email: userData?.email || '',
+        dial_code: userData?.dial_code || '',
+        privacy: userData?.privacy || '',
+      },
+      familyDetails: {
+        father: userData?.father || '',
+        father_gotra: userData?.father_gotra || '',
+        mother: userData?.mother || '',
+        husband: userData?.husband || '',
+        relationship: userData?.relationship || '',
+      },
+      educationInfo: {
+        education_level: userData?.education_level || '',
+        profession: userData?.profession || '',
+        occupation: userData?.occupation || '',
+      },
+      lifestyle: {
+        language: userData?.language || '',
+      },
+      preferences: {
+        ISActiveProfile: userData?.ISActiveProfile || false,
+        provider: userData?.provider || '',
+      },
+    };
+
+    return baseData[activeTab] || {};
   };
 
   const [formData, setFormData] = useState(getInitialFormData());
   const [isLoading, setIsLoading] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [profileImage, setProfileImage] = useState(null);
 
-  // Update form data when tab changes
   useEffect(() => {
     setFormData(getInitialFormData());
-  }, [activeTab]);
+    initializeProfileImage();
+  }, [activeTab, userData]);
+
+  const initializeProfileImage = () => {
+    const photoUrl = userData?.photo || userData?.photos?.[0]?.url;
+    const photoId = userData?.photos?.[0]?.id || userData?.photoId;
+
+    if (photoUrl) {
+      setProfileImage(photoUrl);
+      setFormData(prev => ({
+        ...prev,
+        photo: photoUrl,
+        photoId: photoId
+      }));
+    }
+  };
 
   const formatDate = (date) => {
     return date.toISOString().split('T')[0];
@@ -92,20 +104,23 @@ const EditBasicAll = ({route}) => {
     }));
   };
 
+  const handleImageUploaded = (imageUrl, id) => {
+    if (imageUrl && id) {
+      setProfileImage(imageUrl);
+      setFormData(prev => ({
+        ...prev,
+        photo: imageUrl,
+        photoId: id
+      }));
+    }
+  };
+
   const showSuccessMessage = () => {
-    Alert.alert(
-      'Success',
-      'Information has been successfully updated.',
-      [{ text: 'OK' }]
-    );
+    Alert.alert('Success', 'Information has been successfully updated.', [{ text: 'OK' }]);
   };
 
   const showErrorMessage = (message) => {
-    Alert.alert(
-      'Error',
-      message || 'Failed to update information.',
-      [{ text: 'OK' }]
-    );
+    Alert.alert('Error', message || 'Failed to update information.', [{ text: 'OK' }]);
   };
 
   const onDateChange = (event, selectedDate) => {
@@ -115,58 +130,46 @@ const EditBasicAll = ({route}) => {
     }
   };
 
-  // Get form fields configuration based on active tab
   const getFormFields = () => {
-    switch (activeTab) {
-      case "personalInfo":
-        return [
-          { name: 'firstname', label: 'First Name', required: true },
-          { name: 'lastname', label: 'Last Name', required: true },
-          { name: 'username', label: 'Username' },
-          { name: 'sex', label: 'Gender', required: true },
-          { name: 'gotra', label: 'Gotra' },
-          { name: 'cast', label: 'Cast' },
-          { name: 'jati', label: 'Ethnicity' },
-          { name: 'bio', label: 'Bio', multiline: true },
-          { name: 'marital', label: 'Marital Status' },
-        ];
-      case "contactInfo":
-        return [
-          { name: 'mobile', label: 'Phone Number', required: true },
-          { name: 'email', label: 'Email', required: true },
-          { name: 'dial_code', label: 'Dial Code' },
-          { name: 'privacy', label: 'Privacy Settings' },
-        ];
-      case "familyDetails":
-        return [
-          { name: 'father', label: 'Father Name' },
-          { name: 'father_gotra', label: 'Father Gotra' },
-          { name: 'mother', label: 'Mother Name' },
-          { name: 'husband', label: 'Husband Name' },
-          { name: 'relationship', label: 'Relationship' },
-        ];
-      case "educationInfo":
-        return [
-          { name: 'education_level', label: 'Education Level' },
-          { name: 'profession', label: 'Profession' },
-          { name: 'occupation', label: 'Occupation' },
-        ];
-      case "lifestyle":
-        return [
-          { name: 'language', label: 'Language' },
-          { name: 'userstatus', label: 'User Status' },
-          { name: 'commityroles', label: 'Community Roles' },
-          { name: 'myrole', label: 'My Role' },
-        ];
-      case "preferences":
-        return [
-          { name: 'user_title', label: 'User Title' },
-          { name: 'userrole', label: 'User Role' },
-          { name: 'provider', label: 'Provider' },
-        ];
-      default:
-        return [];
-    }
+    const fields = {
+      personalInfo: [
+        { name: 'firstname', label: 'First Name', required: true },
+        { name: 'lastname', label: 'Last Name', required: true },
+        { name: 'username', label: 'Username' },
+        { name: 'sex', label: 'Gender', required: true },
+        { name: 'gotra', label: 'Gotra' },
+        { name: 'cast', label: 'Cast' },
+        { name: 'jati', label: 'Ethnicity' },
+        { name: 'bio', label: 'Bio', multiline: true },
+        { name: 'marital', label: 'Marital Status' },
+      ],
+      contactInfo: [
+        { name: 'mobile', label: 'Phone Number', required: true },
+        { name: 'email', label: 'Email', required: true },
+        { name: 'dial_code', label: 'Dial Code' },
+        { name: 'privacy', label: 'Privacy Settings' },
+      ],
+      familyDetails: [
+        { name: 'father', label: 'Father Name' },
+        { name: 'father_gotra', label: 'Father Gotra' },
+        { name: 'mother', label: 'Mother Name' },
+        { name: 'husband', label: 'Husband Name' },
+        { name: 'relationship', label: 'Relationship' },
+      ],
+      educationInfo: [
+        { name: 'education_level', label: 'Education Level' },
+        { name: 'profession', label: 'Profession' },
+        { name: 'occupation', label: 'Occupation' },
+      ],
+      lifestyle: [
+        { name: 'language', label: 'Language' },
+      ],
+      preferences: [
+        { name: 'provider', label: 'Provider' },
+      ],
+    };
+
+    return fields[activeTab] || [];
   };
 
   const validateForm = () => {
@@ -187,29 +190,75 @@ const EditBasicAll = ({route}) => {
     setIsLoading(true);
 
     try {
-      let values = { ...formData };
+      const values = { ...formData };
       
-      // Handle special cases
-      if (activeTab === 'personalInfo') {
-        values.dob = formatDate(formData.dob);
+      if (activeTab === 'personalInfo' && values.dob) {
+        values.dob = formatDate(values.dob);
       }
       
-      const updateData = {
-        resource: "users",
-        id: userid,
-        values,
-      };
-
-      await updateBasicInfo(updateData, {
-        onSuccess: () => showSuccessMessage(),
-        onError: (error) => showErrorMessage(error?.message),
-      });
+      await updateBasicInfo(
+        {
+          resource: "users",
+          id: userid,
+          values,
+        },
+        {
+          onSuccess: showSuccessMessage,
+          onError: (error) => showErrorMessage(error?.message),
+        }
+      );
     } catch (error) {
       showErrorMessage(error.message);
     } finally {
       setIsLoading(false);
     }
   };
+
+  const renderPersonalInfoFields = () => (
+    <>
+      <ProfileImageDisplay
+        imageUrl={profileImage}
+        size={150}
+        loading={isLoading}
+      />
+      <ImageUpload onImageUploaded={handleImageUploaded} userId={userid}/>
+      {getFormFields().map(field => (
+        <View key={field.name} style={styles.formGroup}>
+          <Text style={styles.label}>
+            {field.label}
+            {field.required && <Text style={styles.required}> *</Text>}
+          </Text>
+          <TextInput
+            style={[styles.input, field.multiline && styles.multilineInput]}
+            placeholder={`Enter ${field.label.toLowerCase()}`}
+            value={formData[field.name]}
+            onChangeText={(value) => handleChange(field.name, value)}
+            multiline={field.multiline}
+            numberOfLines={field.multiline ? 4 : 1}
+          />
+        </View>
+      ))}
+    </>
+  );
+
+  const renderFormFields = () => (
+    getFormFields().map(field => (
+      <View key={field.name} style={styles.formGroup}>
+        <Text style={styles.label}>
+          {field.label}
+          {field.required && <Text style={styles.required}> *</Text>}
+        </Text>
+        <TextInput
+          style={[styles.input, field.multiline && styles.multilineInput]}
+          placeholder={`Enter ${field.label.toLowerCase()}`}
+          value={formData[field.name]}
+          onChangeText={(value) => handleChange(field.name, value)}
+          multiline={field.multiline}
+          numberOfLines={field.multiline ? 4 : 1}
+        />
+      </View>
+    ))
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -223,25 +272,8 @@ const EditBasicAll = ({route}) => {
           contentContainerStyle={styles.scrollViewContent}
         >
           <View style={styles.card}>
-            {/* Render form fields based on active tab */}
-            {getFormFields().map(field => (
-              <View key={field.name} style={styles.formGroup}>
-                <Text style={styles.label}>
-                  {field.label}
-                  {field.required && <Text style={styles.required}> *</Text>}
-                </Text>
-                <TextInput
-                  style={[styles.input, field.multiline && styles.multilineInput]}
-                  placeholder={`Enter ${field.label.toLowerCase()}`}
-                  value={formData[field.name]}
-                  onChangeText={(value) => handleChange(field.name, value)}
-                  multiline={field.multiline}
-                  numberOfLines={field.multiline ? 4 : 1}
-                />
-              </View>
-            ))}
+            {activeTab === "personalInfo" ? renderPersonalInfoFields() : renderFormFields()}
 
-            {/* Date picker for personal info */}
             {activeTab === 'personalInfo' && (
               <>
                 <View style={styles.formGroup}>
@@ -289,7 +321,6 @@ const EditBasicAll = ({route}) => {
               </>
             )}
 
-            {/* Active Profile switch for preferences */}
             {activeTab === 'preferences' && (
               <View style={styles.formGroup}>
                 <Text style={styles.label}>Active Profile</Text>
@@ -340,19 +371,19 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: 'white',
-    borderRadius: 8,
-    padding: 16,
+    borderRadius: 12,
+    padding: 20,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
     elevation: 5,
   },
   formGroup: {
-    marginBottom: 16,
+    marginBottom: 20,
   },
   label: {
     fontSize: 16,
@@ -361,12 +392,12 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   required: {
-    color: 'red',
+    color: '#ff4d4f',
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 4,
+    borderColor: '#d9d9d9',
+    borderRadius: 8,
     padding: 12,
     fontSize: 16,
     backgroundColor: '#fff',
@@ -377,8 +408,8 @@ const styles = StyleSheet.create({
   },
   dateButton: {
     borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 4,
+    borderColor: '#d9d9d9',
+    borderRadius: 8,
     padding: 12,
     backgroundColor: '#fff',
   },
@@ -390,24 +421,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 16,
     borderTopWidth: 1,
-    borderTopColor: '#ddd',
+    borderTopColor: '#f0f0f0',
     elevation: 5,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: -2,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   button: {
     backgroundColor: '#1890ff',
     padding: 14,
-    borderRadius: 4,
+    borderRadius: 8,
     alignItems: 'center',
   },
   buttonDisabled: {
-    backgroundColor: '#ccc',
+    backgroundColor: '#bae7ff',
   },
   buttonText: {
     color: 'white',
