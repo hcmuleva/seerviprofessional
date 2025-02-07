@@ -23,15 +23,101 @@ export default function Register() {
   const gotra = {
     "Gotra": [
       {
-        "HName": "choyal"
+        "english": "Rathore",
+        "hindi": "राठौड़"
       },
       {
-        "HName": "kag"
+        "english": "Parihar",
+        "hindi": "परिहार"
       },
       {
-        "EName": "Kartik",
-        "HName": "septa"
+        "english": "Panwar",
+        "hindi": "पंवार"
       },
+      {
+        "english": "Chauhan",
+        "hindi": "चौहान"
+      },
+      {
+        "english": "Solanki",
+        "hindi": "सोलंकी"
+      },
+      {
+        "english": "Gehlot",
+        "hindi": "गहलोत"
+      },
+      {
+        "english": "Lacheta",
+        "hindi": "लचेटा"
+      },
+      {
+        "english": "Septa",
+        "hindi": "सेपटा"
+      },
+      {
+        "english": "Kag",
+        "hindi": "काग"
+      },
+      {
+        "english": "Bhayal",
+        "hindi": "भायल"
+      },
+      {
+        "english": "Parihariya",
+        "hindi": "परिहारिया"
+      },
+      {
+        "english": "Devda",
+        "hindi": "देवड़ा"
+      },
+      {
+        "english": "Aglecha",
+        "hindi": "आगलेचा"
+      },
+      {
+        "english": "Bhumbhadiya",
+        "hindi": "भुम्भाड़िया"
+      },
+      {
+        "english": "Choyal",
+        "hindi": "चोयल"
+      },
+      {
+        "english": "Hambad",
+        "hindi": "हाम्बड़"
+      },
+      {
+        "english": "Sencha",
+        "hindi": "सेणचा"
+      },
+      {
+        "english": "Songara",
+        "hindi": "सोनगरा"
+      },
+      {
+        "english": "Sindda",
+        "hindi": "सींदड़ा"
+      },
+      {
+        "english": "Khandala",
+        "hindi": "खंडाला"
+      },
+      {
+        "english": "Barfa",
+        "hindi": "बर्फा"
+      },
+      {
+        "english": "Mogrecha",
+        "hindi": "मोगरेचा"
+      },
+      {
+        "english": "Siyall",
+        "hindi": "सियाल्ल"
+      },
+      {
+        "english": "Muleva",
+        "hindi": "मूलेवा"
+      }
     ]
   };
 
@@ -120,30 +206,36 @@ export default function Register() {
               <Text style={styles.doneButton}>Done</Text>
             </TouchableOpacity>
           </View>
-          <Picker
-            selectedValue={selectedValue}
-            onValueChange={(itemValue) => {
-              onValueChange(itemValue);
-              onClose();
-            }}
-            style={styles.iosPicker}
-          >
-            <Picker.Item key="default" label={title} value="" />
-            {title === "Select Gender" ? (
-              <>
-                <Picker.Item key="male" label="Male" value="Male" />
-                <Picker.Item key="female" label="Female" value="Female" />
-              </>
-            ) : (
-              gotra.Gotra.map((g, index) => (
-                <Picker.Item 
-                  key={`gotra-${index}-${g.EName || g.HName}`}
-                  label={`${g.EName || ''} ${g.HName}`.trim()}
-                  value={g.EName || g.HName}
+          {title === "Select Gender" ? (
+            <Picker
+              selectedValue={selectedValue}
+              onValueChange={(itemValue) => {
+                onValueChange(itemValue);
+              }}
+              style={styles.iosPicker}
+            >
+              <Picker.Item label="Select Gender" value="" />
+              <Picker.Item label="Male" value="Male" />
+              <Picker.Item label="Female" value="Female" />
+            </Picker>
+          ) : (
+            <Picker
+              selectedValue={selectedValue}
+              onValueChange={(itemValue) => {
+                onValueChange(itemValue);
+              }}
+              style={styles.iosPicker}
+            >
+              <Picker.Item label="Select Gotra" value="" />
+              {gotra.Gotra.map((g, index) => (
+                <Picker.Item
+                  key={index}
+                  label={`${g.english} (${g.hindi})`}
+                  value={g.english}
                 />
-              ))
-            )}
-          </Picker>
+              ))}
+            </Picker>
+          )}
         </View>
       </View>
     </Modal>
@@ -282,6 +374,7 @@ export default function Register() {
           selectedValue={formData.sex}
           onValueChange={(value) => {
             handleInputChange('sex', value);
+            setShowGenderPicker(false);
           }}
           title="Select Gender"
         />
@@ -292,6 +385,7 @@ export default function Register() {
           selectedValue={formData.gotra}
           onValueChange={(value) => {
             handleInputChange('gotra', value);
+            setShowGotraPicker(false);
           }}
           title="Select Gotra"
         />

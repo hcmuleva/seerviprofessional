@@ -15,7 +15,8 @@ import EditBasicAll from "./pages/myprofile/profession/EditBasicAll";
 import Login from "./login";
 import DonationScreen from "./Screen/Cards/DonationScreen";
 import CommunityMembers from "./Screen/Cards/CommunityMembers";
-import Matrimonial from "./Screen/Cards/Matrimonial";
+import Dashboard from "./Dashboard/usersdashbaord";
+import BusinessNetwork from "./Screen/Cards/BusinessNetwork";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -26,7 +27,10 @@ const HomeStack = () => (
     <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
     <Stack.Screen name="DonationScreen" component={DonationScreen} options={{ headerShown: true, title: "Donation" }} />
     <Stack.Screen name="CommunityMembers" component={CommunityMembers} options={{ headerShown: true, title: "Donation" }} />
-    <Stack.Screen name="Matrimonial" component={Matrimonial} options={{ headerShown: true, title: "Matrimonial" }} />
+    <Stack.Screen name="Dashboard" component={Dashboard} options={{ headerShown: true, title: "Dashboard" }} />
+    <Stack.Screen name="BusinessNetwork" component={BusinessNetwork} options={{ headerShown: true, title: "Matrimonial" }} />
+    <Stack.Screen name="ProfileMobile" component={ProfileMobile} options={{ headerShown: true, title: "Matrimonial" }} />
+
   </Stack.Navigator>
   
 
