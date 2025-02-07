@@ -122,7 +122,7 @@ const ProfileMobile = ({ route }) => {
           <TouchableOpacity style={styles.iconButton} onPress={handleLogout}>
               <Feather name="power" size={28} color="#86878B" />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.iconButton}>
+            <TouchableOpacity style={styles.iconButton} onPress={() => (navigation.navigate('Settings'))} >
               <Feather name="settings" size={28} color="#86878B" />
             </TouchableOpacity>
           </View>

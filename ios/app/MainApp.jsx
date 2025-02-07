@@ -17,6 +17,7 @@ import DonationScreen from "./Screen/Cards/DonationScreen";
 import CommunityMembers from "./Screen/Cards/CommunityMembers";
 import Dashboard from "./Dashboard/usersdashbaord";
 import BusinessNetwork from "./Screen/Cards/BusinessNetwork";
+import SettingsScreen from "./pages/myprofile/setting/setting";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -58,6 +59,7 @@ const ProfileStack = () => (
     <Stack.Screen name="ProfileTabs" component={ProfileTabs} options={{ headerShown: true }} />
     <Stack.Screen name="EditJob" component={EditJob} options={{ headerShown: true }} />
     <Stack.Screen name="EditBasicAll" component={EditBasicAll} />
+    <Stack.Screen name="Settings" component={SettingsScreen} />
 
   </Stack.Navigator>
 );
