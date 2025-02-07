@@ -1,10 +1,10 @@
 export const resourcesConfig = [
     {
-        name: "HomeScreen",
-        list: "HomeScreen",
+        name: "dashboard",
+        list: "dashboard",
         meta: {
             icon: "/home.svg",  // Store the icon URL as a string
-            label: "HomeScreen",
+            label: "dashboard",
             canonical: true,
         },
     },

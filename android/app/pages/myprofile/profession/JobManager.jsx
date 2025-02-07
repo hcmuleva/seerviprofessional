@@ -34,6 +34,7 @@ const JobManager = () => {
         title="Add Job"
         onPress={() => handleAddJob({ id: jobs.length + 1, post: 'New Job', organization: 'Company', experience: 2, type: 'Full-time', job_type: 'Permanent', from: '2025-01-01', to: '2025-12-31', address: { village: 'Village', tehsil: 'Tehsil', district: 'District', state: 'State' } })}
       />
+       
     </View>
   );
 };

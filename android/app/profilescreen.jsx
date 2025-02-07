@@ -122,7 +122,7 @@ const ProfileEdit = ({ userData, onSave }) => {
           </View>
         </TouchableOpacity>
       </View>
-
+      
       <Tab.Navigator
         screenOptions={{
           tabBarStyle: styles.tabBar,

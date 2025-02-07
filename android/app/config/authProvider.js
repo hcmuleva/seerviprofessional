@@ -64,19 +64,18 @@ export const authProvider = {
     try {
       const { data, status } = await strapiAuthHelper.login(userid, password);
       if (status == 200) {
-        console.log("DATA",data)
-        AsyncStorage.setItem(TOKEN_KEY, data.jwt);
-        AsyncStorage.setItem("userid", String(data?.user?.id));
-        AsyncStorage.setItem("emeelanrole", String(data?.user?.emeelanrole));
-        AsyncStorage.setItem("userstatus",String(data?.user?.userstatus))
+        await AsyncStorage.setItem(TOKEN_KEY, data.jwt);
+        await AsyncStorage.setItem("userid", String(data?.user?.id));
+        await AsyncStorage.setItem("emeelanrole", String(data?.user?.emeelanrole));
+        await AsyncStorage.setItem("userstatus",String(data?.user?.userstatus))
         axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${data.jwt}`;
         
         return {
           success: true,
-          redirectTo: "/user-dashboard",
+          redirectTo: "/HomeScreen",
         };
 
-        return { success: true, redirectTo: "/user-dashboard" };
+        return { success: true, redirectTo: "/HomeScreen" };
    
       }
     } catch (error) {
@@ -148,7 +147,7 @@ export const authProvider = {
 
       const { status, data } = response;
       if (status == 200) {
-        AsyncStorage.setItem(TOKEN_KEY, data?.jwt);
+       await AsyncStorage.setItem(TOKEN_KEY, data?.jwt);
         return {
           success: true,
           redirectTo: "/dashboard",
@@ -173,7 +172,7 @@ export const authProvider = {
     };
   },
   logout: async () => {
-    AsyncStorage.clear();
+    await AsyncStorage.clear();
     axiosInstance.defaults.headers.common["Authorization"] = null;
     return {
       success: true,
@@ -185,7 +184,7 @@ export const authProvider = {
     const status = error.response?.status;
     
     if (status === 401 || status === 403) {
-      AsyncStorage.clear();
+     await AsyncStorage.clear();
       return {
         logout: true,
         redirectTo: "/login",
@@ -223,7 +222,7 @@ export const authProvider = {
         };
       }
     } catch (error) {
-      AsyncStorage.clear();
+     await AsyncStorage.clear();
       return {
         authenticated: false,
         error: {
@@ -312,8 +311,8 @@ export const authProvider = {
             requestsby,
             usermeelan,
         } = data;
-        AsyncStorage.setItem(USER_ROLE, emeelanrole);
-        AsyncStorage.setItem(USER_STATUS, userstatus);
+       await AsyncStorage.setItem(USER_ROLE, emeelanrole);
+       await AsyncStorage.setItem(USER_STATUS, userstatus);
         return {
             userstatus,
             emeelanrole,
@@ -329,5 +328,4 @@ export const authProvider = {
     }
     return null;
 },
-
 };

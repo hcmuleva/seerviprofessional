@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, Text, StyleSheet, PermissionsAndroid, Platform } from 'react-native';
-import Location from 'react-native-location'; // Import react-native-location
+// import Location from 'react-native-location'; // Import react-native-location
 import fetchGeoData from '../../utils/geoLocation';
 import ProfileTabs from '../../(tabs)/profiletabs';
 

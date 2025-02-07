@@ -20,29 +20,29 @@ const API_URL = process.env.VITE_SERVER_URL;
 const TOKEN_KEY = process.env.VITE_TOKEN_KEY;
 
 export default function Login() {
-
- 
+  
   const navigation = useNavigation();
-  const [userid, setUserId] = useState('');
-  const [password, setPassword] = useState('');
+  
+  const [userid, setUserId] = useState("mani@hph.com");
+  const [password, setPassword] = useState("welcome"); // Default password
+  // const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const { mutate: login, isLoading } = useLogin();
 
-  // useEffect(() => {
-  //   const checkToken = async () => {
-  //     const token = await AsyncStorage.getItem(TOKEN_KEY);
-  //     if (token) {
-  //       navigation.navigate('HomeScreen');
-  //     }
-  //   };
-  //   checkToken();
-  // }, []);
-
   useEffect(() => {
-    if (AsyncStorage.getItem("jwt-token")) navigation.navigate("HomeScreen");
+    const checkToken = async () => {
+      const token = await AsyncStorage.getItem(TOKEN_KEY);
+      if (token) {
+        navigation.navigate('Main');
+      }
+    };
+    checkToken();
   }, []);
-
   
+
+  // useEffect(() => {
+  //   if (AsyncStorage.getItem("jwt-token")) navigation.navigate("Testdahboard");
+  // }, []);
 
   const handleLogin = async () => {
     try {
@@ -53,14 +53,13 @@ export default function Login() {
       });
        
       if (res.ok) {
-        const data = await res.json();
-        console.log("INSIDE LOGIN",data);
+        const data = await res.json()
         
         await AsyncStorage.setItem(TOKEN_KEY, data.jwt);
         await AsyncStorage.setItem('userid', String(data?.user?.id));
         await AsyncStorage.setItem('userstatus', String(data?.user?.userstatus));
         await AsyncStorage.setItem('emeelanrole', String(data?.user?.emeelanrole));
-        navigation.navigate('HomeScreen');
+        navigation.navigate('Main');
       } else {
         const errorData = await res.json();
         Alert.alert('Login Failed', errorData?.message || 'Invalid Credentials.');
@@ -103,13 +102,13 @@ export default function Login() {
           <View style={styles.inputContainer}>
             <Feather name="lock" size={20} color="#666" style={styles.inputIcon} />
             <TextInput
-              style={styles.input}
-              placeholder="Password"
-              placeholderTextColor="#999"
-              secureTextEntry={!showPassword}
-              onChangeText={setPassword}
-              value={password}
-            />
+  style={styles.input}
+  placeholder="Password"
+  placeholderTextColor="#999"
+  secureTextEntry={!showPassword}
+  onChangeText={setPassword}
+  value={password}  // Default password
+/>
             <TouchableOpacity
               style={styles.eyeIcon}
               onPress={() => setShowPassword(!showPassword)}

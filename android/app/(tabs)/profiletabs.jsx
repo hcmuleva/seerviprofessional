@@ -12,7 +12,7 @@ import {
 import { ArrowLeft, Plus, Edit2 } from 'react-native-feather';
 
 const ProfileTabs = ({ route }) => {
-  const { userData, userid, itemKey } = route.params;
+  const { userData, userid, itemKey, PofileShown } = route.params;
   const navigation = useNavigation();
   const [activeTab, setActiveTab] = useState(itemKey.key === 'professional' ? 'jobs' :
     itemKey.key === 'address' ? 'address' :
@@ -63,8 +63,7 @@ const ProfileTabs = ({ route }) => {
     if (itemKey.key === 'professional') {
       return [
         { id: 'jobs', label: 'Jobs' },
-        { id: 'educationInfo', label: 'Education' },
-        { id: 'skills', label: 'Skills' }
+        { id: 'educationInfo', label: 'Education' }
       ];
     } else if (itemKey.key === 'address') {
       return [
@@ -97,71 +96,159 @@ const ProfileTabs = ({ route }) => {
       case "personalInfo":
         return {
           name: `${userData?.firstname} ${userData?.lastname}`,
-          dob: userData?.dob || "Not Provided",
-          age: 28,
+          username: userData?.username || "Not Provided",
+          dateOfBirth: userData?.dob || "Not Provided",
           gender: userData?.sex || "Not Provided",
-          height: "5'11\"",
-          weight: "75 kg",
-          bodyType: "Athletic",
+          gotra: userData?.gotra || "Not Provided",
+          cast: userData?.cast || "Not Provided",
           ethnicity: userData?.jati || "Not Provided",
-          religion: "Agnostic",
-          zodiacSign: "Leo",
+          bio: userData?.bio || "Not Provided",
+          maritalStatus: userData?.marital || "Not Provided",
+          isDivyang: userData?.isdivyang ? "Yes" : "No",
+          divyangDescription: userData?.divyangdescription || "Not Provided"
         };
+        
       case "jobs":
-        return userData?.jobs?.map(job => {
-          const fromFormatted = formatDate(job.from);
-          const toFormatted = job.to ? formatDate(job.to) : 'Present';
-          const duration = calculateDuration(job.from, job.to);
-          
-          return {
-            jobid: job.id || "Not Provided",
-            jobTitle: job.post || "Not Provided",
-            company: job.organization || "Not Provided",
-            experience: job.experience || "Not Provided",
-            duration: `${fromFormatted} to ${toFormatted} ${duration}`,
-          }
-        }) || [];
-      case "skills":
-        return {
-          technicalSkills: "React Native, JavaScript, Python",
-          softSkills: "Leadership, Communication",
-          languages: "English, Spanish",
-          certifications: "AWS Certified Developer",
-        };
+        return userData?.jobs?.map(job => ({
+          jobid: job.id || "Not Provided",
+          jobTitle: job.post || "Not Provided",
+          company: job.organization || "Not Provided",
+          experience: job.experience || "Not Provided",
+          jobType: job.job_type || "Not Provided",
+          compensation: job.annual_compensation || "Not Provided",
+          employeesCount: job.employees_count || "Not Provided",
+          skills: job.skills || "Not Provided",
+          duration: `${formatDate(job.from)} to ${job.to ? formatDate(job.to) : 'Present'} ${calculateDuration(job.from, job.to)}`,
+          orgType: job.orgtype || "Not Provided",
+          type: job.type || "Not Provided",
+          annualcompensation : job.annual_compensation || "Not Provided"
+        })) || [];
+        
       case "contactInfo":
         return {
           phone: userData?.mobile || "Not Provided",
-          email: userData?.email || "Not Provided",
-          address: "Not Available",
+        email: userData?.email || "Not Provided",
+        dialCode: userData?.dial_code || "Not Provided",
+        privacy: userData?.privacy || "Not Provided"
         };
+        
       case "familyDetails":
         return {
-          mother: userData?.mother || "Not Provided",
           father: userData?.father || "Not Provided",
-          siblings: "2 brothers, 1 sister",
+        fatherGotra: userData?.father_gotra || "Not Provided",
+        mother: userData?.mother || "Not Provided",
+        husband: userData?.husband || "Not Provided",
+        relationship: userData?.relationship || "Not Provided"
         };
+        
       case "educationInfo":
         return {
-          degree: userData?.education_level || "Not Provided",
-          university: "XYZ University",
-          graduationYear: "2019",
+          educationLevel: userData?.education_level || "Not Provided",
+          profession: userData?.profession || "Not Provided",
+          occupation: userData?.occupation || "Not Provided"
         };
+        
       case "lifestyle":
         return {
-          hobbies: "Reading, Hiking, Swimming",
-          diet: "Vegetarian",
-          exercise: "Gym 3 times a week",
+          language: userData?.language || "Not Provided",
+          userStatus: userData?.userstatus || "Not Provided",
+          communityRoles: userData?.commityroles || "Not Provided",
+          myRole: userData?.myrole || "Not Provided"
         };
+        
       case "preferences":
         return {
-          preferredLanguage: "English",
-          preferredMusic: "Pop, Jazz",
-          travelDestinations: "Japan, Australia, Italy",
+          userTitle: userData?.user_title || "Not Provided",
+          userRole: userData?.userrole || "Not Provided",
+          isActiveProfile: userData?.ISActiveProfile ? "Yes" : "No",
+          provider: userData?.provider || "Not Provided"
         };
+        
       default:
         return {};
     }
   };
+
+
+  const renderJob = (content) => {
+    return (
+      <>    
+{
+              content.map((job, index) => (
+    <View key={index} style={styles.infoContainer}>
+      <View style={styles.infoRow}>
+        <Text style={styles.label}>Job Title:</Text>
+        <Text style={styles.value}>{job.jobTitle}</Text>
+      </View>
+      
+      <View style={styles.infoRow}>
+        <Text style={styles.label}>Company:</Text>
+        <Text style={styles.value}>{job.company}</Text>
+      </View>
+      
+      <View style={styles.infoRow}>
+        <Text style={styles.label}>Experience:</Text>
+        <Text style={styles.value}>{job.experience} years</Text>
+      </View>
+      
+      <View style={styles.infoRow}>
+        <Text style={styles.label}>Duration:</Text>
+        <Text style={styles.value}>{job.duration}</Text>
+      </View>
+      
+      <View style={styles.infoRow}>
+        <Text style={styles.label}>Job Type:</Text>
+        <Text style={styles.value}>{job.jobType}</Text>
+      </View>
+      
+      <View style={styles.infoRow}>
+        <Text style={styles.label}>Annual Compensation:</Text>
+        <Text style={styles.value}>{job.compensation}</Text>
+      </View>
+      
+      <View style={styles.infoRow}>
+        <Text style={styles.label}>Employee Count:</Text>
+        <Text style={styles.value}>{job.employeesCount}</Text>
+      </View>
+      
+      <View style={styles.infoRow}>
+        <Text style={styles.label}>Skills:</Text>
+        <Text style={styles.value}>{job.skills}</Text>
+      </View>
+      
+      <View style={styles.infoRow}>
+        <Text style={styles.label}>Organization Type:</Text>
+        <Text style={styles.value}>{job.orgType}</Text>
+      </View>
+      
+      <View style={styles.infoRow}>
+        <Text style={styles.label}>Type:</Text>
+        <Text style={styles.value}>{job.type}</Text>
+      </View>
+      
+{ PofileShown !== "NORMALUSER" && 
+
+   <TouchableOpacity
+   style={styles.editButton}
+   onPress={() => {
+     navigation.navigate('EditJob', {
+       jobid: job.jobid,
+     });
+   }}
+ >
+   <Edit2 stroke="white" width={24} height={24} />
+   <Text style={styles.editButtonText}>Edit Job</Text>
+ </TouchableOpacity>
+
+}
+     
+
+    </View>
+  ))}
+
+</>
+    )
+  }
 
   const renderContent = () => {
     const content = getContent(activeTab);
@@ -169,50 +256,35 @@ const ProfileTabs = ({ route }) => {
     if (activeTab === 'jobs' && Array.isArray(content)) {
       return (
         <ScrollView style={styles.formContainer}>
-          <TouchableOpacity 
-            style={styles.addButton}  
-            onPress={() => {
-              navigation.navigate('AddJob', {
-                userid: userid
-              });
-            }}
-          >
-            <Plus stroke="white" width={24} height={24} />
-            <Text style={styles.addButtonText}>Add Job</Text>
-          </TouchableOpacity>
-          
-          {content.map((job, index) => (
-            <View key={index} style={styles.infoContainer}>
-              <View style={styles.infoRow}>
-                <Text style={styles.label}>Job Title:</Text>
-                <Text style={styles.value}>{job.jobTitle}</Text>
-              </View>
-              <View style={styles.infoRow}>
-                <Text style={styles.label}>Company:</Text>
-                <Text style={styles.value}>{job.company}</Text>
-              </View>
-              <View style={styles.infoRow}>
-                <Text style={styles.label}>Experience:</Text>
-                <Text style={styles.value}>{job.experience}</Text>
-              </View>
-              <View style={styles.infoRow}>
-                <Text style={styles.label}>Duration:</Text>
-                <Text style={styles.value}>{job.duration}</Text>
-              </View>
-              
-              <TouchableOpacity
-                style={styles.editButton}
-                onPress={() => {
-                  navigation.navigate('EditJob', {
-                    jobid: job.jobid,
-                  });
-                }}
-              >
-                <Edit2 stroke="white" width={24} height={24} />
-                <Text style={styles.editButtonText}>Edit Job</Text>
-              </TouchableOpacity>
-            </View>
-          ))}
+
+          {
+            PofileShown == "NORMALUSER" ?
+            (
+<>    
+{renderJob(content)}
+</>
+            ) :
+            (
+              <>
+              <TouchableOpacity 
+              style={styles.addButton}  
+              onPress={() => {
+                navigation.navigate('AddJob', {
+                  userid: userid
+                });
+              }}
+            >
+              <Plus stroke="white" width={24} height={24} />
+              <Text style={styles.addButtonText}>Add Job</Text>
+            </TouchableOpacity>
+            
+            {renderJob(content)}
+              </>
+            )
+          }
+
+
+ 
         </ScrollView>
       );
     }
@@ -287,20 +359,30 @@ const ProfileTabs = ({ route }) => {
               <Text style={styles.value}>{value}</Text>
             </View>
           ))}
+
+          {
+            PofileShown == "NORMALUSER" ? (
+               <>
+               </>
+            ):
+            (
+              <TouchableOpacity
+              style={styles.editButton}
+              onPress={() => {
+                navigation.navigate('EditBasicAll', {
+                  userid: userid,
+                  currentData: content,
+                  activeTab: activeTab
+                });
+              }}
+            >
+              <Edit2 stroke="white" width={24} height={24} />
+              <Text style={styles.editButtonText}>Edit {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}</Text>
+            </TouchableOpacity>
+            )
+          }
+         
           
-          <TouchableOpacity
-            style={styles.editButton}
-            onPress={() => {
-              navigation.navigate('EditBasicAll', {
-                userid: userid,
-                currentData: content,
-                activeTab: activeTab
-              });
-            }}
-          >
-            <Edit2 stroke="white" width={24} height={24} />
-            <Text style={styles.editButtonText}>Edit {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}</Text>
-          </TouchableOpacity>
         </View>
       </ScrollView>
     );

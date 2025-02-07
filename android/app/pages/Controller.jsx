@@ -22,7 +22,6 @@ export default function Controller() {
   const closeMenu = () => setVisible(false);
 
   const onItemSelect = (key) => {
-    console.log('Item clicked:', key);
     setCurrent(key);
     closeMenu();
   };

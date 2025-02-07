@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, Button, Alert, Modal, TouchableOpacity, TextInput } from 'react-native';
-import AddressComponent from '../../../components/address/AddressComponent';
+// import AddressComponent from '../../../components/address/AddressComponent';
 
 
 
@@ -11,7 +11,6 @@ export default function CreateAddress({ setType }) {
 
   const onFinish = () => {
     try {
-      console.log({ addressType, address });
       setType("LIST");
     } catch (error) {
       Alert.alert("Error", "There was an issue updating your profile.");
@@ -59,7 +58,7 @@ export default function CreateAddress({ setType }) {
         </View>
       </Modal>
 
-      <AddressComponent form={form} setForm={setForm} />
+      {/* <AddressComponent form={form} setForm={setForm} /> */}
       <Button title="Create Address" onPress={onFinish} />
     </View>
   );

@@ -4,18 +4,14 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useOne } from '@refinedev/core';
+import { Button } from 'react-native-paper';
+import { useNavigation } from 'expo-router';
 const { width } = Dimensions.get('window');
-const TOKEN_KEY = process.env.VITE_TOKEN_KEY;
-const API_URL = process.env.VITE_SERVER_URL;
+
 const HomeScreen = ({ navigation }) => {
-
-
- 
 
   
   const userid =  AsyncStorage.getItem('userid');
-
-  
 
   const profileCards = [
     {
@@ -35,7 +31,7 @@ const HomeScreen = ({ navigation }) => {
       icon: 'briefcase',
       description: 'Professional networking',
       color: ['#6C63FF', '#5A52D5'],
-      navigationTarget: 'ProfileMobile'
+      navigationTarget: 'Dashboard'
     },
     {
       title: 'Temple Donation',
@@ -57,6 +53,19 @@ const HomeScreen = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <LinearGradient colors={['#4a90e2', '#357abd']} style={styles.header}>
         <Text style={styles.headerTitle}>Seervi Samaj {userid}</Text>
+        <Button onPress={async () => {
+  alert("Log Out");  // Alert shows before logout
+
+  try {
+    await AsyncStorage.clear()  // Optionally, remove the user ID as well
+    navigation.navigate('login');  // Navigate to the login screen
+  } catch (error) {
+    console.error("Error during logout", error);  // Handle potential errors
+  }
+}}>
+  Log Out
+</Button>
+
         <View style={styles.headerIcons}>
           <TouchableOpacity style={styles.iconButton}>
             <Ionicons name="notifications-outline" size={24} color="#fff" />
@@ -65,8 +74,9 @@ const HomeScreen = ({ navigation }) => {
             <Ionicons name="search-outline" size={24} color="#fff" />
           </TouchableOpacity>
         </View>
-      </LinearGradient>
 
+      </LinearGradient>
+      
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Temples</Text>
@@ -143,14 +153,6 @@ const HomeScreen = ({ navigation }) => {
           </View>
         </View>
       </ScrollView>
-
-      <LinearGradient colors={['#fff', '#f8f8f8']} style={styles.bottomNav}>
-        {['home', 'calendar', 'people', 'menu'].map((icon, index) => (
-          <TouchableOpacity key={index} style={styles.navItem}>
-            <Ionicons name={icon} size={24} color={index === 0 ? '#4a90e2' : '#666'} />
-          </TouchableOpacity>
-        ))}
-      </LinearGradient>
     </SafeAreaView>
   );
 };
