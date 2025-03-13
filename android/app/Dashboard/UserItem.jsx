@@ -9,7 +9,7 @@ const UserItem = ({ user, onPress }) => (
       style={styles.avatar}
     />
     <View style={styles.userInfo}>
-      <Text style={styles.userName}>{user.FirstName}</Text>
+      <Text style={styles.userName}>{user.FirstName + ' '+ user.LastName}</Text>
       <Text style={styles.userDetail}>Father: {user.FatherName}</Text>
       <View style={styles.additionalInfo}>
         <Text style={styles.infoText}>Vyaapar: {user.VyaaparType || 'N/A'}</Text>

@@ -122,9 +122,20 @@ export default function Register() {
             />
           </View>
 
-          {/* Last Name Input */}
           <View style={styles.inputContainer}>
-            {/* <Feather name="users" size={20} color="#666" style={styles.inputIcon} /> */}
+            {/* <Feather name="user" size={20} color="#666" style={styles.inputIcon} /> */}
+            <TextInput
+              style={styles.input}
+              placeholder="Last Name"
+              value={formData.lastname}
+              onChangeText={(text) => handleInputChange('lastname', text)}
+              placeholderTextColor="#999"
+            />
+          </View>
+
+          {/* Last Name Input */}
+          {/* <View style={styles.inputContainer}>
+
             <TextInput
               style={styles.input}
               placeholder="Father/Husband Name"
@@ -132,7 +143,7 @@ export default function Register() {
               onChangeText={(text) => handleInputChange('lastname', text)}
               placeholderTextColor="#999"
             />
-          </View>
+          </View> */}
 
           {/* Email Input */}
           <View style={styles.inputContainer}>
@@ -221,8 +232,8 @@ export default function Register() {
           </View>
 
           {/* Gotra Selection */}
-          <View style={styles.pickerContainer}>
-            {/* <Feather name="users" size={20} color="#666" style={styles.inputIcon} /> */}
+          {/* <View style={styles.pickerContainer}>
+
             <Picker
               selectedValue={formData.gotra}
               style={styles.picker}
@@ -233,7 +244,7 @@ export default function Register() {
                 <Picker.Item key={g.EName} label={`${g.EName} (${g.HName})`} value={g.EName} />
               ))}
             </Picker>
-          </View>
+          </View> */}
 
           {/* Mobile Input */}
           <View style={styles.inputContainer}>

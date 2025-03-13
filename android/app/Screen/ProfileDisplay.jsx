@@ -56,6 +56,9 @@ const ProfileMobile = ({route}) => {
 
   const user = data?.data;
 
+  console.log("PROFILEMOBILE DETAIL OF USERSS", user);
+  
+
   const sections = [
     { key: "overview", label: "BasicInfo", features: ['Personal', 'Job', 'Contact', 'Family', 'Educational', 'LifeStyle'] },
     { key: "professional", label: "Professional", features: ['Experience', 'Skills', 'Certifications'] },

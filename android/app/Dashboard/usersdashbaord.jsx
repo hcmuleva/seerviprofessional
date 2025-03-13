@@ -7,36 +7,38 @@ import DashboardNav from './dashboardnav';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from 'expo-router';
 
-export default function Dashboard({route}) {
-  const {city, flag} = route?.params || {};
+export default function Dashboard({ route }) {
+  const { city, flag } = route?.params || {};
   
-  const [userid, setUserid] = useState(null);
+  console.log("CITYNAMEDELHI,", city);
+  
 
+  const [userid, setUserid] = useState(null);
   const navigation = useNavigation();
 
   useEffect(() => {
     const getUserId = async () => {
-        const storedUserId = await AsyncStorage.getItem('userid');
-        setUserid(storedUserId);
+      const storedUserId = await AsyncStorage.getItem('userid');
+      setUserid(storedUserId);
     };
-
     getUserId();
   }, []);
 
-
   const [searchQuery, setSearchQuery] = useState('');
-  const [showFiltered, setShowFiltered] = useState(flag);
   const [organizationFilterActive, setOrganizationFilterActive] = useState(false);
   const [organization, setOrganization] = useState(city);
   const pageSize = 10;
   
   const FilterArray = [
     {
-      field: "jobs.organization",
+      field: "addresses.state",
       operator: "eq",
       value: organization,
     },
   ];
+
+  // Apply organization filter only if search query is empty and flag is true.
+  const filtersForAPI = searchQuery.length === 0 && flag ? FilterArray : false;
 
   const {
     data,
@@ -50,24 +52,23 @@ export default function Dashboard({route}) {
       pageSize,
     },
     meta: {
-      populate: ["photo", "jobs"],
+      populate: ["photo", "jobs", "addresses"],
     },
-    filters: showFiltered ? FilterArray : false,
+    filters: filtersForAPI,
   });
 
-  const toggleFilter = () => {
-    setShowFiltered(!showFiltered);
-  };
-
+  // Local filtering (search) on the fetched users with deduplication
   const getAllUsers = () => {
     if (!data?.pages) return [];
     
-    return data.pages.reduce((allUsers, page) => {
+    // Combine all pages into a single list
+    const allUsers = data.pages.reduce((acc, page) => {
       const pageData = page?.data || [];
       const transformedUsers = pageData.map((user) => ({
         id: user.id,
         profilePicture: user.profilePicture,
         FirstName: user.firstname,
+        LastName: user.lastname,
         FatherName: user.father,
         VyaaparType: user?.vyaapars?.[0]?.type,
         State: user.State,
@@ -75,34 +76,45 @@ export default function Dashboard({route}) {
         City: user.City,
         WorkingCity: user.WorkingCity,
       }));
-      return [...allUsers, ...transformedUsers];
+      return [...acc, ...transformedUsers];
     }, []);
+
+    // Remove duplicate users based on user id using a Map
+    const uniqueUsersMap = new Map();
+    allUsers.forEach(user => {
+      if (!uniqueUsersMap.has(user.id)) {
+        uniqueUsersMap.set(user.id, user);
+      }
+    });
+    return Array.from(uniqueUsersMap.values());
   };
 
   const users = getAllUsers();
 
-  // Adjusted displayed users logic
   const displayedUsers = () => {
-    
     if (organizationFilterActive) {
-      return users; // Show all users related to the organization
+      return users;
     }
-
-    return showFiltered 
-      ? users.filter(user => 
-          user.FirstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          user.FatherName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          user.WorkingCity?.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-      : users;
+    if (searchQuery.length > 0) {
+      const lowerSearch = searchQuery.toLowerCase();
+      return users.filter(user => {
+        // Concatenate first and last names for full name search
+        const fullName = `${user.FirstName || ''} ${user.LastName || ''}`.toLowerCase();
+        return (
+          fullName.includes(lowerSearch) ||
+          user.FirstName?.toLowerCase().includes(lowerSearch) ||
+          user.LastName?.toLowerCase().includes(lowerSearch) ||
+          user.FatherName?.toLowerCase().includes(lowerSearch) ||
+          user.WorkingCity?.toLowerCase().includes(lowerSearch)
+        );
+      });
+    }
+    return users;
   };
 
   const handleSearch = (text) => {
     setSearchQuery(text);
-    setShowFiltered(text.length > 0); // Show filtered results if there's text
   };
-
- 
 
   const handleLoadMore = useCallback(() => {
     if (hasNextPage && !isFetchingNextPage) {
@@ -119,23 +131,20 @@ export default function Dashboard({route}) {
     );
   };
 
-
-
   const renderItem = ({ item }) => (
     <UserItem 
       user={item}
       onPress={() => { 
-        if(item.id !=  userid){
-          navigation.navigate('ProfileMobile', {
+        if (item.id !== userid) {
+          navigation.navigate('EmployeeProfile', {
             PofileShown: "NORMALUSER",
             CurrentUserId: item.id,
-          })
-        }
-        else{
+          });
+        } else {
           navigation.navigate('ProfileMobile', {
             PofileShown: "LOGINUSER",
             CurrentUserId: item.id,
-          })
+          });
         }
       }} 
     />
@@ -151,7 +160,7 @@ export default function Dashboard({route}) {
 
   return (
     <>
-      <DashboardNav navigation={navigation}/>
+      <DashboardNav navigation={navigation} />
       <View style={styles.container}>
         <View style={styles.searchHeader}>
           <View style={styles.searchContainer}>
@@ -165,15 +174,14 @@ export default function Dashboard({route}) {
           </View>
         </View>
 
-        {showFiltered && searchQuery.length > 0 && (
+        {searchQuery.length > 0 && (
           <View style={styles.filterInfo}>
             <Text style={styles.filterText}>
               Showing filtered results for "{searchQuery}"
             </Text>
             <TouchableOpacity onPress={() => { 
-              setShowFiltered(false); 
-              setSearchQuery(''); // Clear search query when showing all
-              setOrganizationFilterActive(false); // Reset organization filter
+              setSearchQuery(''); 
+              setOrganizationFilterActive(false);
             }}>
               <Text style={styles.showAllText}>Show all</Text>
             </TouchableOpacity>
@@ -183,7 +191,7 @@ export default function Dashboard({route}) {
         <FlatList
           data={displayedUsers()}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id?.toString()}
+          keyExtractor={(item) => item.id?.toString() || Math.random().toString()}
           style={styles.userList}
           contentContainerStyle={styles.userListContent}
           onEndReached={handleLoadMore}
@@ -236,52 +244,24 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: 16,
   },
-  filterButton: {
-    padding: 12,
-    borderRadius: 8,
-    backgroundColor: '#fff',
-    elevation: 2,
-  },
-  filterButtonActive: {
-    backgroundColor: '#e74c3c',
-  },
   filterInfo: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingBottom: 8,
-   },
-   filterText:{
-     color:'#666',
-   },
-   showAllText:{
-     color:'#e74c3c',
-     fontWeight:'bold',
-   },
-   userList:{
-     flex :1 ,
-   },
-   userListContent:{
-     paddingHorizontal :16 ,
-   },
-   footer:{
-     flexDirection:'row',
-     justifyContent:'space-around',
-     padding :16 ,
-     backgroundColor:'#fff' ,
-     elevation :8 ,
-   },
-   roleButton:{
-     flexDirection:'row',
-     alignItems:'center',
-     backgroundColor:'#e74c3c' ,
-     padding :12 ,
-     borderRadius :8 ,
-   },
-   roleButtonText:{
-     color:'#fff' ,
-     fontWeight:'bold' ,
-     marginLeft :8 ,
-   },
+  },
+  filterText: {
+    color: '#666',
+  },
+  showAllText: {
+    color: '#e74c3c',
+    fontWeight: 'bold',
+  },
+  userList: {
+    flex: 1,
+  },
+  userListContent: {
+    paddingHorizontal: 16,
+  },
 });

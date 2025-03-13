@@ -24,7 +24,8 @@ const HomeScreen = ({ navigation }) => {
       title: 'Community Members',
       icon: 'account-group',
       description: 'Connect with members',
-      color: ['#4ECDC4', '#45B7AF']
+      color: ['#4ECDC4', '#45B7AF'],
+      navigationTarget: 'EmployeeProfile'
     },
     {
       title: 'Business Network',

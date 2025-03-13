@@ -24,6 +24,7 @@ import TestDashboard from "./Screen/TestDashboard";
 import Dashboard from "./Dashboard/usersdashbaord";
 import FilterScreen from "./Dashboard/Filter";
 import AppTabs from "./Apptabs";
+import EmployeeProfile from "./Employee/EmployeProfile";
 // import UserProfileDummy from "./Dashboard/UserProfileDisplay/userprofile";
 
 const Stack = createStackNavigator();
@@ -58,13 +59,14 @@ export default function App() {
               <Stack.Screen name="HomeScreen" component={HomeScreen} />
               <Stack.Screen name="Dashboard" component={Dashboard} options={{headerShown:false}}/>
               <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+              <Stack.Screen name="EmployeeProfile" component={EmployeeProfile} />
               <Stack.Screen name="AddJob" component={AddJob} />
               <Stack.Screen name="EditJob" component={EditJob} />
               <Stack.Screen name="Settings" component={SettingsScreen} />
               <Stack.Screen name="FilterScreen" component={FilterScreen} options={{headerShown:false}} />
               <Stack.Screen name="EditBasicAll" component={EditBasicAll} />
               <Stack.Screen name="UserProfileOverview" component={UserProfileOverview} options={{headerShown:false}} />
-              <Stack.Screen name="ProfileTabs" component={ProfileTabs} options={{headerShown:false}}/>
+              <Stack.Screen name="ProfileTabs" component={ProfileTabs}/>
               <Stack.Screen name="ProfileMobile" component={ProfileMobile} options={{headerShown:false}}/>
               {/* <Stack.Screen name="UserProfileDummy" component={UserProfileDummy} options={{headerShown:false}}/> */}
             </Stack.Navigator>
