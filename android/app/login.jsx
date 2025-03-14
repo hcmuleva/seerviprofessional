@@ -10,6 +10,7 @@ import {
   Platform,
   ScrollView,
   SafeAreaView,
+  Image, // Import Image component
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -24,8 +25,7 @@ export default function Login() {
   const navigation = useNavigation();
   
   const [userid, setUserId] = useState("mani@hph.com");
-  const [password, setPassword] = useState("welcome"); // Default password
-  // const [password, setPassword] = useState('');
+  const [password, setPassword] = useState("welcome");
   const [showPassword, setShowPassword] = useState(false);
   const { mutate: login, isLoading } = useLogin();
 
@@ -38,11 +38,6 @@ export default function Login() {
     };
     checkToken();
   }, []);
-  
-
-  // useEffect(() => {
-  //   if (AsyncStorage.getItem("jwt-token")) navigation.navigate("Testdahboard");
-  // }, []);
 
   const handleLogin = async () => {
     try {
@@ -53,7 +48,7 @@ export default function Login() {
       });
        
       if (res.ok) {
-        const data = await res.json()
+        const data = await res.json();
         
         await AsyncStorage.setItem(TOKEN_KEY, data.jwt);
         await AsyncStorage.setItem('userid', String(data?.user?.id));
@@ -73,7 +68,6 @@ export default function Login() {
     navigation.navigate('Help');
   };
   
-
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
@@ -82,8 +76,13 @@ export default function Login() {
       >
         <ScrollView contentContainerStyle={styles.scrollView}>
           <View style={styles.logoContainer}>
-            <Text style={styles.logo}>EMEELAN</Text>
-            <Text style={styles.logoSubtitle}>गठजोड़</Text>
+            {/* Add the logo image here */}
+            <Image 
+              source={require('./images/geculogo.png')} 
+              style={styles.logoImage} 
+            />
+            <Text style={styles.logo}>GECU</Text>
+            {/* <Text style={styles.logoSubtitle}>गठजोड़</Text> */}
           </View>
           <Text style={styles.welcomeText}>Welcome Back!</Text>
           <Text style={styles.subWelcomeText}>Sign in to continue</Text>
@@ -102,13 +101,13 @@ export default function Login() {
           <View style={styles.inputContainer}>
             <Feather name="lock" size={20} color="#666" style={styles.inputIcon} />
             <TextInput
-  style={styles.input}
-  placeholder="Password"
-  placeholderTextColor="#999"
-  secureTextEntry={!showPassword}
-  onChangeText={setPassword}
-  value={password}  // Default password
-/>
+              style={styles.input}
+              placeholder="Password"
+              placeholderTextColor="#999"
+              secureTextEntry={!showPassword}
+              onChangeText={setPassword}
+              value={password}
+            />
             <TouchableOpacity
               style={styles.eyeIcon}
               onPress={() => setShowPassword(!showPassword)}
@@ -150,6 +149,13 @@ const styles = StyleSheet.create({
   logoContainer: {
     alignItems: 'center',
     marginBottom: 40,
+  },
+  // Style for the logo image
+  logoImage: {
+    width: 100,
+    height: 100,
+    resizeMode: 'contain',
+    marginBottom: 10,
   },
   logo: {
     fontSize: 36,
@@ -237,4 +243,3 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-

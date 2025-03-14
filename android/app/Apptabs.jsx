@@ -5,6 +5,7 @@ import ProfileMobile from './Screen/ProfileDisplay';
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Dashboard from './Dashboard/usersdashbaord';
+import MemberDashboard from './MemberDashboard';
 // import ProfileScreen from './pages/myprofile/profession/ProfileScreen';
 // import Dashboard from './Dashboard/usersdashbaord';
 // import HelpScreen from './HelpScreen'; // Create this component
@@ -75,7 +76,7 @@ const AppTabs = () => {
         headerShown: false,
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Home" component={MemberDashboard} />
       <Tab.Screen 
         name="Professions" 
         component={DashboardWrapper}

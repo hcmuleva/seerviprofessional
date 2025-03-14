@@ -25,6 +25,7 @@ import Dashboard from "./Dashboard/usersdashbaord";
 import FilterScreen from "./Dashboard/Filter";
 import AppTabs from "./Apptabs";
 import EmployeeProfile from "./Employee/EmployeProfile";
+import MemberDashboard from "./MemberDashboard";
 // import UserProfileDummy from "./Dashboard/UserProfileDisplay/userprofile";
 
 const Stack = createStackNavigator();
@@ -57,6 +58,7 @@ export default function App() {
             />
               
               <Stack.Screen name="HomeScreen" component={HomeScreen} />
+              <Stack.Screen name="MemberDashboard" component={MemberDashboard} />
               <Stack.Screen name="Dashboard" component={Dashboard} options={{headerShown:false}}/>
               <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
               <Stack.Screen name="EmployeeProfile" component={EmployeeProfile} />

@@ -7,35 +7,19 @@ import {
   StyleSheet,
   ScrollView,
   SafeAreaView,
-  Platform,
-  Alert
+  Alert,
+  Platform
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
-// Add this import at the top of your Register.js file
-// Add this import at the top of your Register.js file
-
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const API_URL = process.env.VITE_SERVER_URL;
 const TOKEN_KEY = process.env.VITE_TOKEN_KEY;
 
-export default function Register() {
-  const gotra = {
-    "Gotra": [
-      {
-        "HName": "choyal"
-      },
-      {
-        "HName": "kag"
-      },
-      {  "EName" : "Kartik",
-        "HName": "septa"
-      },
-    ]
-  };
-
+export default function Register(){
   const navigation = useNavigation();
   const [formData, setFormData] = useState({
     firstname: '',
@@ -47,21 +31,19 @@ export default function Register() {
     sex: '',
     gotra: '',
     mobile: '',
+    bloodgroup: ''
   });
-  
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   const handleInputChange = (name, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleDateChange = (event, selectedDate) => {
-    setShowDatePicker(false);
+    setShowDatePicker(Platform.OS === 'ios');
     if (selectedDate) {
       handleInputChange('dob', selectedDate);
     }
@@ -79,7 +61,6 @@ export default function Register() {
         username: formData.email,
         userstatus: 'PENDING'
       };
-
       const res = await fetch(`${API_URL}/api/auth/local/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -100,111 +81,80 @@ export default function Register() {
       Alert.alert('Error', 'Something went wrong. Please try again.');
     }
   };
-  
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollView}>
         <View style={styles.headerContainer}>
-          <Text style={styles.headerTitle}>EMEELAN</Text>
+          <Text style={styles.headerTitle}>GECU</Text>
           <Text style={styles.headerSubtitle}>We bring Professionals Together</Text>
         </View>
 
         <View style={styles.formContainer}>
-          {/* First Name Input */}
-          <View style={styles.inputContainer}>
-            {/* <Feather name="user" size={20} color="#666" style={styles.inputIcon} /> */}
+          <Text style={styles.sectionTitle}>Personal Information</Text>
+          
+          <View style={styles.nameContainer}>
             <TextInput
-              style={styles.input}
+              style={[styles.input, styles.halfInput]}
               placeholder="First Name"
               value={formData.firstname}
               onChangeText={(text) => handleInputChange('firstname', text)}
-              placeholderTextColor="#999"
             />
-          </View>
-
-          <View style={styles.inputContainer}>
-            {/* <Feather name="user" size={20} color="#666" style={styles.inputIcon} /> */}
             <TextInput
-              style={styles.input}
+              style={[styles.input, styles.halfInput]}
               placeholder="Last Name"
               value={formData.lastname}
               onChangeText={(text) => handleInputChange('lastname', text)}
-              placeholderTextColor="#999"
             />
           </View>
 
-          {/* Last Name Input */}
-          {/* <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Email Address"
+            value={formData.email}
+            onChangeText={(text) => handleInputChange('email', text)}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
 
+          <View style={styles.passwordContainer}>
             <TextInput
-              style={styles.input}
-              placeholder="Father/Husband Name"
-              value={formData.lastname}
-              onChangeText={(text) => handleInputChange('lastname', text)}
-              placeholderTextColor="#999"
-            />
-          </View> */}
-
-          {/* Email Input */}
-          <View style={styles.inputContainer}>
-            {/* <Feather name="mail" size={20} color="#666" style={styles.inputIcon} /> */}
-            <TextInput
-              style={styles.input}
-              placeholder="Email Address"
-              value={formData.email}
-              onChangeText={(text) => handleInputChange('email', text)}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              placeholderTextColor="#999"
-            />
-          </View>
-
-          {/* Password Input */}
-          <View style={styles.inputContainer}>
-            {/* <Feather name="lock" size={20} color="#666" style={styles.inputIcon} /> */}
-            <TextInput
-              style={styles.input}
+              style={[styles.input, styles.passwordInput]}
               placeholder="Password"
               value={formData.password}
               onChangeText={(text) => handleInputChange('password', text)}
               secureTextEntry={!showPassword}
-              placeholderTextColor="#999"
             />
-            <TouchableOpacity
-              style={styles.eyeIcon}
+            <TouchableOpacity 
+              style={styles.eyeIcon} 
               onPress={() => setShowPassword(!showPassword)}
             >
-              {/* <Feather name={showPassword ? "eye" : "eye-off"} size={20} color="#666" /> */}
+              <Icon name={showPassword ? 'visibility' : 'visibility-off'} size={24} />
             </TouchableOpacity>
           </View>
 
-          {/* Confirm Password Input */}
-          <View style={styles.inputContainer}>
-            {/* <Feather name="lock" size={20} color="#666" style={styles.inputIcon} /> */}
+          <View style={styles.passwordContainer}>
             <TextInput
-              style={styles.input}
+              style={[styles.input, styles.passwordInput]}
               placeholder="Confirm Password"
               value={formData.confirmPassword}
               onChangeText={(text) => handleInputChange('confirmPassword', text)}
               secureTextEntry={!showConfirmPassword}
-              placeholderTextColor="#999"
             />
-            <TouchableOpacity
-              style={styles.eyeIcon}
+            <TouchableOpacity 
+              style={styles.eyeIcon} 
               onPress={() => setShowConfirmPassword(!showConfirmPassword)}
             >
-              {/* <Feather name={showConfirmPassword ? "eye" : "eye-off"} size={20} color="#666" /> */}
+              <Icon name={showConfirmPassword ? 'visibility' : 'visibility-off'} size={24} />
             </TouchableOpacity>
           </View>
 
-          {/* Date of Birth */}
-          <TouchableOpacity
-            style={styles.inputContainer}
+          <TouchableOpacity 
+            style={styles.input} 
             onPress={() => setShowDatePicker(true)}
           >
-            {/* <Feather name="calendar" size={20} color="#666" style={styles.inputIcon} /> */}
-            <Text style={styles.dateText}>
-              {formData.dob.toLocaleDateString()}
+            <Text style={formData.dob ? styles.dateText : styles.placeholderText}>
+              {formData.dob ? formData.dob.toLocaleDateString() : 'Date of Birth'}
             </Text>
           </TouchableOpacity>
 
@@ -212,18 +162,16 @@ export default function Register() {
             <DateTimePicker
               value={formData.dob}
               mode="date"
-              display="default"
+              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
               onChange={handleDateChange}
             />
           )}
 
-          {/* Gender Selection */}
           <View style={styles.pickerContainer}>
-            {/* <Feather name="user" size={20} color="#666" style={styles.inputIcon} /> */}
             <Picker
               selectedValue={formData.sex}
-              style={styles.picker}
               onValueChange={(value) => handleInputChange('sex', value)}
+              style={styles.picker}
             >
               <Picker.Item label="Select Gender" value="" />
               <Picker.Item label="Male" value="Male" />
@@ -231,154 +179,147 @@ export default function Register() {
             </Picker>
           </View>
 
-          {/* Gotra Selection */}
-          {/* <View style={styles.pickerContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Mobile Number"
+            value={formData.mobile}
+            onChangeText={(text) => handleInputChange('mobile', text)}
+            keyboardType="phone-pad"
+          />
 
+          {/* <TextInput
+            style={styles.input}
+            placeholder="Gotra"
+            value={formData.gotra}
+            onChangeText={(text) => handleInputChange('gotra', text)}
+          /> */}
+
+          <View style={styles.pickerContainer}>
             <Picker
-              selectedValue={formData.gotra}
+              selectedValue={formData.bloodgroup}
+              onValueChange={(value) => handleInputChange('bloodgroup', value)}
               style={styles.picker}
-              onValueChange={(value) => handleInputChange('gotra', value)}
             >
-              <Picker.Item label="Select Gotra" value="" />
-              {gotra.Gotra.map((g) => (
-                <Picker.Item key={g.EName} label={`${g.EName} (${g.HName})`} value={g.EName} />
-              ))}
+              <Picker.Item label="Select Blood Group" value="" />
+              <Picker.Item label="A+" value="A+" />
+              <Picker.Item label="A-" value="A-" />
+              <Picker.Item label="B+" value="B+" />
+              <Picker.Item label="B-" value="B-" />
+              <Picker.Item label="O+" value="O+" />
+              <Picker.Item label="O-" value="O-" />
+              <Picker.Item label="AB+" value="AB+" />
+              <Picker.Item label="AB-" value="AB-" />
             </Picker>
-          </View> */}
-
-          {/* Mobile Input */}
-          <View style={styles.inputContainer}>
-            {/* <Feather name="phone" size={20} color="#666" style={styles.inputIcon} /> */}
-            <TextInput
-              style={styles.input}
-              placeholder="Mobile Number"
-              value={formData.mobile}
-              onChangeText={(text) => handleInputChange('mobile', text)}
-              keyboardType="phone-pad"
-              placeholderTextColor="#999"
-            />
           </View>
 
-          {/* Buttons */}
           <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
             <Text style={styles.buttonText}>Register</Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
-            style={styles.loginButton}
-            onPress={() => navigation.navigate('Login')}
+            style={styles.loginButton} 
+            onPress={() => navigation.navigate('login')}
           >
-            <Text style={styles.loginButtonText}>Back to Login</Text>
+            <Text style={styles.loginButtonText}>
+              Already have an account? <Text style={styles.loginLink}>Login</Text>
+            </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f8f8f8',
-  },
-  scrollView: {
-    flexGrow: 1,
-    padding: 20,
-  },
-  headerContainer: {
-    alignItems: 'center',
-    marginBottom: 30,
-  },
-  headerTitle: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#2c3e50',
-    marginBottom: 5,
-  },
-  headerSubtitle: {
-    fontSize: 16,
-    color: '#7f8c8d',
-  },
-  formContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
+  container: { flex: 1, backgroundColor: '#f8f8f8' },
+  scrollView: { flexGrow: 1, padding: 20 },
+  headerContainer: { alignItems: 'center', marginBottom: 30 },
+  headerTitle: { fontSize: 32, fontWeight: 'bold', color: '#2c3e50' },
+  headerSubtitle: { fontSize: 16, color: '#7f8c8d', marginTop: 5 },
+  formContainer: { 
+    backgroundColor: '#fff', 
+    borderRadius: 15,
     padding: 20,
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
   },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    marginBottom: 15,
-    paddingHorizontal: 10,
-    backgroundColor: '#fff',
-  },
-  inputIcon: {
-    marginRight: 10,
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#2c3e50',
+    marginBottom: 20,
   },
   input: {
-    flex: 1,
     height: 50,
-    color: '#333',
-    fontSize: 16,
-  },
-  eyeIcon: {
-    padding: 10,
-  },
-  pickerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
     marginBottom: 15,
-    backgroundColor: '#fff',
+    paddingHorizontal: 15,
+    justifyContent: 'center',
+  },
+  nameContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 15,
+  },
+  halfInput: {
+    flex: 1,
+  },
+  passwordContainer: {
+    position: 'relative',
+    marginBottom: 15,
+  },
+  passwordInput: {
+    paddingRight: 40,
+  },
+  eyeIcon: {
+    position: 'absolute',
+    right: 15,
+    top: 13,
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    marginBottom: 15,
+    overflow: 'hidden',
   },
   picker: {
-    flex: 1,
     height: 50,
+    color: '#333',
   },
   dateText: {
-    flex: 1,
-    height: 50,
-    textAlignVertical: 'center',
-    fontSize: 16,
     color: '#333',
+  },
+  placeholderText: {
+    color: '#999',
   },
   registerButton: {
     backgroundColor: '#3498db',
+    padding: 15,
     borderRadius: 8,
-    height: 50,
-    justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 10,
   },
   buttonText: {
     color: '#fff',
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '600',
   },
   loginButton: {
-    marginTop: 15,
-    height: 50,
-    justifyContent: 'center',
+    marginTop: 20,
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#3498db',
-    borderRadius: 8,
   },
   loginButtonText: {
-    color: '#3498db',
+    color: '#7f8c8d',
     fontSize: 16,
+  },
+  loginLink: {
+    color: '#3498db',
     fontWeight: '600',
   },
 });
