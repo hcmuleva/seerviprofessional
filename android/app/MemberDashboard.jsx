@@ -13,6 +13,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useInfiniteList } from '@refinedev/core';
+import { TextInput } from 'react-native';
 
 // Icons - you would typically use a library like react-native-vector-icons
 // but I'm using simple components for demonstration
@@ -80,6 +81,7 @@ const MemberDashboard = () => {
   const [activeView, setActiveView] = useState('list');
   const [userid, setUserid] = useState(null);
   const navigation = useNavigation();
+
    useEffect(() => {
       const getUserId = async () => {
         const storedUserId = await AsyncStorage.getItem('userid');
@@ -144,8 +146,9 @@ const MemberDashboard = () => {
             }));
             return [...acc, ...transformedUsers];
           }, []);
-        
-      
+
+
+
           // Remove duplicate users based on user id using a Map
           const uniqueUsersMap = new Map();
           allUsers.forEach(user => {
@@ -198,66 +201,8 @@ const renderFooter = () => {
     );
   };
 
-  const members = [
-    {
-      id: '1',
-      name: 'Nipendra vikram singh',
-      position: 'Retired from U P Irrigation department',
-      years: '1967-1973, Civil',
-      location: 'Lucknow',
-      avatar: null, // Will use placeholder
-    },
-    {
-      id: '2',
-      name: 'Virendra Kumar Sharma',
-      position: 'Self employed',
-      years: '1969-1974, Electrical',
-      location: 'Bhopal',
-      avatar: null, // Will use placeholder
-    },
-    {
-      id: '3',
-      name: 'Arvind Bhagwat',
-      position: 'Retired',
-      years: '1972-1977, Civil',
-      location: 'Vadodara',
-      avatar: require('./images/geculogo.png'), // You would need this image
-    },
-    {
-      id: '4',
-      name: 'Kishore kale',
-      position: 'Superannuated',
-      years: '1973-1977, Electrical',
-      location: 'Indore',
-      avatar: null, // Will use placeholder
-    },
-    {
-      id: '5',
-      name: 'Pankaj jain',
-      position: 'OWNTERP',
-      years: '1975-1980, Mechanical',
-      location: 'Indore',
-      avatar: require('./images/geculogo.png'), // You would need this image
-    },
-    {
-      id: '6',
-      name: 'Mukul Majumdar',
-      position: 'Fawaz Trading & Engineering Services Co. W.L.L.',
-      years: '1979-1984, Mechanical',
-      location: 'Kuwait city',
-      avatar: null, // Will use placeholder
-    },
-    {
-      id: '7',
-      name: 'PANKAJ JAIN',
-      position: 'Reliance Industries Ltd, India',
-      years: '',
-      location: '',
-      avatar: null, // Will use placeholder
-    },
-  ];
 
-  const renderMemberItem = ({ item }) => (
+  const renderItem = ({ item }) => (
     <View style={styles.memberItem}>
       <View style={styles.avatarContainer}>
         {item.avatar ? (
@@ -269,10 +214,10 @@ const renderFooter = () => {
         )}
       </View>
       <View style={styles.memberDetails}>
-        <Text style={styles.memberName}>{item.name}</Text>
-        <Text style={styles.memberPosition}>{item.position}</Text>
-        <Text style={styles.memberYears}>{item.years}</Text>
-        <Text style={styles.memberLocation}>{item.location}</Text>
+        <Text style={styles.memberName}>{item.FirstName + ' '+ item.LastName}</Text>
+        <Text style={styles.memberPosition}>{item.position || "Software"}</Text>
+        <Text style={styles.memberYears}>{item.years || "5"}</Text>
+        <Text style={styles.memberLocation}>{item.location || "Bangalore"}</Text>
       </View>
     </View>
   );
@@ -306,6 +251,7 @@ const renderFooter = () => {
       
       {/* View options */}
       <View style={styles.viewOptions}>
+         
         <TouchableOpacity 
           style={[styles.viewOption, activeView === 'grid' && styles.activeViewOption]}
           onPress={() => setActiveView('grid')}
@@ -328,16 +274,27 @@ const renderFooter = () => {
       
       {/* Stats bar */}
       <View style={styles.statsBar}>
-        <Text style={styles.statsText}>
-          Registered Members : 382 | Total Users Logged In : 1
-        </Text>
+
+      <View style={styles.searchContainer}>
+      <Text style={styles.searchEmoji}>🔍</Text>
+  <TextInput
+    style={styles.searchInput}
+    placeholder="Search users..."
+    placeholderTextColor="#999"
+    value={searchQuery}
+    onChangeText={handleSearch}
+  />
+</View>
+
+  
+
       </View>
       
       {/* Members list */}
       <FlatList
-        data={members}
-        renderItem={renderMemberItem}
-        keyExtractor={item => item.id}
+        data={displayedUsers()}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id?.toString() || Math.random().toString()}
         style={styles.membersList}
       />
     </SafeAreaView>
@@ -512,10 +469,29 @@ const styles = StyleSheet.create({
   },
   statsBar: {
     paddingHorizontal: 15,
-    paddingVertical: 10,
+    paddingVertical: 1,
     borderBottomWidth: 1,
     borderBottomColor: '#EEEEEE',
   },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f2f2f2',
+    borderRadius: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 0,
+    marginHorizontal: 15,
+    marginVertical: 10,
+  },
+  searchIcon: {
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    color: '#333',
+  },
+  
   statsText: {
     fontSize: 14,
     color: '#616161',
