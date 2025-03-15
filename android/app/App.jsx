@@ -18,14 +18,16 @@ import ProfileTabs from "./(tabs)/profiletabs";
 import ProfileMobile from "./Screen/ProfileDisplay";
 import EditJob from "./pages/myprofile/profession/EditJob";
 import EditBasicAll from "./pages/myprofile/profession/EditBasicAll";
-import ProfileScreen from "./pages/myprofile/profession/ProfileScreen";
 import SettingsScreen from "./pages/myprofile/setting/setting";
 import TestDashboard from "./Screen/TestDashboard";
 import Dashboard from "./Dashboard/usersdashbaord";
 import FilterScreen from "./Dashboard/Filter";
 import AppTabs from "./Apptabs";
+import ProfileScreen from "./pages/myprofile/profession/ProfileScreen";
 import EmployeeProfile from "./Employee/EmployeProfile";
 import MemberDashboard from "./MemberDashboard";
+import FilterForm from "./GecuList/filterform";
+import ProfileScreenGecu from "./GecuList/professionallist";
 // import UserProfileDummy from "./Dashboard/UserProfileDisplay/userprofile";
 
 const Stack = createStackNavigator();
@@ -49,7 +51,8 @@ export default function App() {
           <PageViewProvider>
             <Stack.Navigator>
 
-             <Stack.Screen name="login" component={Login} />
+             <Stack.Screen name="login" component={Login} options={{headerShown:false}}/>
+
                <Stack.Screen name="Register" component={Register} />
                <Stack.Screen 
               name="Main" 
@@ -58,7 +61,7 @@ export default function App() {
             />
               
               <Stack.Screen name="HomeScreen" component={HomeScreen} />
-              <Stack.Screen name="MemberDashboard" component={MemberDashboard} />
+              <Stack.Screen name="MemberDashboard" component={MemberDashboard} options={{headerShown:false}} />
               <Stack.Screen name="Dashboard" component={Dashboard} options={{headerShown:false}}/>
               <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
               <Stack.Screen name="EmployeeProfile" component={EmployeeProfile} />
@@ -66,10 +69,12 @@ export default function App() {
               <Stack.Screen name="EditJob" component={EditJob} />
               <Stack.Screen name="Settings" component={SettingsScreen} />
               <Stack.Screen name="FilterScreen" component={FilterScreen} options={{headerShown:false}} />
+              <Stack.Screen name="FilterForm" component={FilterForm} options={{headerShown:false}} />
               <Stack.Screen name="EditBasicAll" component={EditBasicAll} />
               <Stack.Screen name="UserProfileOverview" component={UserProfileOverview} options={{headerShown:false}} />
               <Stack.Screen name="ProfileTabs" component={ProfileTabs}/>
               <Stack.Screen name="ProfileMobile" component={ProfileMobile} options={{headerShown:false}}/>
+              <Stack.Screen name="ProfileScreenGecu" component={ProfileScreenGecu} options={{headerShown:false}}/>
               {/* <Stack.Screen name="UserProfileDummy" component={UserProfileDummy} options={{headerShown:false}}/> */}
             </Stack.Navigator>
           </PageViewProvider>

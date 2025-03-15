@@ -1,23 +1,18 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import HomeScreen from './Screen/HomeScreen';
-import ProfileMobile from './Screen/ProfileDisplay';
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import HomeScreen from './Screen/HomeScreen';
+import ProfileMobile from './Screen/ProfileDisplay';
 import Dashboard from './Dashboard/usersdashbaord';
 import MemberDashboard from './MemberDashboard';
-// import ProfileScreen from './pages/myprofile/profession/ProfileScreen';
-// import Dashboard from './Dashboard/usersdashbaord';
-// import HelpScreen from './HelpScreen'; // Create this component
 
 const Tab = createBottomTabNavigator();
 
 const AppTabs = () => {
-
   const [userId, setUserId] = useState(null);
-  
-  useEffect(() => {
 
+  useEffect(() => {
     const getUserId = async () => {
       try {
         const storedUserId = await AsyncStorage.getItem('userid');
@@ -29,11 +24,10 @@ const AppTabs = () => {
     getUserId();
   }, []);
 
-
   const ProfileWrapper = ({ navigation }) => (
     <ProfileMobile 
       PofileShown="LOGINUSER"
-      CurrentUserId={userId} // Make sure userid is defined or passed as a prop to AppTabs
+      CurrentUserId={userId}
     />
   );
 
@@ -52,7 +46,6 @@ const AppTabs = () => {
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
-
           switch (route.name) {
             case "Home":
               iconName = focused ? "home" : "home-outline";
@@ -74,29 +67,32 @@ const AppTabs = () => {
         tabBarActiveTintColor: "#007AFF",
         tabBarInactiveTintColor: "gray",
         headerShown: false,
+        // Fix for keyboard pushing tabs down
+        tabBarHideOnKeyboard: true,
+        tabBarStyle: {
+          position: 'absolute',
+          borderTopWidth: 0,
+          elevation: 0,
+          backgroundColor: '#ffffff',
+        }
       })}
     >
-      <Tab.Screen name="Home" component={MemberDashboard} />
+      <Tab.Screen 
+        name="Home" 
+        component={MemberDashboard}
+        options={{ unmountOnBlur: true }}
+      />
       <Tab.Screen 
         name="Professions" 
         component={DashboardWrapper}
+        options={{ unmountOnBlur: true }}
       />
-      {/* <Tab.Screen name="Help" component={HelpScreen} /> */}
-      {/* <Tab.Screen name="Profile" component={ProfileMobile} /> */}
       <Tab.Screen 
         name="Profile" 
         component={ProfileWrapper}
+        options={{ unmountOnBlur: true }}
       />
     </Tab.Navigator>
-    // onPress={() => {
-    //   {icon ==  'people' ?
-         
-    //     navigation.navigate('ProfileMobile', {
-    //       PofileShown: "LOGINUSER",
-    //       CurrentUserId: userid.id,
-    //     })
-    //     : ""}
-    // }}
   );
 };
 

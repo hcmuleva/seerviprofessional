@@ -10,10 +10,11 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useNavigation } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useInfiniteList } from '@refinedev/core';
 import { TextInput } from 'react-native';
+import FilterForm from './GecuList/filterform';
+import { useNavigation } from '@react-navigation/native';
 
 // Icons - you would typically use a library like react-native-vector-icons
 // but I'm using simple components for demonstration
@@ -38,7 +39,7 @@ const NotificationIcon = ({ count }) => (
 
 const GridIcon = () => (
   <View style={styles.viewIcon}>
-    <View style={styles.gridContainer}>
+    <View style={styles.gridContainerIcon}>
       <View style={styles.gridItem} />
       <View style={styles.gridItem} />
       <View style={styles.gridItem} />
@@ -81,7 +82,8 @@ const MemberDashboard = () => {
   const [activeView, setActiveView] = useState('list');
   const [userid, setUserid] = useState(null);
   const navigation = useNavigation();
-
+  const [showFilters, setShowFilters] = useState(false);
+  const [FilterObj, SetFilterObj] = useState({});
    useEffect(() => {
       const getUserId = async () => {
         const storedUserId = await AsyncStorage.getItem('userid');
@@ -92,22 +94,37 @@ const MemberDashboard = () => {
 
     const [searchQuery, setSearchQuery] = useState('');
       const [organizationFilterActive, setOrganizationFilterActive] = useState(false);
-    //   const [organization, setOrganization] = useState(city);
+      const [organization, setOrganization] = useState(FilterObj);
       const pageSize = 10;
   
-    //   const FilterArray = [
-    //     {
-    //       field: "addresses.state",
-    //       operator: "eq",
-    //       value: organization,
-    //     },
-    //   ];
+      const FilterArray = [
+        // Filter by name
+  {
+    field: "firstname",
+    operator: "contains",
+    value: FilterObj.name,
+  },
+  {
+    field: "bloodgroup",
+    operator: "contains",
+    value: FilterObj.bloodGroup,
+  },
+  {
+    field: "addresses.state",
+    operator: "contains",
+    value: FilterObj.city,
+  },
+
+      ];
    
 
       
 
-    //    const filtersForAPI = searchQuery.length === 0 && flag ? FilterArray : false;
-      
+       const filtersForAPI = searchQuery.length === 0 && FilterObj.flag ? FilterArray : false;
+       
+       console.log("FLAGGGGG", FilterObj.flag );
+       
+
         const {
           data,
           isLoading,
@@ -122,7 +139,7 @@ const MemberDashboard = () => {
           meta: {
             populate: ["photo", "jobs", "addresses"],
           },
-        //   filters: filtersForAPI,
+          filters: filtersForAPI,
         });
       
         // Local filtering (search) on the fetched users with deduplication
@@ -203,23 +220,50 @@ const renderFooter = () => {
 
 
   const renderItem = ({ item }) => (
-    <View style={styles.memberItem}>
-      <View style={styles.avatarContainer}>
-        {item.avatar ? (
-          <Image source={item.avatar} style={styles.avatar} />
-        ) : (
-          <View style={styles.placeholderAvatar}>
-            <View style={styles.placeholderIcon} />
+    activeView === 'grid' ? (
+      <TouchableOpacity style={styles.gridItemContainer} onPress={() => navigation.navigate('ProfileScreenGecu')}>
+        <View style={styles.gridCard}>
+          <View style={styles.gridAvatarContainer}>
+            {item.avatar ? (
+              <Image source={item.avatar} style={styles.gridAvatar} />
+            ) : (
+              <View style={styles.gridPlaceholderAvatar}>
+                <View style={styles.placeholderIcon} />
+              </View>
+            )}
           </View>
-        )}
+          <Text style={styles.gridMemberName} numberOfLines={1}>
+            {item.FirstName + ' ' + item.LastName}
+          </Text>
+          <Text style={styles.gridMemberPosition} numberOfLines={1}>
+            {item.position || "Software"}
+          </Text>
+          <Text style={styles.gridMemberYears} numberOfLines={1}>
+            {item.years || "5"} years
+          </Text>
+        </View>
+      </TouchableOpacity>
+    ) : (
+      <TouchableOpacity style={styles.gridItemContainer} onPress={() => navigation.navigate('ProfileScreenGecu')}>
+      <View style={styles.memberItem}>
+        <View style={styles.avatarContainer}>
+          {item.avatar ? (
+            <Image source={item.avatar} style={styles.avatar} />
+          ) : (
+            <View style={styles.placeholderAvatar}>
+              <View style={styles.placeholderIcon} />
+            </View>
+          )}
+        </View>
+        <View style={styles.memberDetails}>
+          <Text style={styles.memberName}>{item.FirstName + ' ' + item.LastName}</Text>
+          <Text style={styles.memberPosition}>{item.position || "Software"}</Text>
+          <Text style={styles.memberYears}>{item.years || "5"}</Text>
+          <Text style={styles.memberLocation}>{item.location || "Bangalore"}</Text>
+        </View>
       </View>
-      <View style={styles.memberDetails}>
-        <Text style={styles.memberName}>{item.FirstName + ' '+ item.LastName}</Text>
-        <Text style={styles.memberPosition}>{item.position || "Software"}</Text>
-        <Text style={styles.memberYears}>{item.years || "5"}</Text>
-        <Text style={styles.memberLocation}>{item.location || "Bangalore"}</Text>
-      </View>
-    </View>
+      </TouchableOpacity>
+    )
   );
 
   return (
@@ -264,9 +308,10 @@ const renderFooter = () => {
         >
           <ListIcon />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.viewOption}>
+        <TouchableOpacity style={styles.viewOption} onPress={() => setShowFilters(true)}>
           <FilterIcon />
         </TouchableOpacity>
+
         <TouchableOpacity style={styles.viewOption}>
           <SortIcon />
         </TouchableOpacity>
@@ -284,6 +329,7 @@ const renderFooter = () => {
     value={searchQuery}
     onChangeText={handleSearch}
   />
+
 </View>
 
   
@@ -297,9 +343,21 @@ const renderFooter = () => {
         keyExtractor={(item) => item.id?.toString() || Math.random().toString()}
         style={styles.membersList}
       />
+
+    <FilterForm
+      visible={showFilters}
+      onClose={() => setShowFilters(false)}
+      onApplyFilters={(filters) => {
+        // Implement actual filtering logic here
+        SetFilterObj(filters);
+        console.log("Applied filters:", filters);
+      }}
+    />
+    
     </SafeAreaView>
   );
 };
+ 
 
 const styles = StyleSheet.create({
   container: {
@@ -399,7 +457,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  gridContainer: {
+  gridContainerIcon: {
     width: 20,
     height: 20,
     flexDirection: 'row',
@@ -553,6 +611,59 @@ const styles = StyleSheet.create({
   memberLocation: {
     fontSize: 14,
     color: '#9E9E9E',
+  },
+  gridContainer: {
+    paddingHorizontal: 8,
+  },
+  gridItemContainer: {
+    flex: 1,
+    margin: 8,
+  },
+  gridCard: {
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    padding: 16,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  gridAvatarContainer: {
+    marginBottom: 12,
+  },
+  gridAvatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+  },
+  gridPlaceholderAvatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    borderWidth: 1,
+    borderColor: '#BDBDBD',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  gridMemberName: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#424242',
+    marginBottom: 4,
+    textAlign: 'center',
+  },
+  gridMemberPosition: {
+    fontSize: 12,
+    color: '#757575',
+    marginBottom: 4,
+    textAlign: 'center',
+  },
+  gridMemberYears: {
+    fontSize: 12,
+    color: '#9E9E9E',
+    textAlign: 'center',
   },
 });
 
