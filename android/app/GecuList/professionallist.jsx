@@ -15,16 +15,18 @@ import {
 } from "react-native-feather"
 import { Icon } from "react-native-paper"
 
-const ProfileScreenGecu = () => {
-    // const user = route.params;
+const ProfileScreenGecu = ({route}) => {
+    const { user } = route.params;
+    console.log("username", user.FirstName);
+    
   const profileData = {
-    name: "Nipendra vikram singh",
+    name: `${user.FirstName + ' ' + user.LastName}`,
     title: "Filmi",
     position: "Superintendent Engineer",
     department: "Retired from U P Irrigation department",
     year: "1967-1973, Civil",
     location: "Lucknow",
-    phone: "8707871528",
+    phone: `${user.FirstName + ' ' + user.LastName}`,
     email: "nvsingh23@rediffmail.com",
     birthday: "08-12-XXXX",
     hobbies: "Watching movies, reading and traveling",

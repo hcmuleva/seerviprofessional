@@ -1,8 +1,8 @@
-import React, { useReducer, useEffect, useCallback, useState, memo } from "react";
+// components/FilterForm.js
+import React, { useReducer, useEffect, useCallback, useState } from "react";
 import { 
   View, 
   Text, 
-  TextInput, 
   TouchableOpacity, 
   StyleSheet, 
   ScrollView, 
@@ -11,17 +11,19 @@ import {
   Animated,
   Easing
 } from "react-native";
-import { Search, ChevronDown, X } from "react-native-feather";
+import { Search, ChevronDown } from "react-native-feather";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "expo-router";
+import FilterHeader from "./Filter/filterheader";
+import Dropdown from "./Filter/dropdown";
+import InputField from "./Filter/inputfields";
 
 const BATCH_YEARS = Array.from(
-    { length: 2024 - 1967 + 1 },
-    (_, index) => (1967 + index).toString()
-  );
+  { length: 2024 - 1967 + 1 },
+  (_, index) => (1967 + index).toString()
+);
 const BRANCHES = ["Computer Science", "Electrical", "Mechanical", "Civil", "Chemical"];
 const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
-
 
 const initialState = {
   name: "",
@@ -46,37 +48,9 @@ function reducer(state, action) {
   }
 }
 
-
-const Dropdown = memo(({ options, onSelect, visible, setVisible }) => {
-  if (!visible) return null;
-  return (
-    <View style={styles.dropdownContainer}>
-      <ScrollView 
-        style={styles.dropdownScrollView}
-        nestedScrollEnabled
-        keyboardShouldPersistTaps="handled"
-      >
-        {options.map((option, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.dropdownItem}
-            onPress={() => {
-              onSelect(option);
-              setVisible(false);
-            }}
-          >
-            <Text style={styles.dropdownItemText}>{option}</Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-    </View>
-  );
-});
-
 function FilterForm({ visible, onClose, onApplyFilters }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const navigation = useNavigation();
-
 
   const [batchYearDropdownVisible, setBatchYearDropdownVisible] = useState(false);
   const [branchDropdownVisible, setBranchDropdownVisible] = useState(false);
@@ -117,6 +91,9 @@ function FilterForm({ visible, onClose, onApplyFilters }) {
     Animated.parallel(animations).start();
   }, [visible, translateX, backdropOpacity]);
 
+  const handleFieldChange = useCallback((field, value) => {
+    dispatch({ type: "SET_FIELD", field, value });
+  }, []);
 
   const clearFilters = useCallback(() => {
     dispatch({ type: "CLEAR" });
@@ -124,17 +101,13 @@ function FilterForm({ visible, onClose, onApplyFilters }) {
     onClose();
   }, [navigation, onClose]);
 
-
-  const applyFilters = useCallback(() => {
+  const applyFilters = () => {
+    const updatedFilters = { ...state, flag: true };
     dispatch({ type: "SET_FLAG", value: true });
-    onApplyFilters(state);
+    onApplyFilters(updatedFilters);
     onClose();
-  }, [onApplyFilters, state, onClose]);
-
-
-  const handleFieldChange = useCallback((field, value) => {
-    dispatch({ type: "SET_FIELD", field, value });
-  }, []);
+  };
+  
 
   return (
     <Modal visible={visible} transparent animationType="none" onRequestClose={onClose}>
@@ -144,19 +117,9 @@ function FilterForm({ visible, onClose, onApplyFilters }) {
           activeOpacity={1}
           onPress={onClose}
         >
-          <Animated.View 
-            style={[styles.modalContent, { transform: [{ translateX }] }]}
-          >
+          <Animated.View style={[styles.modalContent, { transform: [{ translateX }] }]}>
             <SafeAreaView style={styles.safeArea}>
-              {/* Header */}
-              <View style={styles.header}>
-                <Text style={styles.headerTitle}>Filters</Text>
-                <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-                  <X width={24} height={24} color="#666" />
-                </TouchableOpacity>
-              </View>
-
-              {/* Form */}
+              <FilterHeader onClose={onClose} />
               <ScrollView 
                 style={styles.formContainer}
                 contentContainerStyle={styles.scrollContent}
@@ -165,16 +128,12 @@ function FilterForm({ visible, onClose, onApplyFilters }) {
                 {/* Name Filter */}
                 <View style={styles.formGroup}>
                   <Text style={styles.label}>Name</Text>
-                  <View style={styles.inputContainer}>
-                    <Search width={20} height={20} color="#999" style={styles.inputIcon} />
-                    <TextInput
-                      style={styles.input}
-                      placeholder="Search by name..."
-                      value={state.name}
-                      onChangeText={(value) => handleFieldChange("name", value)}
-                      placeholderTextColor="#999"
-                    />
-                  </View>
+                  <InputField
+                    icon={<Search width={20} height={20} color="#999" style={styles.inputIcon} />}
+                    placeholder="Search by name..."
+                    value={state.name}
+                    onChangeText={(value) => handleFieldChange("name", value)}
+                  />
                 </View>
 
                 {/* Batch Year */}
@@ -182,7 +141,7 @@ function FilterForm({ visible, onClose, onApplyFilters }) {
                   <Text style={styles.label}>Batch Year</Text>
                   <TouchableOpacity
                     style={styles.selectContainer}
-                    onPress={() => setBatchYearDropdownVisible(prev => !prev)}
+                    onPress={() => setBatchYearDropdownVisible((prev) => !prev)}
                   >
                     <Text style={state.batchYear ? styles.selectText : styles.selectPlaceholder}>
                       {state.batchYear || "Select batch year"}
@@ -202,7 +161,7 @@ function FilterForm({ visible, onClose, onApplyFilters }) {
                   <Text style={styles.label}>Branch</Text>
                   <TouchableOpacity
                     style={styles.selectContainer}
-                    onPress={() => setBranchDropdownVisible(prev => !prev)}
+                    onPress={() => setBranchDropdownVisible((prev) => !prev)}
                   >
                     <Text style={state.branch ? styles.selectText : styles.selectPlaceholder}>
                       {state.branch || "Select branch"}
@@ -220,31 +179,23 @@ function FilterForm({ visible, onClose, onApplyFilters }) {
                 {/* City */}
                 <View style={styles.formGroup}>
                   <Text style={styles.label}>City</Text>
-                  <View style={styles.inputContainer}>
-                    <Search width={20} height={20} color="#999" style={styles.inputIcon} />
-                    <TextInput
-                      style={styles.input}
-                      placeholder="Enter city..."
-                      value={state.city}
-                      onChangeText={(value) => handleFieldChange("city", value)}
-                      placeholderTextColor="#999"
-                    />
-                  </View>
+                  <InputField
+                    icon={<Search width={20} height={20} color="#999" style={styles.inputIcon} />}
+                    placeholder="Enter city..."
+                    value={state.city}
+                    onChangeText={(value) => handleFieldChange("city", value)}
+                  />
                 </View>
 
                 {/* Country */}
                 <View style={styles.formGroup}>
                   <Text style={styles.label}>Country</Text>
-                  <View style={styles.inputContainer}>
-                    <Search width={20} height={20} color="#999" style={styles.inputIcon} />
-                    <TextInput
-                      style={styles.input}
-                      placeholder="Enter country..."
-                      value={state.country}
-                      onChangeText={(value) => handleFieldChange("country", value)}
-                      placeholderTextColor="#999"
-                    />
-                  </View>
+                  <InputField
+                    icon={<Search width={20} height={20} color="#999" style={styles.inputIcon} />}
+                    placeholder="Enter country..."
+                    value={state.country}
+                    onChangeText={(value) => handleFieldChange("country", value)}
+                  />
                 </View>
 
                 {/* Blood Group */}
@@ -252,7 +203,7 @@ function FilterForm({ visible, onClose, onApplyFilters }) {
                   <Text style={styles.label}>Blood Group</Text>
                   <TouchableOpacity
                     style={styles.selectContainer}
-                    onPress={() => setBloodGroupDropdownVisible(prev => !prev)}
+                    onPress={() => setBloodGroupDropdownVisible((prev) => !prev)}
                   >
                     <Text style={state.bloodGroup ? styles.selectText : styles.selectPlaceholder}>
                       {state.bloodGroup || "Select blood group"}
@@ -270,16 +221,10 @@ function FilterForm({ visible, onClose, onApplyFilters }) {
 
               {/* Footer */}
               <View style={styles.footer}>
-                <TouchableOpacity 
-                  style={styles.clearButton}
-                  onPress={clearFilters}
-                >
+                <TouchableOpacity style={styles.clearButton} onPress={clearFilters}>
                   <Text style={styles.clearButtonText}>Clear</Text>
                 </TouchableOpacity>
-                <TouchableOpacity 
-                  style={styles.applyButton}
-                  onPress={applyFilters}
-                >
+                <TouchableOpacity style={styles.applyButton} onPress={applyFilters}>
                   <LinearGradient
                     colors={['#FFA500', '#FF6347']}
                     style={styles.gradient}
@@ -297,6 +242,8 @@ function FilterForm({ visible, onClose, onApplyFilters }) {
     </Modal>
   );
 }
+
+export default FilterForm;
 
 const styles = StyleSheet.create({
   backdrop: {
@@ -322,22 +269,6 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
   },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#333",
-  },
-  closeButton: {
-    padding: 8,
-  },
   formContainer: {
     flex: 1,
     paddingHorizontal: 20,
@@ -354,23 +285,8 @@ const styles = StyleSheet.create({
     color: "#444",
     marginBottom: 10,
   },
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#f8f8f8",
-    borderRadius: 10,
-    paddingHorizontal: 15,
-    height: 50,
-    borderWidth: 1,
-    borderColor: "#eee",
-  },
   inputIcon: {
     marginRight: 10,
-  },
-  input: {
-    flex: 1,
-    fontSize: 16,
-    color: "#333",
   },
   selectContainer: {
     flexDirection: "row",
@@ -390,27 +306,6 @@ const styles = StyleSheet.create({
   selectPlaceholder: {
     fontSize: 16,
     color: "#999",
-  },
-  dropdownContainer: {
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    marginTop: 5,
-    borderWidth: 1,
-    borderColor: "#eee",
-    maxHeight: 200,
-    elevation: 5,
-  },
-  dropdownScrollView: {
-    maxHeight: 200,
-  },
-  dropdownItem: {
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
-  },
-  dropdownItemText: {
-    fontSize: 16,
-    color: "#333",
   },
   footer: {
     position: "absolute",
@@ -453,5 +348,3 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 });
-
-export default FilterForm;
